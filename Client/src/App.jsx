@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home/Home';
-import CustomerService from './pages/customerService/customerService.jsx';
+import CustomerService from './pages/CustomerService/CustomerService.jsx';
 import BurnedAppliances from './pages/BurnedAppliances/BurnedAppliances.jsx';
 import Operations from './pages/Operations/Operations.jsx';
 import Admin from './pages/Admin/Admin.jsx';
