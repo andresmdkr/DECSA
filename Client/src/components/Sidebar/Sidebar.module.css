@@ -1,0 +1,54 @@
+.sidebar {
+    font-family: 'Archivo', sans-serif;
+    width: 200px;
+    background-color: #4751A8;
+    color: white;
+    border-radius: 0 10px 10px 0;
+    padding: 20px;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.actionItem {
+    margin: 50px 0;
+    cursor: pointer;
+    font-size: 16px;
+    position: relative;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.actionItem::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background-color: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: width 0.3s ease;
+}
+
+.actionItem:hover::after,
+.active::after {
+    width: 100%;
+}
+
+.active {
+    color: #ffffff;
+    position: relative;
+}
+
+.active::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background-color: white;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}

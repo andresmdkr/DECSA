@@ -5,11 +5,9 @@
 }
 
 .mainContentWithNavbar {
+    display: flex;
+    height: 100%;
     flex: 1;
     background-color: #b3b3b3; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 0;
 }
  
