@@ -44,7 +44,7 @@ const LoginForm = () => {
                 dispatch(loginStart());
                 const data = await login(username, password);
                 dispatch(loginSuccess({ user: { role: data.role, username: data.username, name:data.name, lastName:data.lastName}, token: data.token }));
-                navigate('/home');
+                navigate('/customer-service');
             } catch (error) {
                 if (!error.response) {
                     setServerError('Error en el servidor, intente nuevamente');
