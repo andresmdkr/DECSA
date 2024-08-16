@@ -1,0 +1,27 @@
+.underConstruction {
+    width: 100%;
+    height: 100%;
+    background-color: #dbdffd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(0, 0, 0);
+}
+
+.constructionContainer {
+    text-align: center;
+    max-width: 600px;
+    padding: 20px;
+    background-color: #dbdffd;
+}
+
+.constructionImage {
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
