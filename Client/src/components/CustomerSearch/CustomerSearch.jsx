@@ -3,10 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchClientByAccountNumber, resetState } from '../../redux/slices/clientsSlice';
 import styles from './CustomerSearch.module.css';
 import { AiOutlineLoading3Quarters, AiOutlineSearch, AiOutlineSync } from 'react-icons/ai';
+import CustomerDetails from '../CustomerDetails/CustomerDetails.jsx';
+import SacForm from '../SacForm/SacForm.jsx'; // Importamos el nuevo componente SacForm
 
 const CustomerSearch = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [showDetails, setShowDetails] = useState(false);
+    const [showSacForm, setShowSacForm] = useState(false); // Estado para controlar el modal de SAC
+
     const dispatch = useDispatch();
     const { client, status, error } = useSelector((state) => state.clients);
 
@@ -41,12 +46,26 @@ const CustomerSearch = () => {
 
             setTimeout(() => {
                 setIsRefreshing(false);
-            }, 1000); // Simula el tiempo de refresco
+            }, 1000);
         }
     };
 
     const handleViewDetails = () => {
-        alert('Detalles del cliente: \n' + JSON.stringify(client, null, 2));
+        setShowDetails(true);
+    };
+
+    const handleStartSac = () => {
+        if (client) {
+            setShowSacForm(true); // Mostrar el modal de SAC
+        }
+    };
+
+    const closeDetails = () => {
+        setShowDetails(false);
+    };
+
+    const closeSacForm = () => {
+        setShowSacForm(false); // Cerrar el modal de SAC
     };
 
     const isButtonDisabled = !client;
@@ -138,6 +157,7 @@ const CustomerSearch = () => {
                     </table>
                     <div className={styles.buttonContainer}>
                         <button 
+                            onClick={handleStartSac} 
                             className={styles.startSacButton}
                             disabled={isButtonDisabled}
                         >
@@ -146,6 +166,8 @@ const CustomerSearch = () => {
                     </div>
                 </div>
             )}
+            {showDetails && <CustomerDetails client={client} onClose={closeDetails} />}
+            {showSacForm && <SacForm client={client} onClose={closeSacForm} />} {/* Renderizar el modal de SAC */}
         </div>
     );
 };

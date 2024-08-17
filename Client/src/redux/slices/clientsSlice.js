@@ -27,6 +27,26 @@ export const fetchClientByAccountNumber = createAsyncThunk(
   }
 );
 
+export const updateClientByAccountNumber = createAsyncThunk(
+  'client/updateClientByAccountNumber',
+  async ({ accountNumber, data }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.put(`${API_BASE_URL}/client/${accountNumber}`, data, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to update client');
+    }
+  }
+);
+
 const clientsSlice = createSlice({
   name: 'clients',
   initialState: {
@@ -54,9 +74,18 @@ const clientsSlice = createSlice({
       .addCase(fetchClientByAccountNumber.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to fetch client';
+      })
+      .addCase(updateClientByAccountNumber.fulfilled, (state, action) => {
+        state.client = { ...state.client, ...action.payload };
+      })
+      
+      .addCase(updateClientByAccountNumber.rejected, (state, action) => {
+        state.error = action.payload || 'Failed to update client';
       });
+      
   },
 });
 
 export const { resetState } = clientsSlice.actions;
 export default clientsSlice.reducer;
+

@@ -18,6 +18,7 @@ const createClient = async (clientData) => {
 
 
 const updateClientByAccountNumber = async (accountNumber, clientData) => {
+    console.log(accountNumber, clientData);
     const client = await Client.findOne({ where: { accountNumber } });
     if (!client) return null;
     return await client.update(clientData);
