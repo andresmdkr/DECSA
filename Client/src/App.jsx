@@ -1,4 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchClientByAccountNumber } from './redux/slices/clientsSlice';
 import Home from './pages/Home/Home';
 import CustomerService from './pages/CustomerService/CustomerService.jsx';
 import BurnedAppliances from './pages/BurnedAppliances/BurnedAppliances.jsx';
@@ -10,6 +13,19 @@ import LoginPage from './pages/LoginPage/LoginPage';
 import Layout from './components/Layout/Layout';
 
 function App() {
+
+
+    //HACER QUE EL SERVIDOR NO SE REINCIE
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            dispatch(fetchClientByAccountNumber(1));
+        }, 15000);
+
+        return () => clearInterval(intervalId); 
+    }, [dispatch]);
+
     return (
         <Router>
             <Layout>
