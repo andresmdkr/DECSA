@@ -17,12 +17,10 @@
     border-radius: 5px;
     max-width: 600px;
     width: 90%;
-    max-height: 90vh; 
-    overflow-y: auto;
 }
 
 .scrollableContent {
-    max-height: 70vh;
+    max-height: 60vh;
     overflow-y: auto;
     margin-bottom: 20px;
 }
