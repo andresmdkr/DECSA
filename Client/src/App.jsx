@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchClientByAccountNumber } from './redux/slices/clientsSlice';
 import Home from './pages/Home/Home';
 import CustomerService from './pages/CustomerService/CustomerService.jsx';
 import BurnedAppliances from './pages/BurnedAppliances/BurnedAppliances.jsx';
@@ -11,6 +10,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import LoginPage from './pages/LoginPage/LoginPage';
 import Layout from './components/Layout/Layout';
+import axios from 'axios';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
 
@@ -19,8 +20,8 @@ function App() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-            dispatch(fetchClientByAccountNumber(1));
+        const intervalId = setInterval(async () => {
+            await axios.get(`${API_BASE_URL}/user`);
         }, 15000);
 
         return () => clearInterval(intervalId); 
