@@ -56,7 +56,7 @@ const CustomerSearch = () => {
 
     const handleStartSac = () => {
         if (client) {
-            setShowSacForm(true); // Mostrar el modal de SAC
+            setShowSacForm(true); 
         }
     };
 
@@ -65,7 +65,7 @@ const CustomerSearch = () => {
     };
 
     const closeSacForm = () => {
-        setShowSacForm(false); // Cerrar el modal de SAC
+        setShowSacForm(false); 
     };
 
     const isButtonDisabled = !client;

@@ -6,13 +6,14 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     height: 100%;
-    margin-top: 50px;
+    margin-top: 30px;
     position: relative;
+    
 }
 
 .tabs {
     position: absolute;
-    top: -51px;
+    top: -42px;
     left: 0;
     display: flex;
     justify-content: flex-start;
@@ -20,24 +21,29 @@
 
 .tab {
     background-color: #4751A8;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 10px 10px 0 0;
+    color: rgb(255, 255, 255);
+    padding: 0px 30px;
+    border-radius: 5px 5px 0 0;
     text-align: center;
     font-family: sans-serif;
+    font-weight: lighter;   
     font-size: 10px;
     cursor: pointer;
 }
 
 .tab:hover {
-    background-color: #3c479e;
+    background-color: #121d80;
 }
+
+
 
 .searchBar {
     display: flex;
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+    margin-top: 20px;   
+    margin-left: 15px;
 }
 
 .searchBar label {
@@ -85,25 +91,36 @@
     transform-origin: center;
     width: 40px;
     height: 40px;
+    outline: none;
+
+}
+
+.refreshButton {
+    -webkit-tap-highlight-color: transparent;
 }
 
 .refreshButton:hover {
+    outline: none;
     color: #007bff;
 }
-
-.refreshButton:disabled {
-    cursor: not-allowed;
+.refreshButton:focus {
+    box-shadow: none; 
 }
+
+
 
 .customerDetails {
     font-size: 13px;
     margin-top: 20px;
+    width: 100%;
+    
 }
 
 .customerDetails table {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    table-layout: fixed;
 }
 
 .customerDetails th,
@@ -111,6 +128,8 @@
     padding: 10px;
     border-bottom: 1px solid #ccc;
     text-align: left;
+    word-wrap: break-word; 
+    max-width: 150px;
 }
 
 .buttonContainer {
@@ -125,10 +144,12 @@
     border: none;
     border-radius: 5px;
     cursor: not-allowed;
+    padding: 15px;
     transition: background-color 0.1s ease;
 }
 
 .startSacButton:enabled {
+
     background-color: #008a20;
     cursor: pointer;
 }
@@ -197,4 +218,49 @@
 
 .detailsButton:hover {
     background-color: #0056b3;
+}
+
+@media screen and (max-width: 870px) {
+    .searchBar input {
+        width: 100%;
+    }
+
+    .searchButton {
+        justify-content: center;
+    }
+
+    .customerDetails {
+        font-size: 12px;
+    }
+
+    .customerDetails table {
+        min-width: 100%;
+    }
+
+    .buttonContainer {
+        justify-content: center;
+    }
+}
+
+@media screen and (max-width: 820px) {
+  
+    
+    .customerDetails table {
+        display:block;
+        overflow-x: auto;
+        width: 100%;
+        overflow-block: auto;
+
+    }
+
+    .searchBar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .searchButton,
+    .refreshButton {
+        width: 100%;
+        justify-content: center;
+    }
 }

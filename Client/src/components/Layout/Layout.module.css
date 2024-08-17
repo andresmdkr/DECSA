@@ -7,6 +7,7 @@
 .mainContentWithNavbar {
     display: flex;
     height: 100%;
+    overflow: auto;
     flex: 1;
     background-color: #b3b3b3; 
 }
