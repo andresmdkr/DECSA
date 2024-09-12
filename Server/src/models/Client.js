@@ -19,6 +19,16 @@ sequelize.define('Client', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    dni: {
+        type: DataTypes.STRING
+      },
+
+    phone: {
+        type: DataTypes.STRING, 
+    },
+    auxPhone: {
+        type: DataTypes.STRING, 
+    },
     address: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -89,5 +99,6 @@ sequelize.define('Client', {
     consumption2024: {
         type: DataTypes.FLOAT,
     },
-    
+   
+     
 }, {timestamps: false,});};

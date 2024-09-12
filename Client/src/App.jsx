@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Home from './pages/Home/Home';
@@ -17,7 +17,7 @@ function App() {
 
 
     //HACER QUE EL SERVIDOR NO SE REINCIE
-    const dispatch = useDispatch();
+/*     const dispatch = useDispatch();
 
     useEffect(() => {
         const intervalId = setInterval(async () => {
@@ -25,7 +25,7 @@ function App() {
         }, 15000);
 
         return () => clearInterval(intervalId); 
-    }, [dispatch]);
+    }, [dispatch]); */
 
     return (
         <Router>

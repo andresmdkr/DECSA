@@ -4,14 +4,16 @@ import { fetchClientByAccountNumber, resetState } from '../../redux/slices/clien
 import styles from './CustomerSearch.module.css';
 import { AiOutlineLoading3Quarters, AiOutlineSearch, AiOutlineSync } from 'react-icons/ai';
 import CustomerDetails from '../CustomerDetails/CustomerDetails.jsx';
-import SacForm from '../SacForm/SacForm.jsx'; // Importamos el nuevo componente SacForm
+import SacForm from '../SacForm/SacForm.jsx'; 
+import SacTable from '../SacTable/SacTable.jsx';
 
 const CustomerSearch = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
-    const [showSacForm, setShowSacForm] = useState(false); // Estado para controlar el modal de SAC
-
+    const [showSacForm, setShowSacForm] = useState(false); 
+    const [activeTab, setActiveTab] = useState('search'); 
+    
     const dispatch = useDispatch();
     const { client, status, error } = useSelector((state) => state.clients);
 
@@ -51,6 +53,7 @@ const CustomerSearch = () => {
     };
 
     const handleViewDetails = () => {
+        console.log(client);
         setShowDetails(true);
     };
 
@@ -84,90 +87,111 @@ const CustomerSearch = () => {
     return (
         <div className={styles.container}>
             <div className={styles.tabs}>
-                <div className={styles.tab}>
+                <div 
+                    className={`${styles.tab} ${activeTab === 'search' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('search')}
+                >
                     <h2>Búsqueda de Cliente</h2>
                 </div>
-            </div>
-            <div className={styles.searchBar}>
-                <label htmlFor="searchInput">N° de cuenta:</label>
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Ingresa el número de cuenta"
-                    value={searchTerm}
-                    onChange={handleInputChange}
-                    onKeyDown={handleKeyDown}
-                />
-                <button onClick={handleSearch} disabled={!searchTerm} className={styles.searchButton}>
-                    <AiOutlineSearch className={styles.icon} /> Buscar
-                </button>
-                <button 
-                    onClick={handleRefresh} 
-                    className={`${styles.refreshButton} ${isRefreshing ? styles.spinnerIcon : ''}`} 
-                    disabled={isRefreshing}
+                <div 
+                    className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('history')}
                 >
-                    <AiOutlineSync />
-                </button>
+                    <h2>Historial Solicitudes</h2>
+                </div>
             </div>
 
-            {status === 'loading' && (
-                <div className={styles.loadingSpinner}>
-                    <AiOutlineLoading3Quarters className={styles.spinnerIcon} />
-                    <span>Cargando...</span>
-                </div>
-            )}
-            {status === 'failed' && error === 'Client not found' && (
-                <p className={styles.noResults}>No se encontró ningún cliente con ese número de cuenta.</p>
-            )}
-            {status === 'failed' && error !== 'Client not found' && (
-                <p className={styles.errorMessage}>Error: {error}</p>
-            )}
-            {status === 'succeeded' && client && (
-                <div className={styles.customerDetails}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Número de Cuenta</th>
-                                <th>Nombre Titular</th>
-                                <th>Dirección</th>
-                                <th>Categoría</th>
-                                <th>Dispositivo</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{client.accountNumber}</td>
-                                <td>{client.holderName}</td>
-                                <td>{client.address} {client.extraAddressInfo}</td>
-                                <td>{client.category}</td>
-                                <td>{client.device}</td>
-                                <td>
-                                    {getStatusIcon(client.status)}
-                                    {client.status}
-                                </td>
-                                <td>
-                                    <button onClick={handleViewDetails} className={styles.detailsButton}>
-                                        Ver Detalles
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div className={styles.buttonContainer}>
+            {activeTab === 'search' && (
+                <div>
+                    {/* Contenido de la búsqueda de clientes */}
+                    <div className={styles.searchBar}>
+                        <label htmlFor="searchInput">N° de cuenta:</label>
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Ingresa el número de cuenta"
+                            value={searchTerm}
+                            onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
+                        />
+                        <button onClick={handleSearch} disabled={!searchTerm} className={styles.searchButton}>
+                            <AiOutlineSearch className={styles.icon} /> Buscar
+                        </button>
                         <button 
-                            onClick={handleStartSac} 
-                            className={styles.startSacButton}
-                            disabled={isButtonDisabled}
+                            onClick={handleRefresh} 
+                            className={`${styles.refreshButton} ${isRefreshing ? styles.spinnerIcon : ''}`} 
+                            disabled={isRefreshing}
                         >
-                            Iniciar SAC
+                            <AiOutlineSync />
                         </button>
                     </div>
+
+                    {status === 'loading' && (
+                        <div className={styles.loadingSpinner}>
+                            <AiOutlineLoading3Quarters className={styles.spinnerIcon} />
+                            <span>Cargando...</span>
+                        </div>
+                    )}
+                    {status === 'failed' && error === 'Client not found' && (
+                        <p className={styles.noResults}>No se encontró ningún cliente con ese número de cuenta.</p>
+                    )}
+                    {status === 'failed' && error !== 'Client not found' && (
+                        <p className={styles.errorMessage}>Error: {error}</p>
+                    )}
+                    {status === 'succeeded' && client && (
+                        <div className={styles.customerDetails}>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Número de Cuenta</th>
+                                        <th>Nombre Titular</th>
+                                        <th>Dirección</th>
+                                        <th>Categoría</th>
+                                        <th>Dispositivo</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{client.accountNumber}</td>
+                                        <td>{client.holderName}</td>
+                                        <td>{client.address} {client.extraAddressInfo}</td>
+                                        <td>{client.category}</td>
+                                        <td>{client.device}</td>
+                                        <td>
+                                            {getStatusIcon(client.status)}
+                                            {client.status}
+                                        </td>
+                                        <td>
+                                            <button onClick={handleViewDetails} className={styles.detailsButton}>
+                                                Ver Detalles
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className={styles.buttonContainer}>
+                                <button 
+                                    onClick={handleStartSac} 
+                                    className={styles.startSacButton}
+                                    disabled={isButtonDisabled}
+                                >
+                                    Iniciar SAC
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {showDetails && <CustomerDetails client={client} onClose={closeDetails} />}
+                    {showSacForm && <SacForm client={client} onClose={closeSacForm} />} 
                 </div>
             )}
-            {showDetails && <CustomerDetails client={client} onClose={closeDetails} />}
-            {showSacForm && <SacForm client={client} onClose={closeSacForm} />} {/* Renderizar el modal de SAC */}
+
+            {activeTab === 'history' && (
+                <div className={styles.historyTab}>
+                    <SacTable />
+                </div>
+            )}
         </div>
     );
 };

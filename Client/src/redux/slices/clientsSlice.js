@@ -16,7 +16,6 @@ export const fetchClientByAccountNumber = createAsyncThunk(
       };
 
       const response = await axios.get(`${API_BASE_URL}/client/${accountNumber}`, config);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -81,7 +80,7 @@ const clientsSlice = createSlice({
       
       .addCase(updateClientByAccountNumber.rejected, (state, action) => {
         state.error = action.payload || 'Failed to update client';
-      });
+      })
       
   },
 });

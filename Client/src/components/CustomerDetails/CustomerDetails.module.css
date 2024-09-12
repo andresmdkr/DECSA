@@ -9,85 +9,133 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
 .modalContent {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 600px;
-    width: 90%;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    width: 600px;
+    max-width: 100%;
+    max-height: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.closeIcon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 25px;
+    color: #ff6b6b;
+}
+
+.modalTitle {
+    margin-top: 15px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+    margin-bottom: 15px;
 }
 
 .scrollableContent {
-    max-height: 60vh;
     overflow-y: auto;
-    margin-bottom: 20px;
+    padding-right: 5px;
+}
+
+.section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 15px;
 }
 
 .fieldGroup {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
 }
 
-.fieldGroup label {
-    font-weight: bold;
-    margin-bottom: 5px;
+.boldLabel {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
 }
 
 .fieldWrapper {
     display: flex;
     align-items: center;
-}
-
-.inputField {
-    flex-grow: 1;
-    padding: 5px;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    min-width: 0;
-}
-
-.inputField:disabled {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
 }
 
-.editIcon, .saveIcon {
+
+
+.inputField {
+    flex: 1;
+    border: none;
+    background-color: transparent;
+    font-size: 13px;
+    color: #333;
+    padding: 4px 0;
+    outline: none;
+}
+
+.inputField.readOnly {
+    color: #555;
+}
+
+.inputField.editable {
+    background-color: #fff;
+    color: #000;
+}
+
+.editIcon{
     cursor: pointer;
-    margin-left: 10px;
+    font-size: 14px;
+    color: #666666;
+    margin-left: 8px;
+    transition: color 0.2s;
 }
 
-.editIcon:hover, .saveIcon:hover {
+.saveIcon {
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+    margin-left: 8px;
+    transition: color 0.2s;
+}
+
+.editIcon:hover,
+.saveIcon:hover {
     color: #0056b3;
 }
 
-.closeButton {
-    background-color: #dc3545;
-    color: white;
-    padding: 10px 20px;
+.sectionSeparator {
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    border-top: 1px solid #929292;
+    margin: 10px 0;
+
 }
 
-.closeButton:hover {
-    background-color: #c82333;
+.fieldset {
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
-    .modalContent {
-        width: 95%;
-    }
-
-    .inputField {
-        font-size: 14px;
-        padding: 8px;
-    }
-
-    .editIcon, .saveIcon {
-        margin-left: 5px;
-    }
+.legend {
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+    padding: 0 5px;
 }

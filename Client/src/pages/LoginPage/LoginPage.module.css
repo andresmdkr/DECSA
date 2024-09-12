@@ -5,6 +5,7 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.753);
     backdrop-filter: blur(10px);
+    overflow: auto;
 }
 
 body {

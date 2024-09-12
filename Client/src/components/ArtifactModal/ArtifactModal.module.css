@@ -1,0 +1,57 @@
+/* ArtifactModal.module.css */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContent {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra suave */
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc; 
+    border-radius: 4px;
+}
+
+.actions {
+    display: flex;
+    justify-content:space-between;
+    margin-top: 16px; 
+}
+
+.saveButton,
+.cancelButton {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.saveButton {
+    background-color: #2f00d8; 
+    color: #fff;
+    margin-right: 8px;
+}
+
+.cancelButton {
+    background-color: #920000;
+    color: #fff;
+}

@@ -1,4 +1,4 @@
-const express = require('express');
+const { Router } = require("express");
 const { isAuthenticated } = require('../middleware/authMiddleware');
 const {
     getAllClientsHandler,
@@ -9,17 +9,17 @@ const {
     searchClientsHandler,
 } = require('../handlers/client.handler');
 
-const router = express.Router();
+const clientRouter = Router();
 
 
-router.get('/', isAuthenticated, getAllClientsHandler);
-router.get('/:accountNumber', isAuthenticated, getClientByAccountNumberHandler);
-router.get('/search', isAuthenticated, searchClientsHandler);
+clientRouter.get('/', isAuthenticated, getAllClientsHandler);
+clientRouter.get('/:accountNumber', isAuthenticated, getClientByAccountNumberHandler);
+clientRouter.get('/search', isAuthenticated, searchClientsHandler);
 
-router.post('/', isAuthenticated, createClientHandler);
+clientRouter.post('/', isAuthenticated, createClientHandler);
 
-router.put('/:accountNumber', isAuthenticated, updateClientByAccountNumberHandler);
+clientRouter.put('/:accountNumber', isAuthenticated, updateClientByAccountNumberHandler);
 
-router.delete('/:accountNumber', isAuthenticated, deleteClientByAccountNumberHandler);
+clientRouter.delete('/:accountNumber', isAuthenticated, deleteClientByAccountNumberHandler);
 
-module.exports = router;
+module.exports = clientRouter;

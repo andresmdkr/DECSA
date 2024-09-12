@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faSignOutAlt, faTools } from '@fortawesome/free-solid-svg-icons';
 import { logout } from '../../redux/auth/authSlice';
 import styles from './Navbar.module.css';
 import logo from '../../assets/logo.png';
 
+
 const Navbar = () => {
     const user = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation(); // Para obtener la ruta actual
     const [menuOpen, setMenuOpen] = useState(false);
-    const [selectedTab, setSelectedTab] = useState('/home');
+    const [selectedTab, setSelectedTab] = useState(location.pathname);
     const menuRef = useRef(null);
 
     const handleLogout = () => {
@@ -41,6 +43,11 @@ const Navbar = () => {
             document.removeEventListener('click', closeMenu);
         };
     }, []);
+
+    useEffect(() => {
+        setSelectedTab(location.pathname);
+    }, [location.pathname]);
+
 
     return (
         <nav className={styles.navbar}>
