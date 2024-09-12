@@ -13,7 +13,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     issueDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     resolution: {
@@ -21,7 +21,7 @@ module.exports = (sequelize) => {
       allowNull: true, 
     },
     resolutionDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: true, 
     },
     assignedTechnician: {

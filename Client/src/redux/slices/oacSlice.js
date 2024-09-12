@@ -32,7 +32,7 @@ export const createOac = createAsyncThunk(
     try {
       const token = localStorage.getItem('token');
       const formData = new FormData();
-
+      
       // Agregar los campos del formulario al FormData
       formData.append('sacId', sacId);
       formData.append('status', oacData.status);
@@ -40,16 +40,16 @@ export const createOac = createAsyncThunk(
       formData.append('resolution', oacData.resolution);
       formData.append('resolutionDate', oacData.resolutionDate);
       formData.append('assignedTechnician', oacData.assignedTechnician);
-
+     
+      console.log(Array.from(formData.entries()));
       // Agregar los archivos seleccionados
       oacData.files.forEach((file) => {
         formData.append('files', file);
       });
-
+      console.log(Array.from(formData.entries()));
       // Configuración de los headers con el token y el tipo de contenido
       const config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,  // Agregamos el token aquí
         },
       };

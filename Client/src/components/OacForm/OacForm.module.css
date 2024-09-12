@@ -4,7 +4,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.75); /* Fondo más oscuro para enfoque */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -13,20 +13,17 @@
 
 .modalContent {
     background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 700px;
+    padding: 30px;
+    border-radius: 12px;
+    width: 600px;
     max-width: 95%;
     max-height: 90vh;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
     position: relative;
-    font-size: 14px;
+    font-size: 16px;
     display: flex;
     flex-direction: column;
-}
-
-.modalContent2 {
-    overflow-y: auto;
+    overflow-y: auto; /* Para hacer scroll si el contenido es extenso */
 }
 
 .closeButton {
@@ -37,34 +34,101 @@
     background: none;
     font-size: 24px;
     cursor: pointer;
-    color: #ff6b6b;
+    color: #ff4d4f;
+    transition: transform 0.3s ease;
 }
 
+
 .title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
     text-align: center;
-    margin-bottom: 20px;
-    color: #343a40;
+    margin-bottom: 25px;
+    color: #1e1e2f;
+    text-transform: uppercase; /* Para darle un toque más formal */
+    letter-spacing: 1px;
+}
+
+label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #333;
+}
+
+input[type="date"],
+input[type="text"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border-color 0.3s ease;
+}
+
+input[type="date"]:focus,
+input[type="text"]:focus,
+select:focus {
+    border-color: #0056b3;
+    outline: none; /* Para eliminar el borde azul por defecto */
+}
+
+.fileList {
+    margin-top: 20px;
+}
+
+.fileList ul {
+    padding-left: 20px;
+}
+
+.fileList li {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.removeButton {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.removeButton:hover {
+    background-color: #ff7875;
 }
 
 .buttonsContainer {
     display: flex;
     justify-content: flex-end;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .actionButton {
-    background-color: #000f97;
+    background-color: #007bff;
     color: white;
-    padding: 10px 10px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .actionButton:hover {
     background-color: #0056b3;
+    transform: scale(1.05); /* Efecto de hover en el botón */
+}
+
+.errorMessage {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
 }

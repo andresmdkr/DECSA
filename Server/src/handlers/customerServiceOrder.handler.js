@@ -3,10 +3,11 @@ const { createCustomerServiceOrder, getCustomerServiceOrders, updateCustomerServ
 // Handler para crear una nueva O.A.C
 const createCustomerServiceOrderHandler = async (req, res) => {
   try {
-    const customerServiceOrder = await createCustomerServiceOrder(req.body, req.files);  // Pasamos req.files
+    const customerServiceOrder = await createCustomerServiceOrder(req.body, req.files);  
     res.status(201).json(customerServiceOrder);
   } catch (error) {
     res.status(500).json({ message: error.message });
+    console.error('Error al crear la OAC:', error);
   }
 };
 
