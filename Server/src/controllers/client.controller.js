@@ -2,8 +2,12 @@ const { Client } = require("../db.js");
 const { Op } = require('sequelize');
 
 
-const getAllClients = async () => {
-    return await Client.findAll();
+const getAllClients = async (page, limit) => {
+    const offset = (page - 1) * limit;
+    return await Client.findAll({
+        limit,
+        offset
+    });
 };
 
 
@@ -35,13 +39,28 @@ const deleteClientByAccountNumber = async (accountNumber) => {
 
 const searchClients = async (query) => {
     const whereClause = {};
+
     Object.keys(query).forEach((key) => {
         if (query[key]) {
-            whereClause[key] = { [Op.iLike]: `%${query[key]}%` };
+            if (key === 'holderName') {
+                const nameParts = query[key].split(' ').map(part => part.trim()).filter(part => part.length > 0);
+                
+                whereClause[Op.and] = nameParts.map(part => ({
+                    holderName: { [Op.iLike]: `%${part}%` }
+                }));
+            } else {
+                whereClause[key] = { [Op.iLike]: `%${query[key]}%` };
+            }
         }
     });
-    return await Client.findAll({ where: whereClause });
+
+    return await Client.findAll({ 
+        where: whereClause,
+        limit: 5  
+    });
 };
+
+
 
 module.exports = {
     getAllClients,

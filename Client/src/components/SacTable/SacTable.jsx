@@ -101,9 +101,8 @@ const SacTable = () => {
     const handleStatusChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: ''
+            clientId: clientIdSearch || ''
         });
-        setClientIdSearch('');
         setSacIdSearch('');
         setStatusFilter(e.target.value);
         setCurrentPage(1);
@@ -112,9 +111,8 @@ const SacTable = () => {
     const handlePriorityChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: ''
+            clientId: clientIdSearch || ''
         });
-        setClientIdSearch('');
         setSacIdSearch('');
         setPriorityFilter(e.target.value);
         setCurrentPage(1);
@@ -215,7 +213,7 @@ const SacTable = () => {
             {/* Nuevo Search Input para Client ID */}
             <div className={styles.searchContainer2}>
                 <TextField
-                    label="Buscar por Número de Cliente"
+                    label="Buscar por Número de Cuenta"
                     variant="outlined"
                     value={clientIdSearch}
                     onChange={handleClientIdInputChange}
@@ -270,7 +268,7 @@ const SacTable = () => {
                                         </div>
                                     </td>
                                     <td>{capitalizePriority(sac.priority)}</td>
-                                    <td>{sac.clientId}</td>
+                                    <td>{sac.clientId || "S/N"}</td>
                                     <td>
                                     <AiOutlineFilePdf
                                         className={styles.pdfIcon} 

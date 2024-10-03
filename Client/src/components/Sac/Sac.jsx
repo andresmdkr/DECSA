@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchClientByAccountNumber, updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
+import { fetchSACs } from '../../redux/slices/sacsSlice';
 import { updateSAC } from '../../redux/slices/sacsSlice';
 import Swal from 'sweetalert2';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import styles from './Sac.module.css';
 import OacModal from '../OacModal/OacModal';
+import OtModal from '../OtModal/OtModal';
+import ResolutionModal from '../ResolutionModal/ResolutionModal.jsx';
+import Artifact from '../Artifact/Artifact';
+
 
 const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text', maxLength = 250 }) => {
     const [localValue, setLocalValue] = useState(value);
@@ -18,6 +23,10 @@ const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text'
             editingRef.current = true;
         }
     }, [isEditable]);
+
+    useEffect(() => {
+        setLocalValue(value);
+    }, [value]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -74,19 +83,28 @@ const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text'
     );
 };
 
-const Sac = ({ sac, onClose}) => {
+const Sac = ({ sac, onClose}) => {  
     const dispatch = useDispatch();
     const client = useSelector((state) => state.clients.client);
     const [isOacModalOpen, setIsOacModalOpen] = useState(false);
+    const [isOtModalOpen, setIsOtModalOpen] = useState(false);
+    const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
     const [isEditable, setIsEditable] = useState({});
+    const [isArtifactModalOpen, setIsArtifactModalOpen] = useState(false);
+    const [selectedArtifact, setSelectedArtifact] = useState(null);
+    const [artifacts, setArtifacts] = useState(sac.artifacts);
 
 
     useEffect(() => {
         if (sac.clientId) {
             dispatch(fetchClientByAccountNumber(sac.clientId));
         }
+        console.log(sac.artifacts);
     
     }, [dispatch, sac.clientId]);
+
+ 
+
 
     
 
@@ -165,7 +183,6 @@ const Sac = ({ sac, onClose}) => {
         }
     };
 
- 
 
     const handleOpenOacModal = () => {
         setIsOacModalOpen(true);
@@ -175,6 +192,49 @@ const Sac = ({ sac, onClose}) => {
         setIsOacModalOpen(false);
     };
 
+    const handleOpenOtModal = () => {
+        setIsOtModalOpen(true);
+    };
+
+    const handleCloseOtModal = () => {
+        setIsOtModalOpen(false);
+    };
+
+      const handleOpenResolutionModal = () => {
+         setIsResolutionModalOpen(true);
+    };
+   
+
+    const handleCloseResolutionModal = () => {
+        setIsResolutionModalOpen(false);
+    };
+
+    
+
+
+    const handleOpenArtifact = (artifact) => {
+        setSelectedArtifact(artifact);
+        setIsArtifactModalOpen(true);
+    };
+
+    const handleCloseArtifactModal = () => {
+        setIsArtifactModalOpen(false);
+        setSelectedArtifact(null);
+    };
+
+    const handleArtifactUpdate = (artifactId, newStatus) => {
+        setArtifacts(prevArtifacts =>
+            prevArtifacts.map(artifact =>
+                artifact.id === artifactId
+                    ? { ...artifact, status: newStatus }
+                    : artifact
+            )
+        );
+    };
+    
+
+
+    
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
@@ -213,6 +273,9 @@ const Sac = ({ sac, onClose}) => {
                 </div>
             </fieldset>
 
+           
+
+
                   
                 
             {/* Artefactos (si aplica) */}
@@ -224,26 +287,59 @@ const Sac = ({ sac, onClose}) => {
                                 <tr>
                                     <th className={styles.colArtifact}>Artefacto</th>
                                     <th className={styles.colBrand}>Marca/Modelo/Número de Serie</th>
-                                    <th className={styles.colDocumentation}>Documentación Adicional</th>
+                                    <th className={styles.colStatus}>Estado</th>
+                                    <th className={styles.colActions}>Acciones</th>
                                 </tr>
                             </thead>
-                        <tbody>
-                            {sac.artifacts.map((artifact) => (
-                                <tr key={artifact.id}>
-                                   <td className={styles.colArtifact}>{artifact.name}</td>
-                                   <td className={styles.colBrand}>{`${artifact.brand} ${artifact.model} ${artifact.serialNumber}`}</td>
-                                   <td className={styles.colDocumentation}>{artifact.documentation}</td>
-                                </tr>
-                            ))}
-                        </tbody>
+                            <tbody>
+                                {artifacts.map((artifact) => (
+                                    <tr key={artifact.id}>
+                                        <td className={styles.colArtifact}>{artifact.name}</td>
+                                        <td className={styles.colBrand}>{`${artifact.brand} ${artifact.model} ${artifact.serialNumber}`}</td>
+                                        <td className={styles.colStatus}>
+                                            <span
+                                                className={`${styles.statusCircle} ${
+                                                    artifact.status === 'Pending'
+                                                        ? styles.redCircle
+                                                        : artifact.status === 'In Progress'
+                                                        ? styles.orangeCircle
+                                                        : styles.greenCircle
+                                                }`}
+                                            ></span>
+                                            {artifact.status === 'Pending' && 'Pendiente'}
+                                            {artifact.status === 'In Progress' && 'En Curso'}
+                                            {artifact.status === 'Completed' && 'Cerrado'}
+                                        </td>
+                                        <td className={styles.colActions}>
+                                            <button
+                                                className={styles.actionButton}
+                                                onClick={() => handleOpenArtifact(artifact)}
+                                            >
+                                                Abrir Artefacto
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+
                     </table>
                 </fieldset>
 
              
                 
             )}
+             {isArtifactModalOpen && (
+                       <Artifact 
+                       sacId={sac.id} 
+                       artifactId={selectedArtifact.id} 
+                       onUpdate={handleArtifactUpdate} 
+                       onClose={handleCloseArtifactModal}
+                       mode={selectedArtifact.status !== 'Completed' ? 'edit' : 'view'} 
+                   />
+                )}
             {/* Detalles del Cliente */}
-            {client ? (
+            {client && (
+                <>
                 <fieldset className={styles.fieldset}>
                     <legend className={styles.legend}>Detalles del Cliente</legend>
                     <div className={styles.section}>
@@ -311,29 +407,152 @@ const Sac = ({ sac, onClose}) => {
                         />
                     </div>
                 </fieldset>
-            ) : (
-                <p>Cargando detalles del cliente...</p>
+
+                <fieldset className={styles.fieldset}>
+                    <legend className={styles.legend}>Datos Eléctricos (Cliente)</legend>
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Estado"
+                            value={client.status}
+                            isEditable={isEditable.status}
+                            onEdit={() => toggleEdit('status')}
+                            onSave={(newValue) => handleSave('status', newValue)}
+                        />
+                        <EditableField
+                            label="Servicio"
+                            value={client.service}
+                            isEditable={isEditable.service}
+                            onEdit={() => toggleEdit('service')}
+                            onSave={(newValue) => handleSave('service', newValue)}
+                        />
+                        </div>
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Categoría"
+                            value={client.category}
+                            isEditable={isEditable.category}
+                            onEdit={() => toggleEdit('category')}
+                            onSave={(newValue) => handleSave('category', newValue)}
+                        />
+                        <EditableField
+                            label="Voltaje"
+                            value={client.voltage}
+                            isEditable={isEditable.voltage}
+                            onEdit={() => toggleEdit('voltage')}
+                            onSave={(newValue) => handleSave('voltage', newValue)}
+                        />
+                    </div>
+                    <hr className={styles.sectionSeparator} />
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Dispositivo"
+                            value={client.device}
+                            isEditable={isEditable.device}
+                            onEdit={() => toggleEdit('device')}
+                            onSave={(newValue) => handleSave('device', newValue)}
+                        />
+                        <EditableField
+                            label="SETA"
+                            value={client.substation}
+                            isEditable={isEditable.substation}
+                            onEdit={() => toggleEdit('substation')}
+                            onSave={(newValue) => handleSave('substation', newValue)}
+                        />
+                    </div>
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Disribuidor"
+                            value={client.distributor}
+                            isEditable={isEditable.distributor}
+                            onEdit={() => toggleEdit('distributor')}
+                            onSave={(newValue) => handleSave('distributor', newValue)}
+                        />
+                        <EditableField
+                            label="Suministro"
+                            value={client.supply}
+                            isEditable={isEditable.supply}
+                            onEdit={() => toggleEdit('supply')}
+                            onSave={(newValue) => handleSave('supply', newValue)}
+                        />
+                    </div>
+                    <hr className={styles.sectionSeparator} />
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Longitud"
+                            value={client.wsg84Long}
+                            isEditable={isEditable.wsg84Long}
+                            onEdit={() => toggleEdit('wsg84Long')}
+                            onSave={(newValue) => handleSave('wsg84Long', newValue)}
+                        />
+                        <EditableField
+                            label="Latitud"
+                            value={client.wsg84Lati}
+                            isEditable={isEditable.wsg84Lati}
+                            onEdit={() => toggleEdit('wsg84Lati')}
+                            onSave={(newValue) => handleSave('wsg84Lati', newValue)}
+                        />
+                    </div>
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Zona"
+                            value={client.zone}
+                            isEditable={isEditable.zone}
+                            onEdit={() => toggleEdit('zone')}
+                            onSave={(newValue) => handleSave('zone', newValue)}
+                        />
+                        <EditableField
+                            label="Sector"
+                            value={client.sector}
+                            isEditable={isEditable.sector}
+                            onEdit={() => toggleEdit('sector')}
+                            onSave={(newValue) => handleSave('sector', newValue)}
+                        />
+                    </div>
+                    <div className={styles.section}>
+                        <EditableField
+                            label="Ruta"
+                            value={client.route}
+                            isEditable={isEditable.route}
+                            onEdit={() => toggleEdit('route')}
+                            onSave={(newValue) => handleSave('route', newValue)}
+                        />
+                        </div>
+                </fieldset>
+    </>
             )}
+
        
                 </div>
                 <div className={styles.buttonsContainer}>
                     <button className={styles.actionButton} onClick={handleDerivar}>
                         Derivar
                     </button>
+                    <button className={styles.actionButton} onClick={handleOpenResolutionModal}>
+                        Resolucion
+                    </button>
 
+                    
+                    <button className={styles.actionButton} onClick={handleOpenOtModal}>
+                        O.Trabajo
+                    </button>
                     <button className={styles.actionButton} onClick={handleOpenOacModal}>
                         O.A.C
                     </button>
-                    <button className={styles.actionButton} onClick={() => console.log('Orden de Trabajo')}>
-                        O.Trabajo
-                    </button>
-                    <button className={styles.actionButton} onClick={() => console.log('Orden de Inspección')}>
-                        O.Inspeccion
-                    </button>
+                    
                 </div>
             </div>
+            {isResolutionModalOpen && (
+                <ResolutionModal
+                sac={sac}
+                onClose={handleCloseResolutionModal}
+                />
+            )}
+
             {isOacModalOpen && (
                 <OacModal sac={sac} onClose={handleCloseOacModal} />
+            )}
+            {isOtModalOpen && (
+                <OtModal sac={sac} onClose={handleCloseOtModal} />
             )}
         </div>
     );

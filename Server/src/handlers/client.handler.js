@@ -9,7 +9,14 @@ const {
 
 
 const getAllClientsHandler = async (req, res) => {
-    const { page = 1, limit = 12 } = req.query;
+    let { page = 1, limit = 12 } = req.query;
+
+    page = parseInt(page, 10);
+    limit = parseInt(limit, 10);
+
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1) limit = 12;
+
     try {
         const clients = await getAllClients(page, limit);
         res.status(200).json(clients);
@@ -17,6 +24,7 @@ const getAllClientsHandler = async (req, res) => {
         res.status(500).json({ message: 'Error fetching clients', error: error.message });
     }
 };
+
 
 
 const getClientByAccountNumberHandler = async (req, res) => {

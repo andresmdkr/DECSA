@@ -1,11 +1,11 @@
 import jsPDF from 'jspdf';
 import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import { fetchSACs } from '../../redux/slices/sacsSlice';
-import store from '../../redux/store'; // Asegúrate de tener acceso al store
+import store from '../../redux/store'; 
 
 const OacPDF = async (sacId) => {
   try {
-    // Obtener la información de la SAC
+    
     const sacResponse = await store.dispatch(fetchSACs({ sacId }));
     const sacData = sacResponse?.payload?.sacs?.length > 0 ? sacResponse.payload.sacs[0] : null;
     if (!sacData) {

@@ -8,7 +8,7 @@ const CustomerService = () => {
 
     const actions = [
         { label: 'Solicitud de Atención al Cliente (S.A.C)', component: CustomerSearch },
-        { label: 'Accion 2', component: () => <div>Accion 2</div> },
+        /* { label: 'Accion 2', component: () => <div>Accion 2</div> }, */
     ];
 
     const renderContent = () => {

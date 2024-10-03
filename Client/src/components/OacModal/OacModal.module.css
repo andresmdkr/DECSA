@@ -26,6 +26,8 @@
 }
 
 .modalContent2 {
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
 }
 
@@ -68,3 +70,77 @@
 .actionButton:hover {
     background-color: #0056b3;
 }
+
+.tdButton{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.iconButton {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: gray; 
+    transition: color 0.3s ease; 
+}
+
+.iconButton:hover {
+    color: #0056b3;
+}
+
+.statusInProgress {
+    display: flex;
+    align-items: center;
+  }
+  
+  .statusCompleted {
+    display: flex;
+    align-items: center;
+  }
+  
+  .circleRed {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+  
+  .circleGreen {
+    width: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+.oacTable {
+    width: 100%;
+    border-collapse: collapse; 
+}
+
+.oacTable th, .oacTable td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.oacTable th {
+    background-color: #f8f9fa; 
+}
+
+.oacTable td {
+    word-wrap: break-word; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 150px; 
+    white-space: nowrap; 
+}
+
+

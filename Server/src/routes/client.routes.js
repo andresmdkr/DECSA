@@ -13,8 +13,9 @@ const clientRouter = Router();
 
 
 clientRouter.get('/', isAuthenticated, getAllClientsHandler);
-clientRouter.get('/:accountNumber', isAuthenticated, getClientByAccountNumberHandler);
 clientRouter.get('/search', isAuthenticated, searchClientsHandler);
+clientRouter.get('/:accountNumber', isAuthenticated, getClientByAccountNumberHandler);
+
 
 clientRouter.post('/', isAuthenticated, createClientHandler);
 

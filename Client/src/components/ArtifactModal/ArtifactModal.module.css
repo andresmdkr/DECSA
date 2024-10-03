@@ -6,7 +6,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3); /* Ajusta la opacidad */
+    background-color: rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,7 +17,7 @@
     padding: 20px;
     border-radius: 8px;
     width: 400px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Agrega una sombra suave */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
 .field {
@@ -55,3 +55,5 @@
     background-color: #920000;
     color: #fff;
 }
+
+

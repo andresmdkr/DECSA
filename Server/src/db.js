@@ -33,26 +33,32 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder} = sequelize.models;
-//const { User, Order, Product, Category, OrderDetail, ShoppingCart, Favorite, Testimonial} = sequelize.models;
+const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder, WorkOrder, Resolution} = sequelize.models;
 
 // RELACIONES
 Client.hasMany(SAC, { foreignKey: 'clientId' });
-SAC.belongsTo(Client, { foreignKey: 'clientId' });
+SAC.belongsTo(Client, { 
+  foreignKey: 'clientId',
+  allowNull: true 
+});
 
 SAC.hasMany(BurnedArtifact, { foreignKey: 'sacId', as: 'artifacts' });
 BurnedArtifact.belongsTo(SAC, { foreignKey: 'sacId' });
 
+Client.hasMany(BurnedArtifact, { foreignKey: 'clientId', as: 'burnedArtifacts' });
+BurnedArtifact.belongsTo(Client, { foreignKey: 'clientId' });
+
 SAC.hasMany(CustomerServiceOrder, { foreignKey: 'sacId', as: 'customerServiceOrders' });
 CustomerServiceOrder.belongsTo(SAC, { foreignKey: 'sacId' });
-//User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
-//Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
-//Order.belongsToMany(Product, { through: OrderDetail, foreignKey: 'orderId', as: 'products' });
-//Product.belongsToMany(Order, { through: OrderDetail, foreignKey: 'productId', as: 'orders' });
+SAC.hasMany(WorkOrder, { foreignKey: 'sacId', as: 'workOrders' });
+WorkOrder.belongsTo(SAC, { foreignKey: 'sacId', allowNull: true });
 
-//Product.belongsToMany(Category, { through: "ProductCategory", foreignKey: 'productId', as: 'categories' });
-//Category.belongsToMany(Product, { through: "ProductCategory", foreignKey: 'categoryId', as: 'products' });
+BurnedArtifact.hasOne(WorkOrder, { foreignKey: 'burnedArtifactId' });
+WorkOrder.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId', allowNull: true });
+
+SAC.hasOne(Resolution, { foreignKey: 'sacId', as: 'resolution' });
+Resolution.belongsTo(SAC, { foreignKey: 'sacId' });
 
 module.exports = {
   ...sequelize.models, 

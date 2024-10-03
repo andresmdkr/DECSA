@@ -12,7 +12,7 @@ const Navbar = () => {
     const user = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const location = useLocation(); // Para obtener la ruta actual
+    const location = useLocation(); 
     const [menuOpen, setMenuOpen] = useState(false);
     const [selectedTab, setSelectedTab] = useState(location.pathname);
     const menuRef = useRef(null);

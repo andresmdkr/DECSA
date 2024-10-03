@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters, AiOutlineFilePdf } from 'react-icons/ai';
-import { fetchSACs } from '../../redux/slices/sacsSlice';
+import { fetchSACs,updateSAC } from '../../redux/slices/sacsSlice';
 import styles from './ClaimsTable.module.css';
 import Sac from '../Sac/Sac.jsx';
 
@@ -105,9 +105,8 @@ const ClaimsTable = () => {
     const handleStatusChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: ''
+            clientId: clientIdSearch || '',
         });
-        setClientIdSearch('');
         setSacIdSearch('');
         setStatusFilter(e.target.value);
         setCurrentPage(1);
@@ -116,9 +115,8 @@ const ClaimsTable = () => {
     const handlePriorityChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: ''
+            clientId: clientIdSearch || '',
         });
-        setClientIdSearch('');
         setSacIdSearch('');
         setPriorityFilter(e.target.value);
         setCurrentPage(1);
@@ -150,10 +148,32 @@ const ClaimsTable = () => {
         }
     };
 
-    const handleViewSac = (sac) => {
-        setSelectedSac(sac);
-        setShowSac(true); 
+    const handleViewSac = async (sac) => {
+        setSelectedSac({ ...sac, status: "Open" });
+        try {
+            if(sac.status !== "Closed"){
+                await dispatch(updateSAC({ id: sac.id, sacData: { status: "Open" } }));
+            }
+            setShowSac(true);
+        } catch (error) {
+            console.error("Error al actualizar SAC:", error);
+        }
     };
+    
+
+    const handleClose = async () => {
+        dispatch(fetchSACs({
+            page: currentPage,
+            limit: sacsPerPage,
+            sacId: searchParams.sacId,
+            clientId: searchParams.clientId,
+            status:  statusFilter ? statusMap[statusFilter] : '',
+            priority: priorityFilter,
+            area:"artefactos"
+        }));
+        setShowSac(false);
+    };
+    
 
 
 
@@ -278,7 +298,7 @@ const ClaimsTable = () => {
                                         </div>
                                     </td>
                                     <td>{capitalizePriority(sac.priority)}</td>
-                                    <td>{sac.clientId}</td>
+                                    <td>{sac.clientId || "S/N"}</td>
                                     <td>
                                         <button 
                                             className={styles.viewClaimButton} 
@@ -294,7 +314,7 @@ const ClaimsTable = () => {
                         </tbody>
                     </table>
                     {showSac && selectedSac && (
-                        <Sac sac={selectedSac} onClose={() => {setShowSac(false),handleReset()}} />
+                        <Sac sac={selectedSac} onClose={handleClose} />
                     )}
                     {/* Pagination */}
                     <div className={styles.paginationContainer}>

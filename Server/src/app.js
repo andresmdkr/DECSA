@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const path = require("path");
 const routes = require("./routes/index.routes.js");
 
 require("./db.js");
@@ -41,6 +42,9 @@ server.use(cors({
     credentials: true,
   }));
  */
+
+// Servir archivos estáticos de la carpeta "uploads"
+server.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas
 server.use("/", routes);

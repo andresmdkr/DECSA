@@ -4,14 +4,14 @@ module.exports = (sequelize) => {
   sequelize.define('SAC', {
     clientId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     claimReason: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     eventDate: {

@@ -1,32 +1,49 @@
-.modalOverlay {
+.oacModalOverlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75); /* Fondo más oscuro para enfoque */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1000;
-}
-
-.modalContent {
+  }
+  
+  .oacModalContent {
     background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    width: 600px;
-    max-width: 95%;
-    max-height: 90vh;
-    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.3); /* Sombra más intensa */
-    position: relative;
-    font-size: 16px;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90%;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* Para hacer scroll si el contenido es extenso */
-}
-
-.closeButton {
+    position: relative;
+  }
+  
+  .oacFormContainer {
+    overflow-y: auto;
+    flex-grow: 1;
+    margin-bottom: 60px;
+  }
+  
+  .oacButtonContainer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .singleButton {
+    justify-content: flex-end;
+  }
+  
+  .oacCloseButton {
     position: absolute;
     top: 15px;
     right: 15px;
@@ -34,101 +51,174 @@
     background: none;
     font-size: 24px;
     cursor: pointer;
-    color: #ff4d4f;
-    transition: transform 0.3s ease;
-}
-
-
-.title {
-    font-size: 24px;
+    color: #ff6b6b;
+  }
+  
+  .oacTitle {
+    font-size: 26px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 25px;
-    color: #1e1e2f;
-    text-transform: uppercase; /* Para darle un toque más formal */
+    color: #333;
+    text-transform: uppercase;
     letter-spacing: 1px;
-}
-
-label {
-    display: block;
-    margin-bottom: 15px;
+  }
+  
+  .oacLabel {
     font-weight: 500;
     color: #333;
-}
-
-input[type="date"],
-input[type="text"],
-select {
+    font-size: 15px;
+  }
+  
+  .oacInput,
+  .oacSelect {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-top: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin-right: 15px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     transition: border-color 0.3s ease;
-}
+  }
+  
+  .oacInput:focus,
+  .oacSelect:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+  }
+  
+  .inlineGroup {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+ 
+  .inlineGroup .oacLabel {
+    margin-left: 15px;
+    min-width: 80px; 
+  }
 
-input[type="date"]:focus,
-input[type="text"]:focus,
-select:focus {
-    border-color: #0056b3;
-    outline: none; /* Para eliminar el borde azul por defecto */
-}
 
-.fileList {
+  .longInput {
+    font-size: 14px;
+    width: 80%; 
+  }
+  
+  .shortInput {
+    width: 30%; 
+  }
+
+
+  .separator {
+    margin: 20px 0;
+    border: none;
+    border-top: 2px solid #ddd;
+  }
+
+  .textareaGroup {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column; 
+  }
+  
+  .textareaGroup .oacLabel {
+    margin-bottom: 5px; 
+  }
+  
+  .oacTextarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;  
+    transition: border-color 0.3s ease;
+  }
+  
+  .oacTextarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+  }
+  
+
+  
+  
+  .oacFileList {
     margin-top: 20px;
-}
-
-.fileList ul {
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .oacFileList ul {
     padding-left: 20px;
-}
-
-.fileList li {
+    list-style-type: none;
+  }
+  
+  .oacFileList li {
     margin-bottom: 10px;
     font-size: 14px;
-}
-
-.removeButton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .oacFileRemoveButton {
     background-color: #ff4d4f;
     color: white;
     border: none;
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 12px;
     margin-left: 10px;
     transition: background-color 0.3s ease;
-}
-
-.removeButton:hover {
+  }
+  
+  .oacFileRemoveButton:hover {
     background-color: #ff7875;
-}
-
-.buttonsContainer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 30px;
-}
-
-.actionButton {
-    background-color: #007bff;
+  }
+  
+  .oacFileLinkButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .oacFileLinkButton:hover {
+    color: #0056b3;
+  }
+  
+  .oacSubmitButton {
+    background-color: #000f97;
     color: white;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.actionButton:hover {
+    transition: background-color 0.3s ease;
+  }
+  
+  .oacSubmitButton:hover {
     background-color: #0056b3;
-    transform: scale(1.05); /* Efecto de hover en el botón */
-}
+  }
+  
 
-.errorMessage {
+.oacErrorMessage {
     color: #ff4d4f;
     margin-top: 10px;
     font-size: 14px;
+    background-color: #ffe6e6;
+    padding: 8px;
+    border-radius: 6px;
 }

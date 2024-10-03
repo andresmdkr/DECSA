@@ -98,6 +98,28 @@
     color: #000;
 }
 
+.inputSelect {
+    flex: 1;
+    border: none    ;
+    background-color: transparent;
+    font-size: 13px;
+    color: #333;
+    padding: 4px 0;
+    outline: none;
+    box-shadow: none; 
+    -moz-appearance: none;
+    -webkit-appearance: none; 
+    appearance: none; 
+    border-radius: 4px;
+}
+
+.inputSelect:focus {
+    padding: 5px;
+    appearance: auto;
+    border: 1px solid #75757570; 
+}
+
+
 .editIcon{
     cursor: pointer;
     font-size: 14px;

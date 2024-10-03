@@ -18,7 +18,6 @@ const Claims = () => {
 
             </div>
 
-            {/* Contenido de la tab "Historial Solicitudes" */}
             {activeTab === 'history' && (
                 <div className={styles.historyTab}>
                     <ClaimsTable />

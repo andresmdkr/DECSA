@@ -1,0 +1,193 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 90%;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+}
+
+.formScrollable {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ff6b6b;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #343a40;
+}
+
+.loadingText {
+    font-size: 16px;
+    color: #6c757d;
+    text-align: center;
+}
+
+.artifactDetails {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #929292;
+    margin: 15px 0;
+}
+
+.inlineGroup {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.inlineGroup label {
+    min-width: 120px;
+}
+
+.statusSelect, .inputField {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.twoColumns {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.formGroupHalf {
+    width: 48%;
+}
+
+.textareaField {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+    min-height: 170px;
+    resize: none;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+}
+
+.saveButton, .printButton {
+    background-color: #000f97;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.saveButton:hover, .printButton:hover {
+    background-color: #0039b3;
+}
+
+
+.fileList {
+    margin-top: 20px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .fileList ul {
+    padding-left: 20px;
+    list-style-type: none;
+  }
+  
+  .fileList li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .fileRemoveButton {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .fileRemoveButton:hover {
+    background-color: #ff7875;
+  }
+  
+  .fileLinkButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .fileLinkButton:hover {
+    color: #0056b3;
+  }
+
+  .errorMessage {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+    background-color: #ffe6e6;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.formGroup {
+    margin:15px 0;
+    display: flex;
+    flex-direction: column;
+}
+

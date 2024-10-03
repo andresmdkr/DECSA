@@ -3,13 +3,14 @@ import { useDispatch } from 'react-redux';
 import styles from './CustomerDetails.module.css';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
+import Swal from 'sweetalert2';
 
 const CustomerDetails = ({ client, onClose }) => {
   const dispatch = useDispatch();
   const [editableFields, setEditableFields] = useState({});
+  const [labelText, setLabelText] = useState('');
   const inputRefs = useRef({});
   
-  // Referencia para saber qué campo está siendo editado actualmente
   const editingFieldRef = useRef(null);
 
   const handleInputChange = (field, value) => {
@@ -19,12 +20,13 @@ const CustomerDetails = ({ client, onClose }) => {
     });
   };
 
-  const handleEditClick = (field) => {
+  const handleEditClick = (field,label) => {
+    setLabelText(label);
     setEditableFields({
       ...editableFields,
       [field]: client[field] || '',
     });
-    editingFieldRef.current = field;  // Guardamos qué campo está siendo editado
+    editingFieldRef.current = field;  
     setTimeout(() => {
       if (inputRefs.current[field]) {
         inputRefs.current[field].focus();
@@ -33,33 +35,92 @@ const CustomerDetails = ({ client, onClose }) => {
   };
 
   const handleSaveClick = async (field) => {
-    try {
-      await dispatch(
-        updateClientByAccountNumber({
-          accountNumber: client.accountNumber,
-          data: { [field]: editableFields[field] },
-        })
-      );
+   
+    if (editableFields[field] === client[field]) {
       setEditableFields((prevState) => ({
         ...prevState,
         [field]: undefined,
       }));
-      editingFieldRef.current = null; // Reiniciamos la referencia del campo editado
-    } catch (error) {
-      console.error('Error al actualizar el cliente:', error);
+      editingFieldRef.current = null;
+      return;
+    }
+  
+    const result = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Estás seguro de cambiar el campo ${labelText} con el valor ${editableFields[field]}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar',
+      focusCancel: true
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await dispatch(
+          updateClientByAccountNumber({
+            accountNumber: client.accountNumber,
+            data: { [field]: editableFields[field] },
+          })
+        );
+        setEditableFields((prevState) => ({
+          ...prevState,
+          [field]: undefined,
+        }));
+        editingFieldRef.current = null;
+      } catch (error) {
+        console.error('Error al actualizar el cliente:', error);
+      }
+    } else {
+      setEditableFields((prevState) => ({
+        ...prevState,
+        [field]: undefined,
+      }));
+      editingFieldRef.current = null;
     }
   };
+  
+  
+  
+  
+  const handleKeyDown = async (event, field, label) => {
+    setLabelText(label);
+     if (event.key === 'Enter') {
 
-  const handleKeyDown = (event, field) => {
-    if (event.key === 'Enter') {
-      handleSaveClick(field);
+      if (editableFields[field] === client[field]) {
+        setEditableFields((prevState) => ({
+          ...prevState,
+          [field]: undefined,
+        }));
+        editingFieldRef.current = null;
+        return;
+      }
+      const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Estás seguro de cambiar el campo ${labelText} con el valor ${editableFields[field]}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cambiar',
+        cancelButtonText: 'Cancelar',
+      });
+  
+      if (result.isConfirmed) {
+        handleSaveClick(field, label); 
+      }
     }
   };
+  
+  
+  
 
-  // Detectar clics fuera del input
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Si hay un campo en edición y el clic no es dentro del input o el icono de edición
+      
+      if (document.querySelector('.swal2-container')?.contains(event.target)) {
+        return; 
+      }
+  
       if (
         editingFieldRef.current &&
         inputRefs.current[editingFieldRef.current] &&
@@ -68,15 +129,72 @@ const CustomerDetails = ({ client, onClose }) => {
         handleSaveClick(editingFieldRef.current);
       }
     };
-
+  
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [editableFields]);
+  
 
-  const renderEditableField = (field, label) => {
+  const renderEditableField = (field, label, isDate = false, isStatus = false, isVoltage = false) => {
     const isFieldEditing = editableFields[field] !== undefined;
+    
+
+    if (isStatus) {
+      return (
+        <div className={styles.fieldGroup}>
+          <label className={styles.boldLabel}>{label}:</label>
+          <div className={styles.fieldWrapper}>
+            <select
+              ref={(el) => (inputRefs.current[field] = el)}
+              value={editableFields[field] !== undefined ? editableFields[field] : client[field] || ''}
+              disabled={!isFieldEditing}
+              onChange={(e) => handleInputChange(field, e.target.value)}
+              className={`${styles.inputSelect} ${isFieldEditing ? styles.editable : styles.readOnly}`}
+              autoComplete="nope"
+            >
+              <option value="CONECTADO">CONECTADO</option>
+              <option value="BAJA">BAJA</option>
+              <option value="PENDIENTE_CONEXION">PENDIENTE_CONEXION</option>
+            </select>
+            {!isFieldEditing ? (
+              <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />
+            ) : (
+              <AiOutlineCheck className={styles.saveIcon} onClick={() => handleSaveClick(field, label)} />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (isVoltage) {
+      return (
+        <div className={styles.fieldGroup}>
+          <label className={styles.boldLabel}>{label}:</label>
+          <div className={styles.fieldWrapper}>
+            <select
+              ref={(el) => (inputRefs.current[field] = el)}
+              value={editableFields[field] !== undefined ? editableFields[field] : client[field] || ''}
+              disabled={!isFieldEditing}
+              onChange={(e) => handleInputChange(field, e.target.value)}
+              className={`${styles.inputSelect} ${isFieldEditing ? styles.editable : styles.readOnly}`}
+               autoComplete="nope"
+            >
+              <option value="220">220</option>
+              <option value="380">380</option>
+              <option value="Sin Tension">Sin Tension</option>
+            </select>
+            {!isFieldEditing ? (
+              <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />
+            ) : (
+              <AiOutlineCheck className={styles.saveIcon} onClick={() => handleSaveClick(field, label)} />
+            )}
+          </div>
+        </div>
+      );
+    }
+
 
     return (
       <div className={styles.fieldGroup}>
@@ -84,35 +202,28 @@ const CustomerDetails = ({ client, onClose }) => {
         <div className={styles.fieldWrapper}>
           <input
             ref={(el) => (inputRefs.current[field] = el)}
-            type="text"
+            type={isDate ? 'date' : 'text'}
             value={
-              editableFields[field] !== undefined
-                ? editableFields[field]
-                : client[field] || ''
+              isDate
+                ? (editableFields[field] !== undefined ? editableFields[field] : client[field]?.slice(0, 10))
+                : (editableFields[field] !== undefined ? editableFields[field] : client[field] || '')
             }
             disabled={!isFieldEditing}
             onChange={(e) => handleInputChange(field, e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, field)}
-            className={`${styles.inputField} ${
-              isFieldEditing ? styles.editable : styles.readOnly
-            }`}
+            onKeyDown={(e) => handleKeyDown(e, field, label)}
+            maxLength={250}
+            className={`${styles.inputField} ${isFieldEditing ? styles.editable : styles.readOnly}`}
+            autoComplete="nope"
           />
           {!isFieldEditing ? (
-            <AiOutlineEdit
-              className={styles.editIcon}
-              onClick={() => handleEditClick(field)}
-            />
+            <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />
           ) : (
-            <AiOutlineCheck
-              className={styles.saveIcon}
-              onClick={() => handleSaveClick(field)}
-            />
+            <AiOutlineCheck className={styles.saveIcon} onClick={() => handleSaveClick(field, label)} />
           )}
         </div>
       </div>
     );
   };
-  
   return (
     <div className={styles.detailsContainer}>
       <div className={styles.modalContent}>
@@ -140,6 +251,7 @@ const CustomerDetails = ({ client, onClose }) => {
             </div>
             <hr className={styles.sectionSeparator} />
             <div className={styles.section}>
+              {renderEditableField('barrio', 'Barrio')}
               {renderEditableField('province', 'Provincia')}
               {renderEditableField('department', 'Departamento')}
               {renderEditableField('locality', 'Localidad')}
@@ -151,11 +263,11 @@ const CustomerDetails = ({ client, onClose }) => {
             <legend className={styles.legend}>Datos Eléctricos</legend>
            
             <div className={styles.section}>
-                {renderEditableField('status', 'Estado')}
+              {renderEditableField('status', 'Estado', false, true)}
               {renderEditableField('service', 'Servicio')}
               {renderEditableField('category', 'Categoría')}
          
-              {renderEditableField('voltage', 'Voltaje')}
+              {renderEditableField('voltage', 'Voltaje', false,false, true)}
             </div>
             
          
@@ -177,6 +289,20 @@ const CustomerDetails = ({ client, onClose }) => {
         
       </div>
           </fieldset>
+            
+            {/* Sección de Estado Actual */}
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.legend}>Estado Actual</legend>
+            <div className={styles.section}>
+            {renderEditableField('dateOfEntry', 'Fecha de Alta', true)} 
+            {renderEditableField('dateOfTermination', 'Fecha de Baja', true)} 
+            </div>
+            <hr className={styles.sectionSeparator} /> 
+            <div className={styles.section}>
+              {renderEditableField('consumption2024', 'Consumo 2024')}
+            </div>
+          </fieldset>
+
         </div>
       </div>
     </div>

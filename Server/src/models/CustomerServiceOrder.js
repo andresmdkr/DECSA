@@ -9,23 +9,39 @@ module.exports = (sequelize) => {
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: 'Pending', 
+      defaultValue: 'Open', 
       allowNull: false,
     },
     issueDate: {
       type: DataTypes.STRING,
       allowNull: true, 
     },
-    resolution: {
+    issueTime: {
       type: DataTypes.STRING,
       allowNull: true, 
     },
-    resolutionDate: {
+    assignedPerson: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
-    assignedTechnician: {
+    assignedBy: { 
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    assignmentTime: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    oacReason: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    workDescription: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    pendingTasks: {
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     files: {

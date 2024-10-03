@@ -1,0 +1,218 @@
+.otModalOverlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .otModalContent {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .otFormContainer {
+    overflow-y: auto;
+    flex-grow: 1;
+    margin-bottom: 60px;
+  }
+  
+  .otButtonContainer {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .singleButton {
+    justify-content: flex-end;
+  }
+  
+  .otCloseButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ff6b6b;
+  }
+  
+  .otTitle {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .otLabel {
+    font-weight: 500;
+    color: #333;
+    font-size: 15px;
+  }
+  
+  .otInput,
+  .otSelect {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    margin-right: 15px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .otInput:focus,
+  .otSelect:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+  }
+  
+  .inlineGroup {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .inlineGroup .otLabel {
+    margin-left: 15px;
+    min-width: 80px;
+  }
+  
+  .longInput {
+    font-size: 14px;
+    width: 80%;
+  }
+  
+  .shortInput {
+    width: 30%;
+  }
+  
+  .separator {
+    margin: 20px 0;
+    border: none;
+    border-top: 2px solid #ddd;
+  }
+  
+  .textareaGroup {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .textareaGroup .otLabel {
+    margin-bottom: 5px;
+  }
+  
+  .otTextarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    resize: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .otTextarea:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+  }
+  
+  .otFileList {
+    margin-top: 20px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .otFileList ul {
+    padding-left: 20px;
+    list-style-type: none;
+  }
+  
+  .otFileList li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .otFileRemoveButton {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .otFileRemoveButton:hover {
+    background-color: #ff7875;
+  }
+  
+  .otFileLinkButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .otFileLinkButton:hover {
+    color: #0056b3;
+  }
+  
+  .otSubmitButton {
+    background-color: #000f97;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .otSubmitButton:hover {
+    background-color: #0056b3;
+  }
+  
+
+.otErrorMessage {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+    background-color: #ffe6e6;
+    padding: 8px;
+    border-radius: 6px;
+}

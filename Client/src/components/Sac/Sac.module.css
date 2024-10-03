@@ -127,6 +127,15 @@
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
 }
 
+.inputEditable1{
+    padding: 8px 12px;
+    border: 1px solid #dadada;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 16px;
+    outline: none;
+}
+
 .inputReadonly {
     background-color: #cfcfcf79;
     color: #4e4e4e;
@@ -177,10 +186,28 @@
 }
 
 
-.artifactTable .colDocumentation {
+.artifactTable .colActions {
     min-width: 140px
 }
 
+.artifactTable .colActions button {
+    background-color: #0066ff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+}
+
+.artifactTable .colActions button:hover {
+    background-color: #0056b3;
+}
+
+.artifactTable .colStatus {
+    min-width: 120px;
+}
 
 
 .buttonsContainer {
@@ -202,4 +229,31 @@
 
 .actionButton:hover {
     background-color: #0056b3;
+}
+
+.sectionSeparator {
+    border: none;
+    border-top: 1px solid #929292;
+    margin: 10px 0;
+
+}
+
+.statusCircle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.redCircle {
+    background-color: red;
+}
+
+.orangeCircle {
+    background-color: orange;
+}
+
+.greenCircle {
+    background-color: green;
 }

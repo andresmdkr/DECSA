@@ -46,16 +46,39 @@ export const updateClientByAccountNumber = createAsyncThunk(
   }
 );
 
+
+export const searchClientsByName = createAsyncThunk(
+  'client/searchClientsByName',
+  async (holderName, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/client/search?holderName=${holderName}`, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to search clients');
+    }
+  }
+);
+
 const clientsSlice = createSlice({
   name: 'clients',
   initialState: {
     client: null,
+    clients: [],
     status: 'idle', 
     error: null,
   },
   reducers: {
     resetState: (state) => {
       state.client = null;
+      state.clients = []; 
       state.status = 'idle';
       state.error = null;
     }
@@ -81,6 +104,18 @@ const clientsSlice = createSlice({
       .addCase(updateClientByAccountNumber.rejected, (state, action) => {
         state.error = action.payload || 'Failed to update client';
       })
+      .addCase(searchClientsByName.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(searchClientsByName.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.clients = action.payload; 
+      })
+      .addCase(searchClientsByName.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to search clients';
+      });
       
   },
 });

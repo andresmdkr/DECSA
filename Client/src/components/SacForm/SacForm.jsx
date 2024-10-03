@@ -44,6 +44,9 @@ const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text'
         }
     };
 
+
+    
+
     return (
         <div className={styles.fieldGroup}>
             <label className={styles.boldLabel}>{label}</label>
@@ -89,6 +92,15 @@ const SacForm = ({ client, onClose }) => {
     const [showArtifactModal, setShowArtifactModal] = useState(false);
     const [artifactToEdit, setArtifactToEdit] = useState(null);
    
+
+    useEffect(() => {
+        const now = new Date();
+        const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+        setEventDate(localDate.toISOString().split('T')[0]); 
+        setStartTime(now.toTimeString().split(' ')[0].slice(0, 5));
+    }, []);
+    
+
     const dispatch = useDispatch();
 
     const showSuccessAlert = (sacId) => {
@@ -122,14 +134,14 @@ const SacForm = ({ client, onClose }) => {
 
         try {
           const sacData = {
-            clientId: client.accountNumber,
+            clientId: client? client.accountNumber : null,
             claimReason,
             area,
             artifacts: claimReason === 'artefactos' ? artifacts : [], 
             description,
-            eventDate: eventDate ? `${eventDate}T00:00:00.000Z` : null,
-            startTime: startTime ? `${startTime}:00.000Z` : null,
-            endTime: endTime ? `${endTime}:00.000Z` : null,
+            eventDate: eventDate ? new Date(`${eventDate}T00:00:00`).toISOString() : null, 
+            startTime: startTime ? `${startTime}:00` : null, 
+            endTime: endTime ? `${endTime}:00` : null, 
             priority,
           };
           
@@ -196,6 +208,7 @@ const SacForm = ({ client, onClose }) => {
                 <hr />
                 <div className={styles.modalContent2}>
                 {/* Detalles del Cliente */}
+                {client && (
                 <fieldset className={styles.fieldset}>
                     <legend className={styles.legend}>Detalles del Cliente</legend>
                     <div className={styles.section}>
@@ -263,6 +276,7 @@ const SacForm = ({ client, onClose }) => {
                         />
                     </div>
                 </fieldset>
+                )}
 
                 {/* Motivo del Reclamo */}
                 <fieldset className={styles.fieldset}>
@@ -287,7 +301,6 @@ const SacForm = ({ client, onClose }) => {
                             <textarea 
                             className={styles.textarea} 
                             placeholder="Describe el reclamo aquí..."
-                            maxLength={250}
                             value = {description}
                             onChange = {(e) => setDescription(e.target.value)}
                             />
