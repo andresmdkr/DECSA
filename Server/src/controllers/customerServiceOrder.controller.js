@@ -2,7 +2,7 @@ const { CustomerServiceOrder } = require('../db.js');
 const path = require('path');
 const fs = require('fs');
 
-const handleFileUpload = async (files, oacId) => {
+/* const handleFileUpload = async (files, oacId) => {
     const filePaths = [];
     
     if (files && files.length > 0) {
@@ -19,7 +19,31 @@ const handleFileUpload = async (files, oacId) => {
 
 
     await CustomerServiceOrder.update({ files: filePaths }, { where: { id: oacId } });
+}; */
+
+const handleFileUpload = async (files, oacId) => {
+    const filePaths = [];
+    
+    if (files && files.length > 0) {
+        // Crea el directorio dentro de "uploads"
+        const dir = path.join(__dirname, '../../uploads/oac', `OAC-${oacId}`);
+        fs.mkdirSync(dir, { recursive: true });
+
+        files.forEach(file => {
+            // Mueve el archivo al directorio
+            const filePath = path.join(dir, file.originalname);
+            fs.renameSync(file.path, filePath);
+
+            // Guarda solo la ruta relativa accesible públicamente
+            const publicPath = `/uploads/oac/OAC-${oacId}/${file.originalname}`;
+            filePaths.push(publicPath);
+        });
+    }
+
+    // Actualiza los archivos en la base de datos usando solo rutas públicas
+    await CustomerServiceOrder.update({ files: filePaths }, { where: { id: oacId } });
 };
+
 
 const createCustomerServiceOrder = async (data) => {
     const { sacId, status, issueDate, issueTime, assignedPerson, assignedBy, assignmentTime,oacReason, workDescription, pendingTasks } = data;

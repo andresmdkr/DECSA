@@ -2,7 +2,7 @@ const { WorkOrder } = require('../db.js');
 const path = require('path');
 const fs = require('fs');
 
-const handleFileUpload = async (files, otId) => {
+/* const handleFileUpload = async (files, otId) => {
   const filePaths = [];
 
   if (files && files.length > 0) {
@@ -21,7 +21,33 @@ const handleFileUpload = async (files, otId) => {
 
   
   await WorkOrder.update({ files: filePaths }, { where: { id: otId } });
+}; */
+
+const handleFileUpload = async (files, otId) => {
+  const filePaths = [];
+
+  if (files && files.length > 0) {
+    // Define el directorio de destino para los archivos
+    const dir = path.join(__dirname, '../../uploads/OT', `OT-${otId}`);
+
+    // Crea el directorio si no existe
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Mueve los archivos y guarda solo la ruta relativa pública
+    files.forEach(file => {
+      const filePath = path.join(dir, file.originalname);
+      fs.renameSync(file.path, filePath); 
+
+      // Guarda la ruta pública accesible para el navegador
+      const publicPath = `/uploads/OT/OT-${otId}/${file.originalname}`;
+      filePaths.push(publicPath);
+    });
+  }
+
+  // Actualiza los archivos en la base de datos usando solo rutas públicas
+  await WorkOrder.update({ files: filePaths }, { where: { id: otId } });
 };
+
 
 const createWorkOrder = async (data) => {
   let { sacId, burnedArtifactId, status, reason, description } = data;
