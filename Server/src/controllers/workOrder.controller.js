@@ -24,7 +24,7 @@ const fs = require('fs');
 }; */
 
 const handleFileUpload = async (files, otId) => {
-  const filePaths = [];
+  const filePaths = []; // Aquí almacenamos las rutas públicas
 
   if (files && files.length > 0) {
     // Define el directorio de destino para los archivos
@@ -35,18 +35,19 @@ const handleFileUpload = async (files, otId) => {
 
     // Mueve los archivos y guarda solo la ruta relativa pública
     files.forEach(file => {
-      const filePath = path.join(dir, file.originalname);
+      const filePath = path.join(dir, file.originalname); // Ruta completa en el sistema de archivos
       fs.renameSync(file.path, filePath); 
 
-      // Guarda la ruta pública accesible para el navegador
+      // Aquí guardamos solo la ruta pública para la base de datos
       const publicPath = `/uploads/OT/OT-${otId}/${file.originalname}`;
-      filePaths.push(publicPath);
+      filePaths.push(publicPath); // Guardamos la ruta pública, no la del sistema
     });
   }
 
   // Actualiza los archivos en la base de datos usando solo rutas públicas
   await WorkOrder.update({ files: filePaths }, { where: { id: otId } });
 };
+
 
 
 const createWorkOrder = async (data) => {

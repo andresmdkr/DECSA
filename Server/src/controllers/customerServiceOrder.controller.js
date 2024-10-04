@@ -22,27 +22,30 @@ const fs = require('fs');
 }; */
 
 const handleFileUpload = async (files, oacId) => {
-    const filePaths = [];
-    
+    const filePaths = []; // Aquí almacenamos las rutas públicas
+
     if (files && files.length > 0) {
-        // Crea el directorio dentro de "uploads"
+        // Define el directorio de destino para los archivos
         const dir = path.join(__dirname, '../../uploads/oac', `OAC-${oacId}`);
+
+        // Crea el directorio si no existe
         fs.mkdirSync(dir, { recursive: true });
 
+        // Mueve los archivos y guarda solo la ruta relativa pública
         files.forEach(file => {
-            // Mueve el archivo al directorio
-            const filePath = path.join(dir, file.originalname);
-            fs.renameSync(file.path, filePath);
+            const filePath = path.join(dir, file.originalname); // Ruta completa en el sistema de archivos
+            fs.renameSync(file.path, filePath); 
 
-            // Guarda solo la ruta relativa accesible públicamente
+            // Aquí guardamos solo la ruta pública para la base de datos
             const publicPath = `/uploads/oac/OAC-${oacId}/${file.originalname}`;
-            filePaths.push(publicPath);
+            filePaths.push(publicPath); // Guardamos la ruta pública, no la del sistema
         });
     }
 
     // Actualiza los archivos en la base de datos usando solo rutas públicas
     await CustomerServiceOrder.update({ files: filePaths }, { where: { id: oacId } });
 };
+
 
 
 const createCustomerServiceOrder = async (data) => {
