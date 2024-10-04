@@ -27,7 +27,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
   
     const [errorMessage, setErrorMessage] = useState('');
 
-    useEffect(() => {
+/*     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             await dispatch(fetchArtifact(artifactId));
@@ -46,7 +46,34 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
         if (artifactId) {
             fetchData();
         }
+    }, [dispatch, artifactId]); */
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setLoading(true);
+            await dispatch(fetchArtifact(artifactId));
+            const res = await dispatch(fetchWorkOrders({ burnedArtifactId: artifactId }));
+            
+            const filesFromWorkOrder = res.payload[0]?.files || [];
+            
+            const existingFiles = filesFromWorkOrder.map((file) => {
+                const fileName = file.split('/').pop(); // Ajustado para Unix/Linux
+                return {
+                    name: fileName,
+                    isNew: false,
+                    url: `/uploads/OT/OT-${res.payload[0].id}/${fileName}`, // Asegurarse que esté bien formada la URL
+                };
+            });
+            
+            setSelectedFiles(existingFiles);
+            setLoading(false);
+        };
+    
+        if (artifactId) {
+            fetchData();
+        }
     }, [dispatch, artifactId]);
+    
     
 
     useEffect(() => {

@@ -29,7 +29,7 @@
 
     const fileInputRef = useRef(null); 
 
-    useEffect(() => {
+/*     useEffect(() => {
       if (mode === 'edit' || mode === 'view') {
         if (oac) {
           setStatus(oac.status);
@@ -48,7 +48,37 @@
           setSelectedFiles(existingFiles);
         }
       }
+    }, [mode, oac]); */
+
+    useEffect(() => {
+      if (mode === 'edit' || mode === 'view') {
+        if (oac) {
+          setStatus(oac.status);
+          setIssueDate(oac.issueDate);
+          setIssueTime(oac.issueTime);
+          setWorkDescription(oac.workDescription);
+          setPendingTasks(oac.pendingTasks);
+          setAssignedPerson(oac.assignedPerson);
+          setAssignmentTime(oac.assignmentTime);
+          setOacReason(oac.oacReason);
+    
+          // Actualizamos el manejo de archivos para sistemas Unix/Linux
+          const existingFiles = oac.files
+            ? oac.files.map((file) => {
+                const fileName = file.split('/').pop(); // Ajustado para Unix/Linux
+                return {
+                  name: fileName,
+                  isNew: false,
+                  url: `/uploads/oac/OAC-${oac.id}/${fileName}`, // Genera la URL correctamente
+                };
+              })
+            : [];
+            
+          setSelectedFiles(existingFiles);
+        }
+      }
     }, [mode, oac]);
+    
 
  
     const renameFileIfDuplicate = (file, existingFiles) => {
