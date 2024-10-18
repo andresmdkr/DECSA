@@ -46,57 +46,9 @@ const updateSACHandler = async (req, res) => {
   }
 };
 
-const getResolutionHandler = async (req, res) => {
-  const { sacId } = req.params;
-
-  try {
-    const resolution = await getResolution(sacId);
-    return res.status(200).json(resolution);
-  } catch (error) {
-    if (error.message.includes('No se encontró')) {
-      return res.status(404).json({ message: error.message });
-    }
-    return res.status(500).json({ message: 'Error interno del servidor' });
-  }
-};
-
-
-const createResolutionHandler = async (req, res) => {
-  const { sacId } = req.params; 
-  const { type, description, clientNotified } = req.body;
-
-  try {
-    const newResolution = await createResolution(sacId, {
-      type,
-      description,
-      clientNotified,
-    });
-
-    res.status(201).json(newResolution);
-  } catch (error) {
-    console.error('Error al crear la resolución:', error);
-    res.status(500).json({ error: 'Error al crear la resolución' });
-  }
-};
-
-const updateResolutionHandler = async (req, res) => {
-  try {
-    const { sacId, resolutionId } = req.params; 
-    const updatedData = req.body; 
-
-    const updatedResolution = await updateResolution(sacId, resolutionId, updatedData); 
-
-    res.status(200).json(updatedResolution); 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 module.exports = {
   createSACHandler,
   getSACsHandler,
   updateSACHandler,
-  getResolutionHandler,
-  createResolutionHandler,
-  updateResolutionHandler
 };

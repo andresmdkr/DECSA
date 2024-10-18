@@ -99,7 +99,6 @@ const Sac = ({ sac, onClose}) => {
         if (sac.clientId) {
             dispatch(fetchClientByAccountNumber(sac.clientId));
         }
-        console.log(sac.artifacts);
     
     }, [dispatch, sac.clientId]);
 
@@ -337,11 +336,29 @@ const Sac = ({ sac, onClose}) => {
                        mode={selectedArtifact.status !== 'Completed' ? 'edit' : 'view'} 
                    />
                 )}
+            {/* Detalles del Reclamante */}
+            {sac.claimantName && (
+                <fieldset className={styles.fieldset}>
+                    <legend className={styles.legend}>Detalles del Reclamante</legend>
+                    <div className={styles.field}>
+                        <label className={styles.boldLabel}>Nombre y Apellido del Reclamante:</label>
+                        <label>{sac.claimantName}</label>
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.boldLabel}>Relación con el Titular:</label>
+                        <label>{sac.claimantRelationship}</label>
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.boldLabel}>Teléfono del Reclamante:</label>
+                        <label>{sac.claimantPhone}</label>
+                    </div>
+                </fieldset>
+                )}
             {/* Detalles del Cliente */}
             {client && (
                 <>
                 <fieldset className={styles.fieldset}>
-                    <legend className={styles.legend}>Detalles del Cliente</legend>
+                    <legend className={styles.legend}>Detalles del Titular de la cuenta</legend>
                     <div className={styles.section}>
                         <EditableField
                             label="Número de Cuenta:"
@@ -409,7 +426,7 @@ const Sac = ({ sac, onClose}) => {
                 </fieldset>
 
                 <fieldset className={styles.fieldset}>
-                    <legend className={styles.legend}>Datos Eléctricos (Cliente)</legend>
+                    <legend className={styles.legend}>Datos Eléctricos (Titular)</legend>
                     <div className={styles.section}>
                         <EditableField
                             label="Estado"

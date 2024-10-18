@@ -22,7 +22,7 @@ function App() {
     useEffect(() => {
         const intervalId = setInterval(async () => {
             await axios.get(`${API_BASE_URL}/user`);
-        }, 15000);
+        }, 40000);
 
         return () => clearInterval(intervalId); 
     }, [dispatch]); */

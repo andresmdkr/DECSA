@@ -193,6 +193,37 @@
     color: red;
 }
 
+
+
+.formGroup4 {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    width: 100%; 
+  
+}
+
+.boldLabel2 {
+    flex: 1; 
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+    text-align: left;
+}
+
+.inputField {
+    flex: 2; 
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    background-color: white;
+    color: #495057;
+}
+
+
 .select {
     padding: 8px 12px;
     border: 1px solid #ced4da;

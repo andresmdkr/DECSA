@@ -21,7 +21,7 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
   const previousStatus = useRef(status);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (mode === 'edit' || mode === 'view') {
       if (ot) {
         setStatus(ot.status);
@@ -38,7 +38,33 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
         setSelectedFiles(existingFiles);
       }
     }
+  }, [mode, ot]); */
+
+
+  useEffect(() => {
+    if (mode === 'edit' || mode === 'view') {
+      if (ot) {
+        setStatus(ot.status);
+        setReason(ot.reason);
+        setDescription(ot.description);
+  
+        // Actualizamos el manejo de archivos para sistemas Unix/Linux
+        const existingFiles = ot.files
+          ? ot.files.map((file) => {
+              const fileName = file.split('/').pop(); // Ajustado para Unix/Linux
+              return {
+                name: fileName,
+                isNew: false,
+                url: `/uploads/OT/OT-${ot.id}/${fileName}`, // Genera la URL correctamente
+              };
+            })
+          : [];
+          
+        setSelectedFiles(existingFiles);
+      }
+    }
   }, [mode, ot]);
+  
 
   const renameFileIfDuplicate = (file, existingFiles) => {
     let newFileName = file.name;

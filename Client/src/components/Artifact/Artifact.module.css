@@ -102,7 +102,7 @@
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
-    min-height: 170px;
+    min-height: 120px;
     resize: none;
 }
 
@@ -112,7 +112,7 @@
     padding-top: 10px;
 }
 
-.saveButton, .printButton {
+.saveButton, .printButton, .editButton, .resolutionButton{
     background-color: #000f97;
     color: white;
     padding: 10px 20px;
@@ -122,10 +122,23 @@
     font-size: 16px;
 }
 
-.saveButton:hover, .printButton:hover {
+.saveButton:hover, .printButton:hover, .editButton:hover, .resolutionButton:hover{
     background-color: #0039b3;
 }
 
+.cancelButton {
+    background-color: #ff4d4f;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.cancelButton:hover {
+    background-color: #ff7875;
+}
 
 .fileList {
     margin-top: 20px;
@@ -191,3 +204,10 @@
     flex-direction: column;
 }
 
+.selectWithScroll {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}

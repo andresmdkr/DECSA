@@ -91,7 +91,11 @@ const SacForm = ({ client, onClose }) => {
     const [artifacts, setArtifacts] = useState([]);
     const [showArtifactModal, setShowArtifactModal] = useState(false);
     const [artifactToEdit, setArtifactToEdit] = useState(null);
-   
+    const [areaModifiedManually, setAreaModifiedManually] = useState(false);
+    const [claimantName, setClaimantName] = useState('');
+    const [claimantRelationship, setClaimantRelationship] = useState('');
+    const [claimantPhone, setClaimantPhone] = useState('');
+    const [claimantType, setClaimantType] = useState('Titular');
 
     useEffect(() => {
         const now = new Date();
@@ -143,6 +147,11 @@ const SacForm = ({ client, onClose }) => {
             startTime: startTime ? `${startTime}:00` : null, 
             endTime: endTime ? `${endTime}:00` : null, 
             priority,
+            ...(claimantType === 'Otro' && {
+                claimantName, 
+                claimantRelationship, 
+                claimantPhone,
+              }),
           };
           
           const response = await dispatch(createSAC(sacData)).unwrap();  
@@ -195,6 +204,17 @@ const SacForm = ({ client, onClose }) => {
     const handleRemoveArtifact = (index) => {
         const updatedArtifacts = artifacts.filter((_, i) => i !== index);
         setArtifacts(updatedArtifacts);
+    };
+
+    useEffect(() => {
+        if (claimReason === 'artefactos' && !areaModifiedManually) {
+            setArea('artefactos');
+        }
+    }, [claimReason, areaModifiedManually]);
+
+    const handleAreaChange = (e) => {
+        setArea(e.target.value);
+        setAreaModifiedManually(true); 
     };
 
 
@@ -278,6 +298,57 @@ const SacForm = ({ client, onClose }) => {
                 </fieldset>
                 )}
 
+                {/* Campos del Reclamante */}
+                <fieldset className={styles.fieldset}>
+                <legend className={styles.legend}>Reclamante</legend>
+
+                {/* Select para elegir el tipo de reclamante */}
+                <div className={styles.formGroup}>
+                    <label className={styles.boldLabel2}>Reclamante:</label>
+                    <select
+                    value={claimantType}
+                    onChange={(e) => setClaimantType(e.target.value)}
+                    className={styles.select}
+                    >
+                    <option value="Titular">Titular</option>
+                    <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                {/* Si el reclamante es 'Otro', se muestran los campos adicionales */}
+                {claimantType === 'Otro' && (
+                    <>
+                    <div className={styles.formGroup4}>
+                        <label className={styles.boldLabel2}>Nombre y Apellido del Reclamante:</label>
+                        <input
+                        type="text"
+                        value={claimantName}
+                        onChange={(e) => setClaimantName(e.target.value)}
+                        className={styles.inputField}
+                        />
+                    </div>
+                    <div className={styles.formGroup4}>
+                        <label className={styles.boldLabel2}>Relación con el Titular:</label>
+                        <input
+                        type="text"
+                        value={claimantRelationship}
+                        onChange={(e) => setClaimantRelationship(e.target.value)}
+                        className={styles.inputField}
+                        />
+                    </div>
+                    <div className={styles.formGroup4}>
+                        <label className={styles.boldLabel2}>Teléfono:</label>
+                        <input
+                        type="text"
+                        value={claimantPhone}
+                        onChange={(e) => setClaimantPhone(e.target.value)}
+                        className={styles.inputField}
+                        />
+                    </div>
+                    </>
+                )}
+                </fieldset>
+
                 {/* Motivo del Reclamo */}
                 <fieldset className={styles.fieldset}>
                     <legend className={styles.legend}>Motivo del Reclamo</legend>
@@ -289,8 +360,9 @@ const SacForm = ({ client, onClose }) => {
                             className={styles.select}
                         >
                             <option value="">Seleccionar...</option>
-                            <option value="operaciones">Operaciones</option>
-                            <option value="artefactos">Artefactos Quemados</option>
+                            <option value="facturacion">Error de Facturación</option>
+                            <option value="recepcion" >Inconveniente en Recepción de Factura</option>
+                            <option value="artefactos">Rotura de Artefacto/s</option>
                         </select>
                     </div>
 
@@ -352,7 +424,7 @@ const SacForm = ({ client, onClose }) => {
                         <select 
                         className={styles.select}
                         value={area}
-                        onChange={(e) => setArea(e.target.value)}>
+                        onChange={handleAreaChange}>
                             <option value="operaciones">Operaciones</option>
                             <option value="artefactos">Artefactos Quemados</option>
                         </select>

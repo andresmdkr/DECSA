@@ -2,7 +2,7 @@ const { CustomerServiceOrder } = require('../db.js');
 const path = require('path');
 const fs = require('fs');
 
-/* const handleFileUpload = async (files, oacId) => {
+const handleFileUpload = async (files, oacId) => {
     const filePaths = [];
     
     if (files && files.length > 0) {
@@ -19,9 +19,9 @@ const fs = require('fs');
 
 
     await CustomerServiceOrder.update({ files: filePaths }, { where: { id: oacId } });
-}; */
+};
 
-const handleFileUpload = async (files, oacId) => {
+/* const handleFileUpload = async (files, oacId) => {
     const filePaths = []; // Aquí almacenamos las rutas públicas
 
     if (files && files.length > 0) {
@@ -44,7 +44,7 @@ const handleFileUpload = async (files, oacId) => {
 
     // Actualiza los archivos en la base de datos usando solo rutas públicas
     await CustomerServiceOrder.update({ files: filePaths }, { where: { id: oacId } });
-};
+}; */
 
 
 

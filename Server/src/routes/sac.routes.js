@@ -7,8 +7,5 @@ const sacRouter = Router();
 sacRouter.post('/', isAuthenticated, createSACHandler);
 sacRouter.get('/', isAuthenticated, getSACsHandler);
 sacRouter.put('/:id', isAuthenticated, updateSACHandler);
-sacRouter.get('/:sacId/resolution', isAuthenticated, getResolutionHandler);
-sacRouter.post('/:sacId/resolution', isAuthenticated, createResolutionHandler);
-sacRouter.put('/:sacId/resolution/:resolutionId', isAuthenticated, updateResolutionHandler);
 
 module.exports = sacRouter;

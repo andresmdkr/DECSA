@@ -85,14 +85,26 @@ const ArtifactTable = () => {
 
     const handleSearchInputChange = (e) => {
         const value = e.target.value;
-        setClientIdSearch('');
-        setSacIdSearch(value);
+    
+        // Validar si el valor es un número
+        if (!isNaN(value)) {
+            setClientIdSearch('');
+            setSacIdSearch(value);
+        } else {
+            // Si no es un número, limpiamos el campo
+            setSacIdSearch('');
+        }
     };
+    
 
     const handleClientIdInputChange = (e) => {
         const value = e.target.value;
-        setSacIdSearch('');
-        setClientIdSearch(value);
+        if (!isNaN(value)) {
+            setSacIdSearch('');
+            setClientIdSearch(value);
+        } else {
+            setClientIdSearch('');
+        }
     };
 
     const handleKeyDown = (e) => {

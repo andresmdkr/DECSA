@@ -2,7 +2,7 @@ const { SAC, BurnedArtifact,Resolution } = require('../db');
 const { Op } = require('sequelize');
 
 const createSAC = async (sacData) => {
-  const { clientId, claimReason, description, eventDate, startTime, endTime, priority, area, artifacts } = sacData;
+  const { clientId, claimReason, description, eventDate, startTime, endTime, priority, area, claimantName, claimantRelationship,claimantPhone,artifacts } = sacData;
 
   const newSAC = await SAC.create({
     clientId: clientId || null,
@@ -12,7 +12,10 @@ const createSAC = async (sacData) => {
     startTime,
     endTime,
     priority, 
-    area      
+    area,
+    claimantName,      
+    claimantRelationship,   
+    claimantPhone,       
   });
   if (artifacts && artifacts.length > 0) {
     for (let artifact of artifacts) {
@@ -52,7 +55,7 @@ const getSACs = async (filters) => {
       },
       {
         model: Resolution, 
-        as: 'resolution',   
+        as: 'resolutions',   
       },
     ],
     distinct: true, 
@@ -108,45 +111,11 @@ const updateSAC = async (id, updatedData) => {
 };
 
 
-const getResolution = async (sacId) => {
-  try {
-    const resolution = await Resolution.findOne({ where: { sacId } });
-    if (!resolution) {
-      throw new Error('No se encontró ninguna resolución para este SAC');
-    }
-    return resolution;
-  } catch (error) {
-    console.error('Error al obtener la resolución:', error);
-    throw error;
-  }
-};
 
-const createResolution = async (sacId, resolutionData) => {
-  const newResolution = await Resolution.create({
-    ...resolutionData,
-    sacId, 
-  });
-  return newResolution;
-};
-
-const updateResolution = async (sacId, resolutionId, updatedData) => {
-  try {
-    const resolution = await Resolution.findOne({ where: { id: resolutionId, sacId } }); 
-    if (!resolution) {
-      throw new Error('Resolution not found');
-    }
-    const updatedResolution = await resolution.update(updatedData);
-    return updatedResolution;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
 
 module.exports = {
   createSAC,
   getSACs,
   updateSAC,
-  getResolution,
-  createResolution,
-  updateResolution,
+
 };

@@ -5,6 +5,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Claims from "../../components/Claims/Claims.jsx";
 import BurnedArtifacts from "../../components/BurnedArtifacts/BurnedArtifacts.jsx";
 import Clients from "../../components/Clients/Clients.jsx";
+import TechnicalService from "../../components/TechnicalService/TechnicalService.jsx";
 
 
 
@@ -14,7 +15,7 @@ const BurnedAppliances = () => {
     const actions = [
         { label: 'Reclamos', component: Claims },
         { label: 'Artefactos Quemados', component: BurnedArtifacts },
-        { label: 'Tecnicos', component: () => <div>Tecnicos</div> },
+        { label: 'Servicio Tecnico', component: TechnicalService },
         { label: 'Clientes', component: Clients },
     ];
 

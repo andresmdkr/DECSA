@@ -75,7 +75,7 @@ const OtModal = ({ sac, onClose }) => {
             <div className={styles.modalContent2}>
               {status === 'loading' && <p>Cargando órdenes...</p>}
               {status === 'failed' && <p>Error: {error}</p>}
-              {status === 'succeeded' && workOrders.length > 0 && (
+              {status === 'succeeded' && workOrders.length > 0 ? (
                 <table className={styles.otTable}>
                   <thead>
                     <tr>
@@ -112,7 +112,10 @@ const OtModal = ({ sac, onClose }) => {
                     ))}
                   </tbody>
                 </table>
-              )}
+              ):
+              <p>No hay ordenes de trabajo asociadas a este S.A.C.</p>
+  
+              }
             </div>
 
             <div className={styles.buttonsContainer}>

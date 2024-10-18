@@ -75,7 +75,7 @@ const OacModal = ({ sac, onClose }) => {
             <div className={styles.modalContent2}>
               {status === 'loading' && <p>Cargando órdenes...</p>}
               {status === 'failed' && <p>Error: {error}</p>}
-              {status === 'succeeded' && oacs.length > 0 && (
+              {status === 'succeeded' && oacs.length > 0 ? (
                 <table className={styles.oacTable}>
                   <thead>
                     <tr>
@@ -121,7 +121,9 @@ const OacModal = ({ sac, onClose }) => {
                     ))}
                   </tbody>
                 </table>
-              )}
+              ):
+              <p>No hay ordenes de atención al cliente asociadas a este S.A.C.</p>
+              }
             </div>
 
             <div className={styles.buttonsContainer}>

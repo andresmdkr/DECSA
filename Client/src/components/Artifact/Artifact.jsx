@@ -2,10 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchArtifact, updateArtifact } from '../../redux/slices/artifactsSlice';
 import { fetchWorkOrders, createWorkOrder, updateWorkOrder } from '../../redux/slices/otSlice';
+import { fetchResolutions } from '../../redux/slices/resolutionSlice'; 
+import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
 import styles from './Artifact.module.css';
 import { AiOutlineClose } from 'react-icons/ai';
 import Swal from 'sweetalert2';
 import OtPDF from '../OtPDF/OtPDF';
+import ResolutionForm from '../ResolutionForm/ResolutionForm';
+import Select from 'react-select';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -14,6 +18,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
     const dispatch = useDispatch();
     const artifact = useSelector(state => state.artifacts.artifact);
     const workOrders = useSelector(state => state.ot.workOrders);
+    const resolutions = useSelector(state => state.resolution.resolutions);
     const [formData, setFormData] = useState({
         status: '',
         technicalService: '',
@@ -21,16 +26,22 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
         conclusion: '',
         budget: ''
     });
+    const [showResolutionForm, setShowResolutionForm] = useState(false); 
+    const [resolutionMode, setResolutionMode] = useState('create'); 
+    const [resolution, setResolution] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const fileInputRef = useRef(null);
-  
+    const [currentMode, setCurrentMode] = useState(mode); 
     const [errorMessage, setErrorMessage] = useState('');
+
+    const technicalServices = useSelector(state => state.technicalService.technicalServices);
 
 /*     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             await dispatch(fetchArtifact(artifactId));
+            await dispatch(fetchResolutions({ burnedArtifactId: artifactId }));
             const res = await dispatch(fetchWorkOrders({ burnedArtifactId: artifactId }));
             
             const filesFromWorkOrder = res.payload[0]?.files || [];
@@ -73,8 +84,11 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
             fetchData();
         }
     }, [dispatch, artifactId]);
-    
-    
+ 
+
+    useEffect(() => {
+        dispatch(fetchAllTechnicalServices());
+    }, [dispatch]);
 
     useEffect(() => {
         if (artifact) {
@@ -134,7 +148,6 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
     const handleSave = async (showAlert = true) => {
         let updatedStatus = formData.status; 
-    
         if (formData.status === 'Completed') {
             const result = await Swal.fire({
                 title: '¿Seguro que quieres cerrar el artefacto?',
@@ -144,11 +157,6 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                 confirmButtonText: 'Sí, cerrar',
                 cancelButtonText: 'No, volver a "En curso"'
             });
-    
-            
-            if (result.dismiss === Swal.DismissReason.cancel) {
-                updatedStatus = 'In Progress'; 
-            }
         }
     
  
@@ -203,6 +211,75 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
     };
 
+    const handlePrint2 = async () => {
+        await handleSave(false);
+        OtPDF(sacId, artifactId);
+    };
+
+
+    const handleEdit = async () => {
+        const result = await Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Vas a cambiar el estado del artefacto para editarlo.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, editar',
+            cancelButtonText: 'Cancelar',
+        });
+    
+        if (result.isConfirmed) {
+            setCurrentMode('edit'); 
+        }
+    };
+
+    
+    
+
+    const handleResolutionClick = () => {
+        
+        const existingResolution = resolutions.find(res => res.burnedArtifactId
+            === artifactId);
+
+        setResolution(existingResolution);
+
+        if (existingResolution) {
+            if (existingResolution.status === 'Completed') {
+                setResolutionMode('view');
+            } else {
+                setResolutionMode('edit');
+            }
+        } else {
+            setResolutionMode('create');
+        }
+
+        setShowResolutionForm(true);
+    };
+
+    const closeResolutionForm = () => {
+        setShowResolutionForm(false);
+    };
+    
+
+    const customSelectStyles = {
+        container: (provided) => ({
+            ...provided,
+            width: '100%',
+        }),
+        menu: (provided) => ({
+            ...provided,
+            maxHeight: '150px', 
+            overflowY: 'auto', 
+        }),
+        menuList: (provided) => ({
+            ...provided,
+            maxHeight: '150px',
+            overflowY: 'auto',  
+            scrollbarWidth: 'thin', 
+        }),
+    };
+    
+    
+
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
@@ -230,7 +307,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                     value={formData.status}
                                     onChange={handleChange}
                                     className={styles.statusSelect}
-                                    disabled={mode === 'view'}  
+                                    disabled={currentMode === 'view'}  
                                 >
                                     <option value="In Progress">En curso</option>
                                     <option value="Completed">Cerrado</option>
@@ -239,19 +316,32 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
                             <div className={styles.inlineGroup}>
                                 <label htmlFor="technicalService"><strong>Servicio técnico:</strong></label>
-                                <input
-                                    type="text"
+                                <Select
                                     id="technicalService"
                                     name="technicalService"
-                                    value={formData.technicalService}
-                                    onChange={handleChange}
-                                    className={styles.inputField}
-                                    disabled={mode === 'view'}  
+                                    options={technicalServices.map((service) => ({
+                                        value: service.name,
+                                        label: service.name,
+                                    }))}
+                                    value={
+                                        technicalServices.find(
+                                            (service) => service.name === formData.technicalService
+                                        )
+                                        ? { value: formData.technicalService, label: formData.technicalService }
+                                        : null
+                                    }
+                                    onChange={(selectedOption) =>
+                                        setFormData({ ...formData, technicalService: selectedOption.value })
+                                    }
+                                    styles={customSelectStyles} 
+                                    isDisabled={currentMode === 'view'}
+                                    placeholder="Seleccionar servicio técnico"
                                 />
+
                             </div>
                             <hr className={styles.divider} />
-                            <div className={styles.twoColumns}>
-                                <div className={styles.formGroupHalf}>
+    
+                                <div className={styles.formGroup}>
                                     <label htmlFor="technicalReport"><strong>Informe técnico:</strong></label>
                                     <textarea
                                         id="technicalReport"
@@ -260,23 +350,10 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                         onChange={handleChange}
                                         className={styles.textareaField}
                                         maxLength={1000}
-                                        disabled={mode === 'view'}  
+                                        disabled={currentMode === 'view'}  
                                     />
                                 </div>
     
-                                <div className={styles.formGroupHalf}>
-                                    <label htmlFor="conclusion"><strong>Conclusión:</strong></label>
-                                    <textarea
-                                        id="conclusion"
-                                        name="conclusion"
-                                        value={formData.conclusion}
-                                        onChange={handleChange}
-                                        className={styles.textareaField}
-                                        maxLength={1000}
-                                        disabled={mode === 'view'} 
-                                    />
-                                </div>
-                            </div>
     
                             <div className={styles.formGroup}>
                                 <label htmlFor="budget"><strong>Presupuesto:</strong></label>
@@ -288,7 +365,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                     onChange={handleBudgetChange}
                                     className={styles.inputField}
                                     maxLength={250}
-                                    disabled={mode === 'view'}  
+                                    disabled={currentMode === 'view'}  
                                 />
                             </div>
                             
@@ -305,7 +382,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                             {file.isNew ? (
                                                 <>
                                                     {file.name}
-                                                    {mode === 'edit' && ( 
+                                                    {currentMode === 'edit' && ( 
                                                         <button
                                                             type="button"
                                                             className={styles.fileRemoveButton}
@@ -332,7 +409,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                             </div>
                             </>
 )}
-                            {mode === 'edit' && ( 
+                            {currentMode === 'edit' && ( 
                                 <div className={styles.formGroup}>
                                     <label><strong>Subir archivos (máximo 50 MB por archivo):</strong></label>
                                     <input
@@ -347,18 +424,50 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                             {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
                         </div>
 
-                        {mode === 'edit' && ( 
+                        {currentMode === 'edit' && ( 
                             <div className={styles.buttonContainer}>
+                                 <button onClick={handleResolutionClick} className={styles.resolutionButton}>
+                                Resolución
+                                </button>
                                 <button onClick={handlePrint} className={styles.printButton}>
-                                    Imprimir O.T.
+                                    O.Trabajo
+                                </button>
+                                <button onClick={handlePrint2} className={styles.printButton}>
+                                    O.Reparacion
                                 </button>
                                 <button onClick={handleSave} className={styles.saveButton}>
                                     Grabar
                                 </button>
                             </div>
                         )}
+                        {currentMode === 'view' && (
+                            <div className={styles.buttonContainer}>
+                                <button onClick={onClose} className={styles.cancelButton}>
+                                    Cerrar
+                                </button>
+                                <button onClick={handleResolutionClick} className={styles.resolutionButton}>
+                                Resolución
+                                </button>
+                                <button onClick={handleEdit} className={styles.editButton}>
+                                   Modificar
+                                </button>
+
+                            </div>
+                        )}
+     {showResolutionForm && (
+                            <ResolutionForm
+                                
+                                sacId={sacId}
+                                burnedArtifactId={artifactId}
+                                resolution={resolution}
+                                mode={resolutionMode}
+                                onClose={closeResolutionForm}
+                            />
+                        )}
+
                     </>
                 )}
+                
             </div>
         </div>
     );

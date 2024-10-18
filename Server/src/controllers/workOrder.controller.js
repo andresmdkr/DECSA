@@ -2,7 +2,7 @@ const { WorkOrder } = require('../db.js');
 const path = require('path');
 const fs = require('fs');
 
-/* const handleFileUpload = async (files, otId) => {
+const handleFileUpload = async (files, otId) => {
   const filePaths = [];
 
   if (files && files.length > 0) {
@@ -21,9 +21,9 @@ const fs = require('fs');
 
   
   await WorkOrder.update({ files: filePaths }, { where: { id: otId } });
-}; */
+};
 
-const handleFileUpload = async (files, otId) => {
+/* const handleFileUpload = async (files, otId) => {
   const filePaths = []; // Aquí almacenamos las rutas públicas
 
   if (files && files.length > 0) {
@@ -46,7 +46,7 @@ const handleFileUpload = async (files, otId) => {
 
   // Actualiza los archivos en la base de datos usando solo rutas públicas
   await WorkOrder.update({ files: filePaths }, { where: { id: otId } });
-};
+}; */
 
 
 
