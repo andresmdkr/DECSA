@@ -1,103 +1,189 @@
-import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
 import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import { fetchSACs } from '../../redux/slices/sacsSlice';
-import store from '../../redux/store'; // Asegúrate de tener acceso al store
+import store from '../../redux/store';
 
 const SacPDF = async (sacId) => {
   try {
-    // Obtener la información de la SAC
     const sacResponse = await store.dispatch(fetchSACs({ sacId }));
-    const sacData = sacResponse?.payload?.sacs?.length > 0 ? sacResponse.payload.sacs[0] : null;
-    if (!sacData) {
-      throw new Error('SAC no encontrada');
-    }
+    const sacData = sacResponse?.payload?.sacs?.[0];
+    if (!sacData) throw new Error('SAC no encontrada');
 
-    // Obtener la información del cliente
     const clientResponse = await store.dispatch(fetchClientByAccountNumber(sacData.clientId));
     const client = clientResponse?.payload;
-    if (!client) {
-      throw new Error('Cliente no encontrado');
+    if (!client) throw new Error('Cliente no encontrado');
+
+    const htmlTemplate = await fetch('/SAC/SAC.html').then((res) => res.text());
+    
+    const mainContainer = document.createElement('div');
+
+    const updatedAt = new Date(sacData.updatedAt);
+    const formattedDate = updatedAt.toLocaleDateString('es-AR');
+    const formattedTime = updatedAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+
+    const fullAddress = `${client.address || ''} ${client.extraAddressInfo || ''}`.trim();
+    const fullPostalAddress = `${client.postalAddress || ''} ${client.extraPostalAddressInfo || ''}`.trim();
+
+    const claimantName = sacData.claimantName || client.holderName;
+    const claimantRelationship = sacData.claimantName ? sacData.claimantRelationship : 'Titular';
+
+    const artifacts = sacData.artifacts || [];
+    if (artifacts.length > 0) {
+      for (let i = 0; i < artifacts.length; i += 3) {
+        const pageContainer = document.createElement('div');
+        pageContainer.innerHTML = htmlTemplate;
+
+        pageContainer.querySelector('#sacId').textContent = sacData.id || 'N/A';
+        pageContainer.querySelector('#talonarioId').textContent = sacData.id || 'N/A';
+        pageContainer.querySelector('#accountNumber').textContent = client.accountNumber || 'N/A';
+        pageContainer.querySelector('#holderName').textContent = client.holderName || 'N/A';
+        pageContainer.querySelector('#device').textContent = client.device || 'N/A';
+        pageContainer.querySelector('#category').textContent = client.category || 'N/A';
+        pageContainer.querySelector('#substation').textContent = client.substation || 'N/A';
+        pageContainer.querySelector('#supply').textContent = client.supply || 'N/A';
+        pageContainer.querySelector('#claimantName').textContent = claimantName;
+        pageContainer.querySelector('#claimantRelationship').textContent = claimantRelationship;
+        pageContainer.querySelector('#talonarioAccountNumber').textContent = client.accountNumber || 'N/A';
+        pageContainer.querySelector('#talonarioSupplyNumber').textContent = client.supply || 'N/A';
+        pageContainer.querySelector('#talonarioClaimantName').textContent = claimantName;
+
+        const claimantPhoneSection = pageContainer.querySelector('#claimantPhoneSection');
+        if (sacData.claimantName) {
+          pageContainer.querySelector('#claimantPhone').textContent = sacData.claimantPhone || '';
+          claimantPhoneSection.style.display = 'flex';
+        } else {
+          claimantPhoneSection.style.display = 'none';
+        }
+
+        const claimReason = sacData.claimReason || '';
+        if (claimReason.includes('facturacion')) {
+          pageContainer.querySelector('#checkbox-billing').textContent = 'X';
+          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Error de Facturación';
+        } else if (claimReason.includes('recepcion')) {
+          pageContainer.querySelector('#checkbox-reception').textContent = 'X';
+          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Inconveniente en Recepción de Factura';
+        } else if (claimReason.includes('artefactos')) {
+          pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
+          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Rotura de Artefacto/s';
+        }
+
+        pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
+        pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
+        pageContainer.querySelector('#phone').textContent = client.phone || ''; 
+        pageContainer.querySelector('#description').textContent = sacData.description || 'N/A';
+        pageContainer.querySelector('#date').textContent = `${formattedDate}`;
+        pageContainer.querySelector('#time').textContent = `${formattedTime}`;
+        pageContainer.querySelector('#talonarioDate').textContent = `${formattedDate}`;
+        pageContainer.querySelector('#talonarioTime').textContent = `${formattedTime}`;
+
+        const artifactsSection = pageContainer.querySelector('#artifacts');
+        const talonarioArtifactsSection = pageContainer.querySelector('#talonarioArtifacts');
+        artifactsSection.innerHTML = '';
+        talonarioArtifactsSection.innerHTML = '';
+
+        const artifactsChunk = artifacts.slice(i, i + 3);
+        artifactsChunk.forEach(artifact => {
+          const mainRow = document.createElement('tr');
+          const nameCellMain = document.createElement('td');
+          nameCellMain.textContent = artifact.name || 'N/A';
+          mainRow.appendChild(nameCellMain);
+
+          const brandModelSerialCellMain = document.createElement('td');
+          brandModelSerialCellMain.textContent = `${artifact.brand || ''} ${artifact.model || ''} ${artifact.serialNumber || ''}`.trim();
+          mainRow.appendChild(brandModelSerialCellMain);
+
+          const documentationCellMain = document.createElement('td');
+          documentationCellMain.textContent = artifact.documentation || 'N/A';
+          mainRow.appendChild(documentationCellMain);
+
+          artifactsSection.appendChild(mainRow);
+
+          const talonarioRow = document.createElement('tr');
+          const nameCellTalonario = document.createElement('td');
+          nameCellTalonario.textContent = artifact.name || 'N/A';
+          talonarioRow.appendChild(nameCellTalonario);
+
+          const brandModelSerialCellTalonario = document.createElement('td');
+          brandModelSerialCellTalonario.textContent = `${artifact.brand || ''} ${artifact.model || ''} ${artifact.serialNumber || ''}`.trim();
+          talonarioRow.appendChild(brandModelSerialCellTalonario);
+
+          talonarioArtifactsSection.appendChild(talonarioRow);
+        });
+
+        mainContainer.appendChild(pageContainer);
+      }
+    } else {
+      const pageContainer = document.createElement('div');
+      pageContainer.innerHTML = htmlTemplate;
+
+      pageContainer.querySelector('#sacId').textContent = sacData.id || 'N/A';
+      pageContainer.querySelector('#talonarioId').textContent = sacData.id || 'N/A';
+      pageContainer.querySelector('#accountNumber').textContent = client.accountNumber || 'N/A';
+      pageContainer.querySelector('#holderName').textContent = client.holderName || 'N/A';
+      pageContainer.querySelector('#device').textContent = client.device || 'N/A';
+      pageContainer.querySelector('#category').textContent = client.category || 'N/A';
+      pageContainer.querySelector('#substation').textContent = client.substation || 'N/A';
+      pageContainer.querySelector('#supply').textContent = client.supply || 'N/A';
+      pageContainer.querySelector('#claimantName').textContent = claimantName;
+      pageContainer.querySelector('#claimantRelationship').textContent = claimantRelationship;
+      pageContainer.querySelector('#talonarioAccountNumber').textContent = client.accountNumber || 'N/A';
+      pageContainer.querySelector('#talonarioSupplyNumber').textContent = client.supply || 'N/A';
+      pageContainer.querySelector('#talonarioClaimantName').textContent = claimantName;
+
+      const claimantPhoneSection = pageContainer.querySelector('#claimantPhoneSection');
+      if (sacData.claimantName) {
+        pageContainer.querySelector('#claimantPhone').textContent = sacData.claimantPhone || '';
+        claimantPhoneSection.style.display = 'flex';
+      } else {
+        claimantPhoneSection.style.display = 'none';
+      }
+
+      const claimReason = sacData.claimReason || '';
+      if (claimReason.includes('facturacion')) {
+        pageContainer.querySelector('#checkbox-billing').textContent = 'X';
+        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Error de Facturación';
+      } else if (claimReason.includes('recepcion')) {
+        pageContainer.querySelector('#checkbox-reception').textContent = 'X';
+        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Inconveniente en Recepción de Factura';
+      } else if (claimReason.includes('artefactos')) {
+        pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
+        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Rotura de Artefacto/s';
+      }
+
+      pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
+      pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
+      pageContainer.querySelector('#phone').textContent = client.phone || ''; 
+      pageContainer.querySelector('#description').textContent = sacData.description || 'N/A';
+      pageContainer.querySelector('#date').textContent = `${formattedDate}`;
+      pageContainer.querySelector('#time').textContent = `${formattedTime}`;
+      pageContainer.querySelector('#talonarioDate').textContent = `${formattedDate}`;
+      pageContainer.querySelector('#talonarioTime').textContent = `${formattedTime}`;
+
+      pageContainer.querySelector('#artifacts-section').style.display = 'none';
+      pageContainer.querySelector('#talonario-artifacts-section').style.display = 'none';
+
+      mainContainer.appendChild(pageContainer);
     }
 
-    // Crear el PDF usando jsPDF
-    const doc = new jsPDF({
-      format: 'a4',
-      unit: 'mm',
-    });
-    
-    // Ajustes para el tamaño de fuente y espaciado
-    const fontSize = 10; // Tamaño de fuente más pequeño
-    const lineHeight = 7; // Espaciado entre líneas más compacto
-    let y = 10; // Posición inicial en el eje Y
+   
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/SAC/SAC.css';
+    mainContainer.appendChild(link);
 
-    doc.setFontSize(fontSize);
-
-    // Función para agregar texto y manejar saltos de página
-    const addText = (text, x, yPos) => {
-      if (yPos > 290) { // Si sobrepasa el límite de la hoja, agregar nueva página
-        doc.addPage();
-        y = 10; // Reiniciar la posición vertical en la nueva página
-      }
-      doc.text(text, x, y);
-      y += lineHeight; // Incrementar la posición vertical para el siguiente texto
+    const options = {
+      margin: 10,
+      filename: 'Solicitud_Atencion_Cliente.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // Datos del cliente
-    addText('Solicitud de Atención al Cliente', 10, y);
-    addText(`Número de Cuenta: ${client.accountNumber}`, 10, y);
-    addText(`Número de Titular: ${client.holderNumber}`, 10, y);
-    addText(`Nombre del Titular: ${client.holderName}`, 10, y);
-    addText(`DNI: ${client.dni || 'N/A'}`, 10, y);
-    addText(`Teléfono: ${client.phone || 'N/A'}`, 10, y);
-    addText(`Teléfono Auxiliar: ${client.auxPhone || 'N/A'}`, 10, y);
-    addText(`Dirección: ${client.address}`, 10, y);
-    addText(`Info. Adicional Dirección: ${client.extraAddressInfo}`, 10, y);
-    addText(`Dirección Postal: ${client.postalAddress}`, 10, y);
-    addText(`Info. Adicional Postal: ${client.extraPostalAddressInfo}`, 10, y);
-    addText(`Servicio: ${client.service}`, 10, y);
-    addText(`Categoría: ${client.category}`, 10, y);
-    addText(`Fecha de Ingreso: ${new Date(client.dateOfEntry).toLocaleDateString()}`, 10, y);
-    addText(`Fecha de Terminación: ${client.dateOfTermination ? new Date(client.dateOfTermination).toLocaleDateString() : 'N/A'}`, 10, y);
-    addText(`Dispositivo: ${client.device}`, 10, y);
-    addText(`Zona: ${client.zone}`, 10, y);
-    addText(`Sector: ${client.sector}`, 10, y);
-    addText(`Ruta: ${client.route}`, 10, y);
-    addText(`Suministro: ${client.supply}`, 10, y);
-    addText(`Estado: ${client.status}`, 10, y);
-    addText(`Voltaje: ${client.voltage}`, 10, y);
-    addText(`Localidad: ${client.locality}`, 10, y);
-    addText(`Departamento: ${client.department}`, 10, y);
-    addText(`Provincia: ${client.province}`, 10, y);
-    addText(`Subestación: ${client.substation}`, 10, y);
-    addText(`Distribuidor: ${client.distributor}`, 10, y);
-    addText(`Consumo 2024: ${client.consumption2024 || 'N/A'}`, 10, y);
 
-    // Datos de la SAC
-    addText('Datos de la SAC', 10, y);
-    addText(`Número de SAC: ${sacData.id}`, 10, y);
-    addText(`Motivo del Reclamo: ${sacData.claimReason}`, 10, y);
-    addText(`Descripción: ${sacData.description}`, 10, y);
-    addText(`Fecha del Evento: ${new Date(sacData.eventDate).toLocaleDateString()}`, 10, y);
-    addText(`Hora de Inicio: ${sacData.startTime}`, 10, y);
-    addText(`Hora de Fin: ${sacData.endTime}`, 10, y);
-    addText(`Estado: ${sacData.status}`, 10, y);
-    addText(`Prioridad: ${sacData.priority}`, 10, y);
-    addText(`Área Encargada: ${sacData.area}`, 10, y);
-    addText(`Creado: ${new Date(sacData.createdAt).toLocaleDateString()}`, 10, y);
-    addText(`Actualizado: ${new Date(sacData.updatedAt).toLocaleDateString()}`, 10, y);
-
-    // Artefactos quemados
-    if (sacData.artifacts && sacData.artifacts.length > 0) {
-      addText('Artefactos Quemados:', 10, y);
-      sacData.artifacts.forEach((artifact, index) => {
-        addText(`- ${artifact.name}: ${artifact.brand} ${artifact.model} (SN: ${artifact.serialNumber}), documentation: ${artifact.documentation}`, 10, y);
-      });
-    }
-
-    // Guardar o abrir el PDF en una nueva ventana
-    const pdfData = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfData);
+    const pdfBlob = await html2pdf().set(options).from(mainContainer).output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
+    
   } catch (error) {
     console.error('Error al generar el PDF:', error.message);
   }

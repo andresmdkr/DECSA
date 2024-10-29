@@ -65,7 +65,7 @@ const OtModal = ({ sac, onClose }) => {
 
         {showForm ? (
           <OtForm
-            sac={sac}
+            sacId={sac.id}
             ot={selectedOt} 
             mode={formMode}    
             onClose={() => { setShowForm(false); dispatch(fetchWorkOrders({ sacId: sac.id })); }}

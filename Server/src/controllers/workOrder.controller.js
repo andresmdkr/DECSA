@@ -51,7 +51,7 @@ const handleFileUpload = async (files, otId) => {
 
 
 const createWorkOrder = async (data) => {
-  let { sacId, burnedArtifactId, status, reason, description } = data;
+  let { sacId, burnedArtifactId, status, reason, description,technicalService } = data;
 
   if (!sacId) {
     sacId = null;
@@ -61,7 +61,7 @@ const createWorkOrder = async (data) => {
     burnedArtifactId = null;
   }
 
-  console.log({ sacId, burnedArtifactId, status, reason, description });
+  console.log({ sacId, burnedArtifactId, status, reason, description,technicalService });
 
   try {
     const newOrder = await WorkOrder.create({
@@ -70,6 +70,8 @@ const createWorkOrder = async (data) => {
       status,
       reason,
       description,
+      technicalService,
+
     });
     return newOrder;
   } catch (error) {
@@ -102,11 +104,14 @@ const updateWorkOrder = async (id, data, files) => {
   const order = await WorkOrder.findByPk(id);
   if (!order) throw new Error('Order not found');
 
-  const { status, description, reason } = data;
+  const { status, description, reason, technicalService } = data;
+
+  console.log( technicalService)
 
   order.status = status || order.status;
   order.description = description || order.description;
   order.reason = reason || order.reason;
+  order.technicalService = technicalService || order.technicalService;
 
   if (files && files.length > 0) {
     const dir = path.join(__dirname, '../../uploads/OT', `OT-${id}`);

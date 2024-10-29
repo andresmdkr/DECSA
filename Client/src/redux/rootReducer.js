@@ -7,6 +7,7 @@ import artifactReducer from './slices/artifactsSlice';
 import otReducer from './slices/otSlice';
 import resolutionReducer from './slices/resolutionSlice.js';
 import technicalServiceReducer from './slices/technicalServiceSlice';
+import repairOrderReducer from './slices/repairOrderSlice'
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     artifacts: artifactReducer,
     ot: otReducer,
     resolution: resolutionReducer,
-    technicalService: technicalServiceReducer
+    technicalService: technicalServiceReducer,
+    repairOrder: repairOrderReducer
 });
 
 export default rootReducer;

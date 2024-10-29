@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Reclamo</title>
+    <link rel="stylesheet" href="./SAC.css">
+</head>
+<body>
+<div id="pdf-content" class="pdf-container">
+<div class="pdf-container1">
+    <div class="header">
+        <div class="logo">
+          <img src="../logo.gif" alt="Logo de la empresa">
+        </div>
+        <div class="company-info">
+          <p><strong>DISTRIBUIDORA ELECTRICA DE CAUCETE S.A</strong></p>
+          <p>Diag. Sarmiento 259 - C.P 5442 - Caucete</p>
+          <p>Tel. 4961784 / 0800-66668456 / 4961696</p>
+        </div>
+        <div class="claim-form">
+            <p>Formulario de reclamo</p>
+            <p>N° <span id="sacId"></span></p>
+          </div>          
+      </div>
+
+        <div class="date-time">
+            <p class="date"><strong>Fecha:</strong> <span id="date"></span></p>
+            <p class="time"><strong>Hora:</strong> <span id="time"></span></p>
+        </div>
+
+        <h3 class="section-title">DATOS DEL USUARIO</h3>
+        <div class="padding-div">
+        <section class="pdf-section bordered-section">
+            <table class="user-data-table">
+              <tr>
+                <th>Número de Cuenta</th>
+                <th>Suministro N°</th>
+                <th>Medidor N°</th>
+                <th>Tarifa</th>
+                <th>Seta N°</th>
+              </tr>
+              <tr>
+                <td><span id="accountNumber"></span></td>
+                <td><span id="supply"></span></td>
+                <td><span id="device"></span></td>
+                <td><span id="category"></span></td>
+                <td><span id="substation"></span></td>
+              </tr>
+            </table>
+            <p><strong>Apellido y Nombre del Titular:</strong> <span id="holderName"></span></p>
+            <p><strong>Nombre del Reclamante:</strong> <span id="claimantName"></span></p>
+            <p><strong>Relación con el Titular:</strong> <span id="claimantRelationship"></span></p>
+            <p id="claimantPhoneSection"><strong>Teléfono Reclamante:</strong> <span id="claimantPhone"></span></p>
+            <p><strong>Dirección del Suministro:</strong> <span id="address"></span></p>
+            <p><strong>Dirección Postal:</strong> <span id="postalAddress"></span></p>    
+            <p><strong>Teléfono:</strong> <span id="phone"></span></p>
+          </section>
+        </div>
+        <h3 class="section-title2">MOTIVO DEL RECLAMO</h3>
+        <section class="pdf-section">
+            <div class="claim-options">
+              <div class="claim-option">
+                <label class="claim-label">Error de Facturación</label>
+                <span class="checkbox" id="checkbox-billing"></span>
+              </div>
+              <div class="claim-option">
+                <label class="claim-label">Inconveniente en Recepción de Factura</label>
+                <span class="checkbox" id="checkbox-reception"></span>
+              </div>
+              <div class="claim-option">
+                <label class="claim-label">Rotura de Artefacto/s</label>
+                <span class="checkbox" id="checkbox-artifacts"></span>
+              </div>
+              <div class="claim-option">
+                <label class="claim-label">Otro</label>
+                <span class="checkbox" id="checkbox-otro"></span>
+              </div>
+            </div>
+            <p class="description-label"><strong>Descripción de lo acontecido:</strong></p>
+            <div class="description-box">
+              <span id="description"></span>
+            </div>
+          </section>
+    
+      <section class="pdf-section" id="artifacts-section">
+        <p class="artifacts-label"><strong>Artefactos Reclamados</strong></p>
+        <table id="artifacts-table" class="artifacts-table">
+          <thead>
+            <tr>
+              <th>Artefacto</th>
+              <th>Marca/Modelo/N° de Serie</th>
+              <th>Documentación Adicional</th>
+            </tr>
+          </thead>
+          <tbody id="artifacts"></tbody>
+        </table>
+      </section>
+      <section class="pdf-section signature-section">
+        <div class="signature-line">
+            <div class="line-box">
+                <div class="line"></div>
+                <span>Firma</span>
+            </div>
+            <div class="line-box">
+                <div class="line"></div>
+                <span>Aclaración</span>
+            </div>
+            <div class="line-box">
+                <div class="line"></div>
+                <span>Tipo y N° de Documento</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+<div class="dotted-line"></div>
+
+
+<div id="talonario" class="talonario">
+  <div class="header">
+      <div class="logo">
+          <img src="../logo.gif" alt="Logo de la empresa">
+      </div>
+      <div class="company-info">
+          <p><strong>DISTRIBUIDORA ELECTRICA DE CAUCETE S.A</strong></p>
+          <p>Diag. Sarmiento 259 - C.P 5442 - Caucete</p>
+          <p>Tel. 4961784 / 0800-66668456 / 4961696</p>
+      </div>
+      <div class="claim-form">
+          <p>Reclamo</p>
+          <p>N° <span id="talonarioId"></span></p>
+      </div>
+  </div>
+  <div class="date-time">
+      <p class="date"><strong>Fecha:</strong> <span id="talonarioDate"></span></p>
+      <p class="time"><strong>Hora:</strong> <span id="talonarioTime"></span></p>
+  </div>
+
+<div class="talonario-info">
+  <table class="talonario-table">
+      <tr>
+          <td><strong>N° de Cuenta:</strong> <span id="talonarioAccountNumber"></span></td>
+          <td><strong>N° Suministro:</strong> <span id="talonarioSupplyNumber"></span></td>
+      </tr>
+  </table>
+
+  <p><strong>Apellido y Nombre de Reclamante:</strong> <span id="talonarioClaimantName"></span></p>
+  <p><strong>Motivo del Reclamo:</strong> <span id="talonarioClaimReason"></span></p>
+  
+
+  <!-- Tabla de artefactos quemados -->
+  <section class="pdf-section" id="talonario-artifacts-section">
+   <p><strong>Artefactos Quemados:</strong></p>
+  <table class="talonario-artifacts-table">
+      <thead>
+          <tr>
+              <th>Artefacto</th>
+              <th>Marca/Modelo/N° de Serie</th>
+          </tr>
+      </thead>
+      <tbody id="talonarioArtifacts"></tbody>
+  </table>
+  </section>
+  <div class="firma-empresa">
+    <div class="linea"></div>
+    <p class="por-empresa-text">POR EMPRESA</p>
+</div>
+</div>
+</div>
+
+
+</div>
+</body>
+</html>

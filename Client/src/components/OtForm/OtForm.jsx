@@ -2,24 +2,30 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import styles from './OtForm.module.css';
 import { createWorkOrder, updateWorkOrder } from '../../redux/slices/otSlice';
-import { useDispatch } from 'react-redux';
-import OtPDF from '../OtPDF/OtPDF';
+import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
+
+import { useDispatch, useSelector} from 'react-redux';
+import Select from 'react-select';
+
 import Swal from 'sweetalert2';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-const OtForm = ({ sac, onClose, ot, mode }) => {
+const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
   const dispatch = useDispatch();
 
   const [status, setStatus] = useState('In Progress');
   const [reason, setReason] = useState('Personalizado');
   const [description, setDescription] = useState('');
+  const [technicalService, setTechnicalService] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
   const previousStatus = useRef(status);
   const fileInputRef = useRef(null);
+  const technicalServices = useSelector(state => state.technicalService.technicalServices);
+
 
 /*   useEffect(() => {
     if (mode === 'edit' || mode === 'view') {
@@ -27,6 +33,7 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
         setStatus(ot.status);
         setReason(ot.reason);
         setDescription(ot.description);
+        setTechnicalService(ot.technicalService);
 
         const existingFiles = ot.files
           ? ot.files.map((file) => ({
@@ -65,6 +72,10 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
     }
   }, [mode, ot]);
   
+
+  useEffect(() => {
+    dispatch(fetchAllTechnicalServices());
+  }, [dispatch]);
 
   const renameFileIfDuplicate = (file, existingFiles) => {
     let newFileName = file.name;
@@ -125,6 +136,7 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
       status,
       reason,
       description,
+      technicalService,
       files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
     };
 
@@ -134,11 +146,17 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
         Swal.fire({
           title: `Orden de Trabajo #${ot.id} actualizada con éxito`,
           icon: 'success',
-          showConfirmButton: false,
-          timer: 2000,
+          showCancelButton: true,
+          confirmButtonText: 'Imprimir',
+          cancelButtonText: 'Cerrar',
+          
+        }).then((result) => {
+          if (result.isConfirmed) {
+            console.log('Imprimiendo...')
+          } 
         });
       } else {
-        const response = await dispatch(createWorkOrder({ sacId: sac.id, workOrderData }));
+        const response = await dispatch(createWorkOrder({ sacId, workOrderData }));
         Swal.fire({
           title: 'Orden de Trabajo creada con éxito',
           icon: 'success',
@@ -147,13 +165,13 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
           cancelButtonText: 'Cerrar',
         }).then((result) => {
           if (result.isConfirmed) {
-            OtPDF(sac.id)
+            console.log('Imprimiendo...')
+            onClose();            
           } else {
             onClose();
           }
         });
       }
-      onClose();
     } catch (error) {
       console.error('Error al procesar la Orden de Trabajo:', error);
     }
@@ -165,8 +183,27 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
   };
 
     const handlePrint = () => {
-    OtPDF(sac.id);
+      console.log('Imprimiendo...')
     };
+
+    const customSelectStyles = {
+      container: (provided) => ({
+          ...provided,
+          width: '100%',
+          marginRight: '16px',
+      }),
+      menu: (provided) => ({
+          ...provided,
+          maxHeight: '150px', 
+          overflowY: 'auto', 
+      }),
+      menuList: (provided) => ({
+          ...provided,
+          maxHeight: '150px',
+          overflowY: 'auto',  
+          scrollbarWidth: 'thin', 
+      }),
+  };
 
   const isReadOnly = mode === 'view';
 
@@ -179,10 +216,15 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
         <h2 className={styles.otTitle}>
           {mode === 'edit' ? `Orden de Trabajo #${ot.id}` : mode === 'view' ? `Orden de Trabajo #${ot.id} (Cerrada)` : 'Nueva Orden de Trabajo'}
         </h2>
+        {artifact && (
+                    <h3 className={styles.miniTitle}>
+                        {`Reclamo Artefacto (${artifact})`}
+                    </h3>
+        )}
 
         <div className={styles.otFormContainer}>
           <form onSubmit={handleSubmit}>
-            {mode !== 'create' && (
+          {mode !== 'create' && origen !== 'artefacto' && ( 
               <div className={styles.inlineGroup}>
                 <label className={styles.otLabel}>Estado:</label>
                 <select
@@ -196,19 +238,50 @@ const OtForm = ({ sac, onClose, ot, mode }) => {
                 </select>
               </div>
             )}
+            {origen !== 'artefacto' && ( 
+                <div className={styles.inlineGroup}>
+                  <label className={styles.otLabel}>Motivo:</label>
+                  <select
+                    className={styles.otSelect}
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    disabled={isReadOnly}
+                  >
+                    <option value="Personalizado">Personalizado</option>
+                    <option value="Artefacto Quemado">Artefacto Quemado</option>
+                  </select>
+                </div>
+              )}
 
-            <div className={styles.inlineGroup}>
-              <label className={styles.otLabel}>Motivo:</label>
-              <select
-                className={styles.otSelect}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                disabled={isReadOnly}
-              >
-                <option value="Personalizado">Personalizado</option>
-                <option value="Artefacto Quemado">Artefacto Quemado</option>
-              </select>
-            </div>
+              {reason === 'Artefacto Quemado' && ( 
+              <div className={styles.inlineGroup}>
+                <label className={styles.otLabel} htmlFor="technicalService">Servicio técnico encargado:</label>
+                <Select
+                  id="technicalService"
+                  name="technicalService"
+                  options={technicalServices?.map((service) => ({
+                    value: service.name,
+                    label: service.name,
+                  }))}
+                  value={
+                    technicalServices?.find(
+                      (service) => service.name === technicalService
+                    )
+                    ? { value: technicalService, label: technicalService }
+                    : null
+                  }
+                  onChange={(selectedOption) =>
+                    setTechnicalService(selectedOption.value)
+                  }
+                  styles={customSelectStyles}
+                  isDisabled={mode === 'view'}
+                  placeholder="Seleccionar servicio técnico"
+                />
+              </div>
+            )}
+
+            <hr className={styles.separator} />
+
 
             <div className={styles.textareaGroup}>
               <label className={styles.otLabel}>Orden de Trabajo:</label>

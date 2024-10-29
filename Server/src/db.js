@@ -33,7 +33,7 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder, WorkOrder, Resolution, TechnicalService} = sequelize.models;
+const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder, WorkOrder, Resolution, TechnicalService,RepairOrder} = sequelize.models;
 
 // RELACIONES
 Client.hasMany(SAC, { foreignKey: 'clientId' });
@@ -63,6 +63,9 @@ Resolution.belongsTo(SAC, { foreignKey: 'sacId' });
 
 BurnedArtifact.hasOne(Resolution, { foreignKey: 'burnedArtifactId', as: 'resolution' });
 Resolution.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId' });
+
+BurnedArtifact.hasOne(RepairOrder, { foreignKey: 'burnedArtifactId', as: 'repairOrder' });
+RepairOrder.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId' });
 
 
 module.exports = {

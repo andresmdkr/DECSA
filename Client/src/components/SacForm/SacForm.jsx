@@ -116,7 +116,6 @@ const SacForm = ({ client, onClose }) => {
           cancelButtonText: 'Imprimir', 
         }).then((result) => {
           if (result.dismiss === Swal.DismissReason.cancel) {
-            console.log(sacId);
             SacPDF(sacId);
           }
             onClose();  
@@ -130,30 +129,42 @@ const SacForm = ({ client, onClose }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!claimReason) {
-            Swal.fire({
-                icon:"error",
-                text:"Por favor, selecciona un motivo para el reclamo."});
-            return;
+          Swal.fire({
+            icon: "error",
+            text: "Por favor, selecciona un motivo para el reclamo."
+          });
+          return;
         }
-
+      
         try {
+          let relationship = null;
+          if (claimantType === "Inquilino") {
+            relationship = "Inquilino";
+          } else if (claimantType === "Familiar") {
+            relationship = "Familiar";
+          } else if (claimantType === "Apoderado") {
+            relationship = "Apoderado";
+          } else if (claimantType === "Otro") {
+            relationship = claimantRelationship;
+          }
+      
           const sacData = {
-            clientId: client? client.accountNumber : null,
+            clientId: client ? client.accountNumber : null,
             claimReason,
             area,
-            artifacts: claimReason === 'artefactos' ? artifacts : [], 
+            artifacts: claimReason === 'artefactos' ? artifacts : [],
             description,
-            eventDate: eventDate ? new Date(`${eventDate}T00:00:00`).toISOString() : null, 
-            startTime: startTime ? `${startTime}:00` : null, 
-            endTime: endTime ? `${endTime}:00` : null, 
+            eventDate: eventDate ? new Date(`${eventDate}T00:00:00`).toISOString() : null,
+            startTime: startTime ? `${startTime}:00` : null,
+            endTime: endTime ? `${endTime}:00` : null,
             priority,
-            ...(claimantType === 'Otro' && {
-                claimantName, 
-                claimantRelationship, 
-                claimantPhone,
-              }),
+            ...(claimantType !== 'Titular' && {
+              claimantName, 
+              claimantPhone,
+              claimantRelationship: relationship, 
+            }),
           };
-          
+      
           const response = await dispatch(createSAC(sacData)).unwrap();  
           console.log(response.id);
           showSuccessAlert(response.id);
@@ -162,6 +173,7 @@ const SacForm = ({ client, onClose }) => {
           Swal.fire('Error de Servidor', 'Hubo un problema al crear la solicitud.', 'error');
         }
       };
+      
       
 
 
@@ -311,12 +323,14 @@ const SacForm = ({ client, onClose }) => {
                     className={styles.select}
                     >
                     <option value="Titular">Titular</option>
+                    <option value="Inquilino">Inquilino</option>
+                    <option value="Familiar">Familiar</option>
+                    <option value="Apoderado">Apoderado</option>
                     <option value="Otro">Otro</option>
                     </select>
                 </div>
 
-                {/* Si el reclamante es 'Otro', se muestran los campos adicionales */}
-                {claimantType === 'Otro' && (
+                {claimantType !== 'Titular' && (
                     <>
                     <div className={styles.formGroup4}>
                         <label className={styles.boldLabel2}>Nombre y Apellido del Reclamante:</label>
@@ -324,15 +338,6 @@ const SacForm = ({ client, onClose }) => {
                         type="text"
                         value={claimantName}
                         onChange={(e) => setClaimantName(e.target.value)}
-                        className={styles.inputField}
-                        />
-                    </div>
-                    <div className={styles.formGroup4}>
-                        <label className={styles.boldLabel2}>Relación con el Titular:</label>
-                        <input
-                        type="text"
-                        value={claimantRelationship}
-                        onChange={(e) => setClaimantRelationship(e.target.value)}
                         className={styles.inputField}
                         />
                     </div>
@@ -345,9 +350,21 @@ const SacForm = ({ client, onClose }) => {
                         className={styles.inputField}
                         />
                     </div>
+                    {claimantType === 'Otro' && (
+                        <div className={styles.formGroup4}>
+                        <label className={styles.boldLabel2}>Relación con el Titular:</label>
+                        <input
+                            type="text"
+                            value={claimantRelationship}
+                            onChange={(e) => setClaimantRelationship(e.target.value)}
+                            className={styles.inputField}
+                        />
+                        </div>
+                    )}
                     </>
                 )}
                 </fieldset>
+
 
                 {/* Motivo del Reclamo */}
                 <fieldset className={styles.fieldset}>

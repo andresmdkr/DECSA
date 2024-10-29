@@ -5,6 +5,7 @@ import { fetchArtifact } from '../../redux/slices/artifactsSlice';
 import Swal from 'sweetalert2'; 
 import { createResolution, updateResolution, fetchResolutions } from '../../redux/slices/resolutionSlice.js';
 import styles from './ResolutionForm.module.css';
+import ResolutionPDF from '../ResolutionPDF/ResolutionPDF.js';
 
 const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) => {
     const dispatch = useDispatch();
@@ -14,19 +15,51 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
     const [clientNotified, setClientNotified] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(currentMode === 'view');
     const [resolutionId, setResolutionId] = useState(null);
+    const [artifactData, setArtifactData] = useState(null)
     
-
     const artifact = useSelector(state => state.artifacts.artifact);
 
+
+    const defaultTexts = {
+        InconvenienteAjenoAlServicioElectrico: "Texto 1",
+        FCFuerzaMayor: "Texto 2",
+        InconvenienteInstalacionesUsuario: "Texto 3",
+        ReconocimientoIndemnizaciónConRecibo: "Texto 4",
+        Reconocimiento: `Me dirijo a Usted en relacion al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name}" reclamado por Usted.
+
+En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que *agregar texto*.
+
+Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
+
+La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual firma en conformidad, entregandose el artefacto reparado donde constata el normal funcionamiento.`,
+        ReparaciónPreviaReclamo: "Texto 6",
+        Personalizado: "" 
+    };
+    
+
     useEffect(() => {
-        if (!burnedArtifactId) {
-            dispatch(fetchResolutions({ sacId, burnedArtifactId }));
-        }
-        if (burnedArtifactId || resolution?.burnedArtifactId) {
+        const fetchResolutionAndArtifact = async () => {
+            if (!burnedArtifactId) {
+                await dispatch(fetchResolutions({ sacId, burnedArtifactId }));
+            }
+    
             const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
-            dispatch(fetchArtifact(artifactId)); 
-        }
+            if (artifactId) {
+                const artifactResponse = await dispatch(fetchArtifact(artifactId));
+                const artifactData = artifactResponse?.payload;
+                
+                if (artifactData) {
+                    setArtifactData(artifactData);
+                    console.log(artifactData)
+                } else {
+                    console.error('Artefacto no encontrado');
+                }
+            }
+        };
+    
+        fetchResolutionAndArtifact();
     }, [burnedArtifactId, sacId, dispatch]);
+    
 
     useEffect(() => {
         if (currentMode !== 'create' && resolution) {
@@ -48,10 +81,12 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
             });
             return; 
         }
-
+    
         if (currentMode === 'create') {
             dispatch(createResolution({ sacId, resolutionData: { type, description, clientNotified, burnedArtifactId } }))
-                .then(() => {
+                .then((response) => {
+                    const createdResolutionId = response.payload?.id; 
+    
                     Swal.fire({
                         title: '¡Resolución Creada!',
                         text: 'La resolución ha sido creada exitosamente.',
@@ -61,12 +96,14 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
                         cancelButtonText: 'Cerrar',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            console.log('Imprimir resolución');
-                            onClose();  
-                        } else {
-                            onClose();
+                            const artifactId = burnedArtifactId || response.payload?.burnedArtifactId;
+                            ResolutionPDF(sacId, createdResolutionId, artifactId); 
                         }
+                        onClose();
                     });
+                })
+                .catch((error) => {
+                    console.error("Error al crear la resolución:", error);
                 });
         } else if (currentMode === 'edit') {
             dispatch(updateResolution({ sacId, resolutionId: resolution.id, resolutionData: { type, description, clientNotified } }))
@@ -80,11 +117,14 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
                         cancelButtonText: 'Cerrar',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            console.log('Imprimir resolución');
-                        } else {
-                            onClose();
+                            const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
+                            ResolutionPDF(sacId, resolution.id, artifactId);
                         }
+                        onClose()
                     });
+                })
+                .catch((error) => {
+                    console.error("Error al actualizar la resolución:", error);
                 });
         }
     };
@@ -93,12 +133,11 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
         if (burnedArtifactId || resolution?.burnedArtifactId) {
             return (
                 <>
-                    <option value="Artefacto/ProblemaElectrico">Artefacto afectado por problema eléctrico</option>
-                    <option value="FCViento">Fallo/Corte por viento</option>
                     <option value="InconvenienteAjenoAlServicioElectrico">Inconveniente ajeno al servicio eléctrico</option>
+                    <option value="FCFuerzaMayor">Caso fuerza mayor</option>
                     <option value="InconvenienteInstalacionesUsuario">Inconveniente en instalaciones del usuario</option>
                     <option value="ReconocimientoIndemnizaciónConRecibo">Reconocimiento de indemnización con recibo</option>
-                    <option value="ReconocimientoRoturaReparacion">Reconocimiento de rotura y reparación</option>
+                    <option value="Reconocimiento">Reconocimiento</option>
                     <option value="ReparaciónPreviaReclamo">Reparación previa al reclamo</option>
                 </>
             );
@@ -110,6 +149,38 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
             );
         }
     };
+
+    const handleTypeChange = (e) => {
+        const selectedType = e.target.value;
+        setType(selectedType);
+        setDescription(defaultTexts[selectedType]); 
+    };
+
+    const handlePrint = async () => {
+        if (currentMode === 'edit') {
+            try {
+                await dispatch(updateResolution({ 
+                    sacId, 
+                    resolutionId: resolution.id, 
+                    resolutionData: { type, description, clientNotified } 
+                }));
+                const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
+                ResolutionPDF(sacId, resolution.id, artifactId);
+            } catch (error) {
+                console.error("Error al actualizar la resolución antes de imprimir:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al actualizar la resolución antes de imprimir.',
+                });
+            }
+        } else {
+            const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
+            ResolutionPDF(sacId, resolution.id, artifactId);
+        }
+    };
+    
+    
 
     return (
         <div className={styles.modalOverlay}>
@@ -134,7 +205,7 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
                             <select
                                 className={styles.modalSelect}
                                 value={type}
-                                onChange={(e) => setType(e.target.value)}
+                                onChange={handleTypeChange}
                                 disabled={isReadOnly}
                             >
                                 <option value="" disabled>Selecciona un tipo</option> 
@@ -171,7 +242,7 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
                         <div className={styles.buttonContainer}>
                            
                             {currentMode !== 'create' && (
-                                <button className={styles.modalButton} type="button" onClick={() => console.log('Imprimir resolución')}>
+                                <button className={styles.modalButton} type="button" onClick={handlePrint}>
                                     Imprimir
                                 </button>
                             )}

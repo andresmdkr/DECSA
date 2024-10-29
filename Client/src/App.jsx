@@ -17,7 +17,7 @@ function App() {
 
 
     //HACER QUE EL SERVIDOR NO SE REINCIE
-/*     const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const intervalId = setInterval(async () => {
@@ -25,7 +25,7 @@ function App() {
         }, 40000);
 
         return () => clearInterval(intervalId); 
-    }, [dispatch]); */
+    }, [dispatch]);
 
     return (
         <Router>

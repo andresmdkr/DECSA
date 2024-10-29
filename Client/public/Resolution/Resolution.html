@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolución PDF</title>
+    <link rel="stylesheet" href="Resolution.css">
+</head>
+<body>
+    <div class="pdf-container"> 
+    <header class="header">
+        <img src="../sj.png" alt="Logo Izquierdo" class="header-logo-left">
+        <img src="../logo.gif" alt="Logo Derecho" class="header-logo-right">
+    </header>
+    
+    <div class="info-container">
+        <div class="info-left">
+            <p>Sr/a. <span id="holderName">N/A</span></p>
+            <p>Suministro N° <span id="supply">N/A</span></p>
+            <p>Domicilio Suministro: <span id="address">N/A</span></p>
+            <p><span id="department">N/A</span>, <span id="province">N/A</span></p>
+        </div>
+        <div class="info-right">
+            <p>Caucete, San Juan</p>
+            <p>Nota DECSA N°:</p>
+        </div>
+    </div>
+
+    <hr class="divider"> 
+    <div class="pdf-description">
+        <p class="description-right">Resolución N° <span id="resolutionId">N/A</span></p>
+        <p class="description-right">Ref: Reclamo N° <span id="sacId">N/A</span></p>
+        <div class="description-content">
+            <p><span class="description" id="description"></span></p>
+        </div>
+    </div>
+    <div class="signature-section">
+        <div class="signature-fields">
+            <div class="field-group">
+                <span class="line"></span>
+                <p>Firma</p>
+            </div>
+            <div class="field-group">
+                <span class="line"></span>
+                <p>Aclaración</p>
+            </div>
+            <div class="field-group">
+                <span class="line"></span>
+                <p>DNI</p>
+            </div>
+        </div>
+        <div class="date-time">
+            <p>Fecha: <span class="line"></span>/<span class="line"></span>/<span class="line"></span></p>
+            <p>Hora: <span class="line"></span>:<span class="line"></span></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

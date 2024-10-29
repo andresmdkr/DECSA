@@ -1,0 +1,395 @@
+.pdf-container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+    height:277.2mm;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding: 10px;
+  }
+  
+  .header .logo img {
+    height: 60px; 
+  }
+  
+  .header .company-info {
+    text-align: center;
+    flex-grow: 1;
+    font-size: 12px;
+  }
+  
+  .header .company-info p {
+    margin: 2px 0;
+  }
+  
+  .header .claim-form {
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .header .claim-form p {
+    margin: 0;
+  }
+  
+  .header .claim-form p:first-child {
+    font-size: 14px; 
+  }
+  
+  .header .claim-form p:last-child {
+    font-size: 16px; 
+  }
+  
+
+  .date-time {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 0;
+  }
+  
+  .date, .time {
+    font-size: 12px;
+    margin-bottom: 0;
+  }
+  
+  .section-title {
+    margin-top: 0;
+    margin-bottom: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+  
+  .pdf-container h2 {
+    color: #ff0000;
+  }
+  
+
+
+  .pdf-container1{
+    border: 1px solid #333;
+  }
+  
+
+  .user-data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .user-data-table th, .user-data-table td {
+    border: 1px solid #333;
+    text-align: left;
+    font-size: 12px;
+  }
+  
+  .user-data-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+
+  .bordered-section {
+    border: 1px solid #333;
+    padding: 10px;
+  }
+  
+  .user-data-table {
+    margin-bottom: 5px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .user-data-table th, .user-data-table td {
+    border: 1px solid #333;
+    text-align: center;
+    font-size: 12px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    
+  }
+  
+  .user-data-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .user-data-table th:nth-child(1),
+  .user-data-table td:nth-child(1) {
+    width: 15%; 
+  }
+  
+  .user-data-table th:nth-child(2),
+  .user-data-table td:nth-child(2),
+  .user-data-table th:nth-child(3),
+  .user-data-table td:nth-child(3),
+  .user-data-table th:nth-child(4),
+  .user-data-table td:nth-child(4),
+  .user-data-table th:nth-child(5),
+  .user-data-table td:nth-child(5) {
+    width: 20%; 
+  }
+
+
+  .padding-div{
+    margin:0 20px;
+  }
+
+  .bordered-section p {
+    margin:0;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  
+  .bordered-section p strong {
+    width: 180px; 
+    margin-right: 15px; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+
+  }
+  
+  .bordered-section p span {
+    flex-grow: 1; 
+    text-align: left; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    
+  }
+
+
+  .section-title2 {
+    margin:0;
+    margin-bottom: 5px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 14px;
+  }
+  
+
+  .claim-options {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .claim-option {
+    display: flex;
+    align-items: center;
+  }
+  
+  .claim-label {
+    font-size: 13px;
+    margin-right: 10px; 
+    font-weight: bold;
+    max-width: 150px; 
+    word-wrap: break-word; 
+  }
+  
+  .checkbox {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+    text-align: center;
+    line-height: 15px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  
+  .description-box {
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    min-height: 50px;
+    max-height: 100px;
+    font-size: 12px;
+    line-height: 1.2;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5; 
+    -webkit-box-orient: vertical;
+  }
+
+  .description-label{
+    font-size:14px;
+    padding-left: 10px;
+  }
+
+  .artifacts-label{
+    margin:0;
+    margin-top:5px; 
+    
+    font-size:14px;
+    padding-left: 10px;
+  }
+
+  .artifacts-table {
+    width: 98%;
+    padding:10px;
+    border-collapse: collapse;
+    margin: 5px;
+  }
+  
+  .artifacts-table th, .artifacts-table td {
+    border: 1px solid #333;
+    text-align: center;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    max-width: 200px; 
+  }
+  
+  .artifacts-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+
+  .signature-section {
+    margin-top: 60px;
+    padding: 0 10px;
+}
+
+.signature-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.line-box {
+    text-align: center;
+    width: 30%; 
+}
+
+.line-box .line {
+    width: 100%;
+    border-bottom: 1px solid #333;
+    margin-bottom: 5px; 
+}
+
+.line-box span {
+    font-size: 12px;
+}
+
+
+
+.dotted-line {
+  border-top: 1px dashed #333;  
+  margin: 5px 0;
+}
+
+
+.talonario {
+  display: flex;
+  flex-grow: 1; 
+  height: 100%;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid #000000;
+  font-size: 12px;
+
+  
+}
+
+.talonario .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding:10px;
+}
+
+.talonario .claim-form p {
+  margin-right: 40px;
+  font-size: 12px;
+
+}
+
+
+.talonario-table {
+  width: 50%;
+  border-collapse: collapse;
+  font-size: 12px;
+  
+}
+
+
+.talonario-table td {
+  border: 1px solid #333;
+  padding-left: 5px;
+  
+}
+
+.talonario-info{
+  margin:0 20px;
+}
+
+.talonario-info p{
+  margin:0;
+}
+
+.talonario-artifacts-table {
+  max-width: 50%;
+  border-collapse: collapse;
+  font-size: 12px;
+  
+  
+}
+.talonario-artifacts-table th,
+.talonario-artifacts-table td {
+  border: 1px solid #333;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+
+}
+.talonario-artifacts-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+
+}
+
+
+.firma-empresa {
+  position: absolute;
+  bottom: 10px; 
+  right: 10px;
+  text-align: center;
+  width: 150px;
+}
+
+.linea {
+  border-top: 1px solid #000;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.por-empresa-text {
+  font-size: 12px;
+  text-align: center;
+}
+
+

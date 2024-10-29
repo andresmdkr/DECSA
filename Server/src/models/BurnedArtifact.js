@@ -32,21 +32,5 @@ module.exports = (sequelize) => {
       allowNull: false,
       defaultValue: 'Pending',
     },
-    technicalService: {  
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    technicalReport: {  
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    conclusion: {  
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
-    budget: {  
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
   }, { timestamps: false });
 };

@@ -1,0 +1,13 @@
+/* src/components/OtTemplate.module.css */
+.pdfContent {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Puedes agregar otros estilos aquí */
+  

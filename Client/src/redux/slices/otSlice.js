@@ -29,16 +29,13 @@ export const createWorkOrder = createAsyncThunk(
     try {
       const token = localStorage.getItem('token');
       const formData = new FormData();
-
+      
       formData.append('sacId', sacId || '');
       formData.append('burnedArtifactId', burnedArtifactId || '');
       formData.append('status', workOrderData.status);
       formData.append('reason', workOrderData.reason);
       formData.append('description', workOrderData.description);
-
-      workOrderData.files.forEach((file) => {
-        formData.append('files', file);
-      });
+      formData.append('technicalService', workOrderData.technicalService|| '')
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const response = await axios.post(`${API_BASE_URL}/ot`, formData, config);
@@ -60,6 +57,7 @@ export const updateWorkOrder = createAsyncThunk(
       formData.append('status', workOrderData.status);
       formData.append('reason', workOrderData.reason);
       formData.append('description', workOrderData.description);
+      formData.append('technicalService', workOrderData.technicalService)
 
       workOrderData.files.forEach((file) => {
         formData.append('files', file);

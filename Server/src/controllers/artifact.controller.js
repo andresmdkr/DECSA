@@ -1,4 +1,4 @@
-const { BurnedArtifact,SAC,Client } = require('../db');
+const { BurnedArtifact,SAC,Client,RepairOrder } = require('../db');
 const { Op } = require('sequelize');
 
 const getArtifacts = async (filters) => {
@@ -23,6 +23,10 @@ const getArtifacts = async (filters) => {
         model: Client, 
         attributes: ['accountNumber'], 
       },
+      {
+        model: RepairOrder, 
+        as: 'repairOrder', 
+      },
     ],
     distinct: true, 
     limit: parseInt(limit),
@@ -34,12 +38,19 @@ const getArtifacts = async (filters) => {
 };
 
 
-
-
 const getArtifact = async (id) => {
-  const artifact = await BurnedArtifact.findByPk(id);
+  const artifact = await BurnedArtifact.findByPk(id, {
+    include: [
+      {
+        model: RepairOrder,
+        as: 'repairOrder',
+      },
+    ],
+  });
+  
   return artifact;
 };
+
 
 const updateArtifact = async (id, updatedData) => {
     const artifact = await BurnedArtifact.findByPk(id);
@@ -51,10 +62,6 @@ const updateArtifact = async (id, updatedData) => {
   
     const updatedArtifact = await artifact.update({
       status: updatedData.status,
-      technicalService: updatedData.technicalService,
-      technicalReport: updatedData.technicalReport,
-      conclusion: updatedData.conclusion,
-      budget: updatedData.budget || null 
     });
   
     return updatedArtifact;

@@ -24,6 +24,10 @@ module.exports = (sequelize) => {
       type: DataTypes.ARRAY(DataTypes.STRING),  
       allowNull: true,
     },
+    technicalService: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     sacId: {
       type: DataTypes.INTEGER,
       allowNull: true,  

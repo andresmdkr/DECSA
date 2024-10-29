@@ -1,0 +1,122 @@
+.pdf-container {
+    font-family: Arial, sans-serif;
+    color: #333;
+    height: 277.2mm;
+    display: flex;
+    flex-direction: column;
+    position:relative;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 1px solid #000000; 
+}
+
+.header-logo-left {
+    max-width: 350px; 
+    height: auto; 
+}
+
+.header-logo-right {
+    max-width: 120px; 
+    height: auto; 
+}
+
+.info-container {
+    display: flex; 
+    justify-content: space-between; 
+    padding: 10px; 
+    font-weight: bold;
+}
+
+.info-left {
+    flex: 1; 
+}
+
+.info-right {
+    flex: 0 0 auto; 
+    text-align: right; 
+}
+
+.divider {
+    border: none; 
+    height: 1px; 
+    background-color: #000; 
+    margin: 10px 0; 
+}
+
+.pdf-description {
+    margin-top: 10px;
+}
+
+.description-right {
+    text-align: right; 
+    font-weight: bold; 
+}
+
+.description-content {
+    margin-top: 50px;
+    font-size: 16px;
+    text-indent: 10px; 
+    margin-left: 0; 
+    line-height: 2;
+}
+
+
+.description-content br {
+    margin-top: 10px; 
+    content: "";
+    display: block;
+}
+
+.indent {
+    margin-left: 10px;
+}
+
+.signature-section {
+    margin-top: 30px;
+    font-size: 16px;
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+}
+
+.signature-fields {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.field-group p{
+    margin: 0;
+    font-weight: bold;
+}
+
+.line {
+    display: inline-block;
+    border-bottom: 1px solid #000;
+    width: 150px;
+}
+
+.date-time {
+    display: flex;
+    justify-content: space-between;
+}
+
+.date-time p {
+    margin: 0;
+}
+
+.date-time .line {
+    width: 30px;
+}
+
