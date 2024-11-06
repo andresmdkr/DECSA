@@ -1,102 +1,78 @@
-import jsPDF from 'jspdf';
-import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
-import { fetchSACs } from '../../redux/slices/sacsSlice';
-import store from '../../redux/store'; 
+import html2pdf from 'html2pdf.js';
+import store from '../../redux/store';
+import Logo from '../../assets/logo.gif';
 
-const OtPDF = async (sacId) => {
+
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+
+const OtPDF = async ({ sac, ot, artifact }) => {
+  const client = store.getState().clients.client;
+
   try {
-    
-    const sacResponse = await store.dispatch(fetchSACs({ sacId }));
-    const sacData = sacResponse?.payload?.sacs?.length > 0 ? sacResponse.payload.sacs[0] : null;
-    if (!sacData) {
-      throw new Error('SAC no encontrada');
+    const htmlTemplate = await fetch('OT/OT.html').then((res) => res.text());
+    const mainContainer = document.createElement('div');
+    const pageContainer = document.createElement('div');
+    pageContainer.innerHTML = htmlTemplate;
+
+    // Rellenar información del encabezado
+    pageContainer.querySelector('#company-logo').src = Logo;
+    pageContainer.querySelector('#otId').textContent = ot.id || 'N/A';
+    pageContainer.querySelector('#sacId').textContent = sac.id || artifact.SAC?.id || 'N/A';
+
+    // Rellenar información del servicio técnico y cliente
+    pageContainer.querySelector('#technicalService').textContent = ot.technicalService || 'N/A';
+    pageContainer.querySelector('#otDate').textContent = ot.createdAt ? formatDate(ot.createdAt) : 'N/A';
+    pageContainer.querySelector('#holderName').textContent = client.holderName || 'N/A';
+    pageContainer.querySelector('#supply').textContent = client.supply || 'N/A';
+    pageContainer.querySelector('#claimantName').textContent = sac.claimantName || client.holderName || 'N/A';
+    pageContainer.querySelector('#eventDate').textContent = sac.eventDate ? formatDate(sac.eventDate) : 'N/A';
+    pageContainer.querySelector('#address').textContent = `${client.address} ${client.extraAddressInfo}`;
+    pageContainer.querySelector('#claimantPhone').textContent = sac.claimantPhone || client.phone || 'N/A';
+
+    if (artifact) {
+      const artifactTable = pageContainer.querySelector('#artifact-table');
+      artifactTable.style.display = 'block';
+      pageContainer.querySelector('#artifact-name').textContent = artifact.name || 'N/A';
+      pageContainer.querySelector('#artifact-details').textContent = 
+        `${artifact.brand || 'N/A'} / ${artifact.model || 'N/A'} / ${artifact.serialNumber || 'N/A'}`;
     }
 
-    // Obtener la información del cliente
-    const clientResponse = await store.dispatch(fetchClientByAccountNumber(sacData.clientId));
-    const client = clientResponse?.payload;
-    if (!client) {
-      throw new Error('Cliente no encontrado');
-    }
+        const subtitle = pageContainer.querySelector('#conditional-subtitle');
+        const descriptionText = pageContainer.querySelector('#description-text');
 
-    // Crear el PDF usando jsPDF
-    const doc = new jsPDF({
-      format: 'a4',
-      unit: 'mm',
-    });
+        if (subtitle) {
+          subtitle.textContent = artifact ? "INFORME Y OBSERVACIONES" : "ORDEN DE TRABAJO";
+        }
+
+        if (descriptionText) {
+          descriptionText.textContent = ot.description || 'Sin descripción disponible';
+        }
+
     
-    // Ajustes para el tamaño de fuente y espaciado
-    const fontSize = 10; // Tamaño de fuente más pequeño
-    const lineHeight = 7; // Espaciado entre líneas más compacto
-    let y = 10; // Posición inicial en el eje Y
+    mainContainer.appendChild(pageContainer);
 
-    doc.setFontSize(fontSize);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'OT/OT.css';
+    mainContainer.appendChild(link);
 
-    // Función para agregar texto y manejar saltos de página
-    const addText = (text, x, yPos) => {
-      if (yPos > 290) { // Si sobrepasa el límite de la hoja, agregar nueva página
-        doc.addPage();
-        y = 10; // Reiniciar la posición vertical en la nueva página
-      }
-      doc.text(text, x, y);
-      y += lineHeight; // Incrementar la posición vertical para el siguiente texto
+    const options = {
+      margin: 10,
+      filename: 'Orden_Trabajo.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
     };
 
-    // Datos del cliente
-    addText('Solicitud de Atención al Cliente', 10, y);
-    addText(`Número de Cuenta: ${client.accountNumber}`, 10, y);
-    addText(`Número de Titular: ${client.holderNumber}`, 10, y);
-    addText(`Nombre del Titular: ${client.holderName}`, 10, y);
-    addText(`DNI: ${client.dni || 'N/A'}`, 10, y);
-    addText(`Teléfono: ${client.phone || 'N/A'}`, 10, y);
-    addText(`Teléfono Auxiliar: ${client.auxPhone || 'N/A'}`, 10, y);
-    addText(`Dirección: ${client.address}`, 10, y);
-    addText(`Info. Adicional Dirección: ${client.extraAddressInfo}`, 10, y);
-    addText(`Dirección Postal: ${client.postalAddress}`, 10, y);
-    addText(`Info. Adicional Postal: ${client.extraPostalAddressInfo}`, 10, y);
-    addText(`Servicio: ${client.service}`, 10, y);
-    addText(`Categoría: ${client.category}`, 10, y);
-    addText(`Fecha de Ingreso: ${new Date(client.dateOfEntry).toLocaleDateString()}`, 10, y);
-    addText(`Fecha de Terminación: ${client.dateOfTermination ? new Date(client.dateOfTermination).toLocaleDateString() : 'N/A'}`, 10, y);
-    addText(`Dispositivo: ${client.device}`, 10, y);
-    addText(`Zona: ${client.zone}`, 10, y);
-    addText(`Sector: ${client.sector}`, 10, y);
-    addText(`Ruta: ${client.route}`, 10, y);
-    addText(`Suministro: ${client.supply}`, 10, y);
-    addText(`Estado: ${client.status}`, 10, y);
-    addText(`Voltaje: ${client.voltage}`, 10, y);
-    addText(`Localidad: ${client.locality}`, 10, y);
-    addText(`Departamento: ${client.department}`, 10, y);
-    addText(`Provincia: ${client.province}`, 10, y);
-    addText(`Subestación: ${client.substation}`, 10, y);
-    addText(`Distribuidor: ${client.distributor}`, 10, y);
-    addText(`Consumo 2024: ${client.consumption2024 || 'N/A'}`, 10, y);
-
-    // Datos de la SAC
-    addText('Datos de la SAC', 10, y);
-    addText(`Número de SAC: ${sacData.id}`, 10, y);
-    addText(`Motivo del Reclamo: ${sacData.claimReason}`, 10, y);
-    addText(`Descripción: ${sacData.description}`, 10, y);
-    addText(`Fecha del Evento: ${new Date(sacData.eventDate).toLocaleDateString()}`, 10, y);
-    addText(`Hora de Inicio: ${sacData.startTime}`, 10, y);
-    addText(`Hora de Fin: ${sacData.endTime}`, 10, y);
-    addText(`Estado: ${sacData.status}`, 10, y);
-    addText(`Prioridad: ${sacData.priority}`, 10, y);
-    addText(`Área Encargada: ${sacData.area}`, 10, y);
-    addText(`Creado: ${new Date(sacData.createdAt).toLocaleDateString()}`, 10, y);
-    addText(`Actualizado: ${new Date(sacData.updatedAt).toLocaleDateString()}`, 10, y);
-
-    // Artefactos quemados
-    if (sacData.artifacts && sacData.artifacts.length > 0) {
-      addText('Artefactos Quemados:', 10, y);
-      sacData.artifacts.forEach((artifact, index) => {
-        addText(`- ${artifact.name}: ${artifact.brand} ${artifact.model} (SN: ${artifact.serialNumber}), documentation: ${artifact.documentation}`, 10, y);
-      });
-    }
-
-    // Guardar o abrir el PDF en una nueva ventana
-    const pdfData = doc.output('blob');
-    const pdfUrl = URL.createObjectURL(pdfData);
+    const pdfBlob = await html2pdf().set(options).from(mainContainer).output('blob');
+    const pdfUrl = URL.createObjectURL(pdfBlob);
     window.open(pdfUrl, '_blank');
   } catch (error) {
     console.error('Error al generar el PDF:', error.message);

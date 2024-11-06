@@ -15,25 +15,71 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
     const [clientNotified, setClientNotified] = useState(false);
     const [isReadOnly, setIsReadOnly] = useState(currentMode === 'view');
     const [resolutionId, setResolutionId] = useState(null);
-    const [artifactData, setArtifactData] = useState(null)
+    const [artifactData, setArtifactData] = useState(null);
+    
     
     const artifact = useSelector(state => state.artifacts.artifact);
 
+    const formatEventDate = (date) => {
+        if (!date) return 'N/A';
+        const eventDate = new Date(date);
+        return eventDate.toLocaleDateString('es-AR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+    
+    const formatStartTime = (time) => {
+        if (!time) return 'N/A';
+        const [hours, minutes, seconds] = time.split(':');
+        const date = new Date();
+        date.setHours(hours, minutes, seconds);
+        return date.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+    };
+    
+
 
     const defaultTexts = {
-        InconvenienteAjenoAlServicioElectrico: "Texto 1",
-        FCFuerzaMayor: "Texto 2",
-        InconvenienteInstalacionesUsuario: "Texto 3",
-        ReconocimientoIndemnizaciónConRecibo: "Texto 4",
-        Reconocimiento: `Me dirijo a Usted en relacion al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name}" reclamado por Usted.
+        
+//////////////////////////       
+InconvenienteAjenoAlServicioElectrico: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
 
-En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que *agregar texto*.
+Mediante Orden de Atencion al Cliente N° ** y  Orden de Trabajo N° ${artifactData?.workOrder?.id ?? 'N/A'} se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: **. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
+
+La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.
 
 Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
 
 La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual firma en conformidad, entregandose el artefacto reparado donde constata el normal funcionamiento.`,
-        ReparaciónPreviaReclamo: "Texto 6",
-        Personalizado: "" 
+        
+//////////////////////////   
+FCFuerzaMayor: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con la rotura del artefacto "${artifactData?.name} / ${artifactData?.brand}" que habría ocurrido el día ${formatEventDate(artifactData?.SAC.eventDate)} a las ${formatStartTime(artifactData?.SAC.startTime)} aproximadamente.
+
+De los hechos ocurridos en fecha indicada como momento del daño, DECSA informa que, si bien existieron eventos en la red, estos se debieron a una situación climática la cual es considerada casos de fuerza mayor. En estos casos, y en concordancia con lo estipulado en el Contrato de Concesión vigente, le informamos que la Distribuidora no tiene responsabilidad en los eventos que hubiesen ocasionado alteraciones y/o roturas en su artefacto.
+
+Por ello no corresponde reconocer los costos asociados a la reparación y/o reposición del artefacto reclamado.
+
+La presente nota, tiene carácter de resolución definitiva del reclamo mencionado en el primer párrafo.`,
+        
+//////////////////////////   
+ReconocimientoIndemnizaciónConRecibo: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con la rotura del artefacto "${artifactData?.name} / ${artifactData?.brand}" que habría ocurrido el día ${formatEventDate(artifactData?.SAC.eventDate)} a las ${formatStartTime(artifactData?.SAC.startTime)} aproximadamente.
+
+En tal sentido se inició el procedimiento de evaluación de su reclamo según lo indicado en la Resolución 16/97 del E.P.R.E; donde **.
+
+Por ello, DECSA entrega el reintegro del gasto incurrido la suma monetaria de $${artifactData?.repairOrder?.budget ?? 'N/A'}.`,
+        
+//////////////////////////   
+ReconocimientoReparacion: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
+
+En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que **.
+
+Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
+
+La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual firma en conformidad, entregandose el artefacto reparado donde constata el normal funcionamiento.`,
+        
+//////////////////////////   
+Personalizado: "" 
     };
     
 
@@ -133,12 +179,10 @@ La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual 
         if (burnedArtifactId || resolution?.burnedArtifactId) {
             return (
                 <>
+                    <option value="ReconocimientoReparacion">Reconocimiento de Reparación</option>
                     <option value="InconvenienteAjenoAlServicioElectrico">Inconveniente ajeno al servicio eléctrico</option>
-                    <option value="FCFuerzaMayor">Caso fuerza mayor</option>
-                    <option value="InconvenienteInstalacionesUsuario">Inconveniente en instalaciones del usuario</option>
                     <option value="ReconocimientoIndemnizaciónConRecibo">Reconocimiento de indemnización con recibo</option>
-                    <option value="Reconocimiento">Reconocimiento</option>
-                    <option value="ReparaciónPreviaReclamo">Reparación previa al reclamo</option>
+                    <option value="FCFuerzaMayor">Caso fuerza mayor</option>
                 </>
             );
         } else {
@@ -176,6 +220,7 @@ La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual 
             }
         } else {
             const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
+            
             ResolutionPDF(sacId, resolution.id, artifactId);
         }
     };

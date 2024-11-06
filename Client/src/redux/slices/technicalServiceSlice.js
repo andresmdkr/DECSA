@@ -69,7 +69,7 @@ export const createTechnicalService = createAsyncThunk(
 
 export const updateTechnicalService = createAsyncThunk(
     'technicalService/updateTechnicalService',
-    async ({ id, name, type }, { rejectWithValue }) => { 
+    async ({ id, name, type, address, phone }, { rejectWithValue }) => { 
       try {
         const token = localStorage.getItem('token');
   
@@ -79,7 +79,7 @@ export const updateTechnicalService = createAsyncThunk(
           },
         };
   
-        const response = await axios.put(`${API_BASE_URL}/technical-service/${id}`, { name, type }, config); 
+        const response = await axios.put(`${API_BASE_URL}/technical-service/${id}`, { name, type, address, phone }, config); 
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to update technical service');

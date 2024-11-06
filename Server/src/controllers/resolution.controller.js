@@ -19,6 +19,13 @@ const getResolutions = async (query) => {
     return resolutions;
   };
   
+  const getResolutionById = async (resolutionId) => {
+    const resolution = await Resolution.findOne({
+      where: { id: resolutionId },
+    });
+    return resolution;
+  };
+  
 
 
 const createResolution = async (sacId, resolutionData) => {
@@ -42,6 +49,7 @@ const updateResolution = async (resolutionId, updatedData) => {
 
 module.exports = {
   getResolutions,
+  getResolutionById,
   createResolution,
   updateResolution,
 };

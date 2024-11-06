@@ -1,4 +1,5 @@
 .pdf-container {
+    font-size: 15px;
     font-family: Arial, sans-serif;
     color: #333;
     height: 277.2mm;
@@ -36,8 +37,10 @@
 }
 
 .info-right {
+    
     flex: 0 0 auto; 
     text-align: right; 
+    font-weight: bold;
 }
 
 .divider {
@@ -58,7 +61,7 @@
 
 .description-content {
     margin-top: 50px;
-    font-size: 16px;
+    font-size: 15px;
     text-indent: 10px; 
     margin-left: 0; 
     line-height: 2;
@@ -77,7 +80,7 @@
 
 .signature-section {
     margin-top: 30px;
-    font-size: 16px;
+    font-size: 15px;
     position: absolute;
     bottom: 20px;
     width: 100%;
@@ -105,6 +108,79 @@
     display: inline-block;
     border-bottom: 1px solid #000;
     width: 150px;
+}
+
+
+
+.talonario-section {
+    display: none; 
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.firma-section {
+    margin-top: 20px;
+}
+
+.firma-line {
+    display: flex;
+    align-items: baseline; 
+    margin-bottom: 8px;
+}
+
+.firma-title {
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.firma-dotted-line {
+    width: 200px; 
+    border-bottom: 1px dotted #000;
+}
+
+
+.dotted-line {
+    border-top: 1px dotted #000;
+    margin-bottom: 10px;
+}
+
+.talonario-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.talonario-logo-left {
+    max-width: 100px; 
+    height: auto;
+}
+
+.recibo-container {
+    border: 1px solid #000;
+    padding: 5px 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.recibo-text{
+    font-size: 15px;
+}
+
+.recibo-title {
+    margin: 0;
+}
+
+.presupuesto-text{
+    font-weight: bold;
+}
+
+
+.logo{
+    max-width: 120px; 
+    height: auto; 
 }
 
 .date-time {

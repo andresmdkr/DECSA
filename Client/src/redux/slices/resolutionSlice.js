@@ -21,6 +21,24 @@ export const fetchResolutions = createAsyncThunk(
   }
 );
 
+export const fetchResolutionById = createAsyncThunk(
+  'resolutions/fetchResolutionById',
+  async (resolutionId, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+      const response = await axios.get(`${API_BASE_URL}/resolution/${resolutionId}`, config);
+      console.log(response)
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to fetch resolution by ID');
+    }
+  }
+);
+
+
 export const createResolution = createAsyncThunk(
   'resolutions/createResolution',
   async ({ sacId, resolutionData }, { rejectWithValue }) => {
@@ -83,6 +101,18 @@ const resolutionsSlice = createSlice({
       state.resolutions = action.payload;
     })
     .addCase(fetchResolutions.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    })
+    .addCase(fetchResolutionById.pending, (state) => {
+      state.status = 'loading';
+      state.error = null;
+    })
+    .addCase(fetchResolutionById.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.resolutions = [action.payload]; 
+    })
+    .addCase(fetchResolutionById.rejected, (state, action) => {
       state.status = 'failed';
       state.error = action.payload;
     })

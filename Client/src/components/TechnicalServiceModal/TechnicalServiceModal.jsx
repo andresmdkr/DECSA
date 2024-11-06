@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import Swal from 'sweetalert2'; // Importar SweetAlert
+import Swal from 'sweetalert2';
 import styles from './TechnicalServiceModal.module.css';
 import { createTechnicalService, updateTechnicalService, fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
 
 const TechnicalServiceModal = ({ isOpen, onClose, mode, technicalService }) => {
   const [name, setName] = useState('');
   const [type, setType] = useState('contratista');
+  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (mode === 'edit' && technicalService) {
       setName(technicalService.name);
       setType(technicalService.type);
+      setAddress(technicalService.address || '');
+      setPhone(technicalService.phone || '');
     } else {
       setName('');
       setType('contratista');
+      setAddress('');
+      setPhone('');
     }
   }, [mode, technicalService]);
 
   const handleSave = () => {
-    const serviceData = { name, type };
+    const serviceData = { name, type, address, phone };
 
     if (mode === 'edit' && technicalService) {
       dispatch(updateTechnicalService({ ...serviceData, id: technicalService.id }))
@@ -62,6 +68,7 @@ const TechnicalServiceModal = ({ isOpen, onClose, mode, technicalService }) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={styles.input}
+            maxLength="50"
           />
         </div>
         <div className={styles.formGroup}>
@@ -75,6 +82,28 @@ const TechnicalServiceModal = ({ isOpen, onClose, mode, technicalService }) => {
             <option value="contratista">Contratista</option>
             <option value="personal propio">Personal Propio</option>
           </select>
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="address">Domicilio:</label>
+          <input
+            id="address"
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className={styles.input}
+            maxLength="100"
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="phone">Teléfono:</label>
+          <input
+            id="phone"
+            type="text"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={styles.input}
+            maxLength="20"
+          />
         </div>
         <div className={styles.modalActions}>
           <button onClick={onClose} className={styles.cancelButton}>Cancelar</button>

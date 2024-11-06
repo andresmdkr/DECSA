@@ -14,7 +14,7 @@ import OtForm from '../OtForm/OtForm';
 import RepairOrderForm from '../RepairOrderForm/RepairOrderForm.jsx'
 
 
-const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
+const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
     const dispatch = useDispatch();
     const artifact = useSelector(state => state.artifacts.artifact);
     const repairOrder = useSelector(state => state.repairOrder.repairOrder);
@@ -115,7 +115,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
     
 
         if (workOrders.length === 0) {
-            await dispatch(createWorkOrder({ sacId, burnedArtifactId: artifactId, workOrderData }));
+            await dispatch(createWorkOrder({ sac.id, burnedArtifactId: artifactId, workOrderData }));
         } else {
             const existingWorkOrder = workOrders[0];
             await dispatch(updateWorkOrder({ workOrderId: existingWorkOrder.id, workOrderData }));
@@ -126,24 +126,13 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
     
         
 
-    const handlePrint = async () => {
-        await handleSave(false);
-        OtPDF(sacId, artifactId);
-
-    };
-
-    const handlePrint2 = async () => {
-        await handleSave(false);
-        OtPDF(sacId, artifactId);
-    };
-
     const closeWorkOrderForm = () => {
         setWorkOrder(null);
     };
 
     const openWorkOrderForm = () => {
         <OtForm 
-            sacId={sacId} 
+            sac={sac} 
             onClose={closeWorkOrderForm} 
             ot={workOrder} 
             mode={otMode} 
@@ -158,7 +147,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
     const handleRepairOrderClick = async () => {
         const response = await dispatch(fetchRepairOrder({ burnedArtifactId: artifactId }));
         if (response.payload?.notFound) {
-            const workOrderResponse = await dispatch(fetchWorkOrders({ sacId, burnedArtifactId: artifactId }));
+            const workOrderResponse = await dispatch(fetchWorkOrders({ sacId:sac.id, burnedArtifactId: artifactId }));
             const workOrders = workOrderResponse.payload;
             const newRepairOrderData = {
                 burnedArtifactId: artifactId,
@@ -182,7 +171,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
     const handleWorkOrderClick = async () => {
  
-        const response = await dispatch(fetchWorkOrders({ sacId, burnedArtifactId: artifactId }));
+        const response = await dispatch(fetchWorkOrders({ sacId:sac.id, burnedArtifactId: artifactId }));
         const workOrders = response.payload;
     
         if (workOrders.length > 0) {
@@ -198,7 +187,7 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                 status: 'In Progress'
             };
             const createdWorkOrder = await dispatch(createWorkOrder({ 
-                sacId, 
+                sacId:sac.id, 
                 burnedArtifactId: artifactId, 
                 workOrderData: newWorkOrder 
             }));
@@ -333,7 +322,8 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                         )}
                         {repairOrderModalOpen && (
                             <RepairOrderForm  
-                                burnedArtifactId={artifactId}
+                                sacId={sac.id} 
+                                burnedArtifact={artifact}
                                 repairOrder={repairOrder}
                                 mode={repairOrderMode}
                                 onClose={closeRepairOrderForm}
@@ -341,17 +331,17 @@ const Artifact = ({ sacId, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                         )}
                         {workOrder && (
                             <OtForm 
-                                sacId={sacId} 
+                                sac={sac} 
                                 onClose={closeWorkOrderForm} 
                                 ot={workOrder} 
                                 mode={otMode} 
                                 origen="artefacto" 
-                                artifact= {artifact.name}
+                                artifact= {artifact}
                             />
                         )}
                         {showResolutionForm && (
                             <ResolutionForm  
-                                sacId={sacId}
+                                sacId={sac.id}
                                 burnedArtifactId={artifactId}
                                 resolution={resolution}
                                 mode={resolutionMode}

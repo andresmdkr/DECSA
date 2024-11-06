@@ -5,9 +5,10 @@ import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
-import { updateRepairOrder } from '../../redux/slices/repairOrderSlice'; // Importa la acción de actualización
+import { updateRepairOrder } from '../../redux/slices/repairOrderSlice'; 
+import OrPDF from '../OrPDF/OrPDF';
 
-const RepairOrderForm = ({ burnedArtifactId, repairOrder, mode, onClose }) => {
+const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) => {
     const dispatch = useDispatch();
     const technicalServices = useSelector(state => state.technicalService.technicalServices);
 
@@ -42,8 +43,6 @@ const RepairOrderForm = ({ burnedArtifactId, repairOrder, mode, onClose }) => {
         if (mode === 'edit') {
             const repairOrderData = { technicalService, budget, technicalReport };
 
-            
-  
             const result = await dispatch(updateRepairOrder({ repairOrderId: repairOrder.id, repairOrderData }));
             if (result.type === 'repairOrders/updateRepairOrder/fulfilled') {
                 Swal.fire({
@@ -61,6 +60,58 @@ const RepairOrderForm = ({ burnedArtifactId, repairOrder, mode, onClose }) => {
             }
         }
     };
+
+    const handlePrintClick = async () => {
+        if (mode === 'edit') {
+            const repairOrderData = { technicalService, budget, technicalReport };
+            const result = await dispatch(updateRepairOrder({ repairOrderId: repairOrder.id, repairOrderData }));
+            
+            if (result.type === 'repairOrders/updateRepairOrder/fulfilled') {
+                console.log('Repair order updated successfully');
+                const selectedTechnicalService = technicalServices.find(service => service.name === technicalService);
+    
+                if (selectedTechnicalService) {
+                    OrPDF({
+                        sacId,
+                        burnedArtifact,
+                        technicalService: selectedTechnicalService,
+                        repairOrder: { ...repairOrder,technicalReport, budget },  
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Servicio técnico no encontrado.',
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un problema al actualizar la orden de reparación.',
+                });
+            }
+        } else {
+            // En caso de que no esté en modo de edición, solo imprime sin actualizar
+            const selectedTechnicalService = technicalServices.find(service => service.name === technicalService);
+            if (selectedTechnicalService) {
+                OrPDF({
+                    sacId,
+                    burnedArtifact,
+                    technicalService: selectedTechnicalService,
+                    repairOrder: { ...repairOrder,technicalReport, budget }, 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Servicio técnico no encontrado.',
+                });
+            }
+        }
+    };
+    
+    
 
     const customSelectStyles = {
         container: (provided) => ({
@@ -126,16 +177,16 @@ const RepairOrderForm = ({ burnedArtifactId, repairOrder, mode, onClose }) => {
                     </div>
 
                     {!isReadOnly && (
-                            <div className={`${styles.repairOrderButtonContainer} ${(mode === 'edit' ? 1 : 0) + 1 === 1 ? styles.singleButton : ''}`}>
+                        <div className={`${styles.repairOrderButtonContainer} ${mode !== 'edit' ? styles.singleButton : ''}`}>
                             {mode !== 'create' && (
-                                <button className={styles.submitButton} type="button" >
-                                Imprimir O.Reparacion
+                                <button className={styles.submitButton} type="button" onClick={handlePrintClick}>
+                                    Imprimir O.Reparacion
                                 </button>
                             )}
                             <button className={styles.submitButton} type="submit">
-                            {mode === 'create' ? 'Crear Orden de Reparación' : 'Grabar'}
+                                {mode === 'create' ? 'Crear Orden de Reparación' : 'Grabar'}
                             </button>
-                            </div>
+                        </div>
                     )}
                 </form>
             </div>

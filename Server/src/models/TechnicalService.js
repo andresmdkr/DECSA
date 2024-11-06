@@ -9,12 +9,20 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(50), 
       allowNull: false,
     },
     type: {
       type: DataTypes.ENUM('contratista', 'personal propio'),
       allowNull: false,
+    },
+    address: {
+      type: DataTypes.STRING(100), 
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(20), 
+      allowNull: true,
     }
   }, { timestamps: false });
 };

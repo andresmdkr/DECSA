@@ -3,7 +3,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import styles from './OtForm.module.css';
 import { createWorkOrder, updateWorkOrder } from '../../redux/slices/otSlice';
 import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
-
+import OtPDF from '../OtPDF/OtPDF';
 import { useDispatch, useSelector} from 'react-redux';
 import Select from 'react-select';
 
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
+const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
   const dispatch = useDispatch();
 
   const [status, setStatus] = useState('In Progress');
@@ -28,6 +28,7 @@ const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
 
 
 /*   useEffect(() => {
+    console.log(ot,artifact);
     if (mode === 'edit' || mode === 'view') {
       if (ot) {
         setStatus(ot.status);
@@ -139,7 +140,7 @@ const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
       technicalService,
       files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
     };
-
+  
     try {
       if (mode === 'edit') {
         await dispatch(updateWorkOrder({ workOrderId: ot.id, workOrderData }));
@@ -149,14 +150,14 @@ const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
           showCancelButton: true,
           confirmButtonText: 'Imprimir',
           cancelButtonText: 'Cerrar',
-          
         }).then((result) => {
           if (result.isConfirmed) {
-            console.log('Imprimiendo...')
-          } 
+            OtPDF({sac, ot, artifact });
+          }
+          onClose(); 
         });
       } else {
-        const response = await dispatch(createWorkOrder({ sacId, workOrderData }));
+        const response = await dispatch(createWorkOrder({ sacId:sac.id, workOrderData }));
         Swal.fire({
           title: 'Orden de Trabajo creada con éxito',
           icon: 'success',
@@ -165,26 +166,52 @@ const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
           cancelButtonText: 'Cerrar',
         }).then((result) => {
           if (result.isConfirmed) {
-            console.log('Imprimiendo...')
-            onClose();            
-          } else {
-            onClose();
+            OtPDF({sac, ot, artifact });
           }
+          onClose();            
         });
       }
     } catch (error) {
       console.error('Error al procesar la Orden de Trabajo:', error);
+      Swal.fire({
+        title: 'Error al guardar',
+        text: 'No se pudo guardar la Orden de Trabajo. Inténtalo de nuevo.',
+        icon: 'error',
+      });
     }
   };
+  
 
   const handleStatusChange = (e) => {
     const newStatus = e.target.value;
     setStatus(newStatus);
   };
 
-    const handlePrint = () => {
-      console.log('Imprimiendo...')
-    };
+  const handlePrint = async () => {
+    if (mode === 'edit' && ot) {
+      const updatedWorkOrderData = {
+        status,
+        reason,
+        description,
+        technicalService,
+        files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
+      };
+      
+      try {
+        await dispatch(updateWorkOrder({ workOrderId: ot.id, workOrderData: updatedWorkOrderData }));
+        OtPDF({ sac, ot: { ...ot, ...updatedWorkOrderData }, artifact });
+      } catch (error) {
+        console.error('Error al actualizar antes de imprimir:', error);
+        Swal.fire({
+          title: 'Error al actualizar',
+          text: 'No se pudo actualizar la Orden de Trabajo antes de imprimir.',
+          icon: 'error',
+        });
+      }
+    } else {
+      OtPDF({ sac, ot, artifact });
+    }
+  };
 
     const customSelectStyles = {
       container: (provided) => ({
@@ -218,7 +245,7 @@ const OtForm = ({ sacId, onClose, ot, mode, origen,artifact}) => {
         </h2>
         {artifact && (
                     <h3 className={styles.miniTitle}>
-                        {`Reclamo Artefacto (${artifact})`}
+                        {`Reclamo Artefacto (${artifact.name})`}
                     </h3>
         )}
 

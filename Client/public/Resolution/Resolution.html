@@ -9,8 +9,8 @@
 <body>
     <div class="pdf-container"> 
     <header class="header">
-        <img src="../sj.png" alt="Logo Izquierdo" class="header-logo-left">
-        <img src="../logo.gif" alt="Logo Derecho" class="header-logo-right">
+        <img id="logo-der" alt="Logo Izquierdo" class="header-logo-left">
+        <img id="logo-izq" alt="Logo Derecho" class="header-logo-right">
     </header>
     
     <div class="info-container">
@@ -21,7 +21,7 @@
             <p><span id="department">N/A</span>, <span id="province">N/A</span></p>
         </div>
         <div class="info-right">
-            <p>Caucete, San Juan</p>
+            <p>Caucete, San Juan, <span id="fechaActual">N/A</span></p>
             <p>Nota DECSA N°:</p>
         </div>
     </div>
@@ -34,7 +34,43 @@
             <p><span class="description" id="description"></span></p>
         </div>
     </div>
-    <div class="signature-section">
+    <div class="talonario-section" id="talonario">
+        <div class="dotted-line"></div>
+
+        <div class="talonario-content">
+            <img alt="Logo" class="talonario-logo-left" id="logo">
+            <div class="recibo-container">
+                <p class="recibo-title">Recibo de Conformidad</p>
+            </div>
+        </div>
+        <hr class="talonario-divider">
+        <div class="info-right">
+            <p>Caucete, San Juan, <span id="fechaActual2">N/A</span></p>
+        </div>
+        <p id="recibo-text" class="recibo-text">Recibí de la Distribuidora Eléctrica de Caucete S.A., la cantidad de <span class="presupuesto-text" id="presupuesto">N/A</span> y en las 
+        condiciones señaladas, en concepto indemnizatorio por la rotura del artefacto indicado en el presente reclamo, no teniendo más que reclamar por ningún 
+        concepto.</p>
+        <div class="firma-section">
+            <div class="firma-line">
+                <span class="firma-title">Recibí Conforme:</span>
+                <span class="firma-dotted-line"></span>
+            </div>
+            <div class="firma-line">
+                <span class="firma-title">Aclaración:</span>
+                <span class="firma-dotted-line"></span>
+            </div>
+            <div class="firma-line">
+                <span class="firma-title">Documento de Identidad N°:</span>
+                <span class="firma-dotted-line"></span>
+            </div>
+            <div class="firma-line">
+                <span class="firma-title">Fecha y Hora:</span>
+                <span class="firma-dotted-line"></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="signature-section" id="firma">
         <div class="signature-fields">
             <div class="field-group">
                 <span class="line"></span>

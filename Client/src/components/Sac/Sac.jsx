@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchClientByAccountNumber, updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import { fetchSACs } from '../../redux/slices/sacsSlice';
 import { updateSAC } from '../../redux/slices/sacsSlice';
+import {updateArtifact} from '../../redux/slices/artifactsSlice.js'
 import Swal from 'sweetalert2';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import styles from './Sac.module.css';
@@ -212,9 +213,19 @@ const Sac = ({ sac, onClose}) => {
 
 
     const handleOpenArtifact = (artifact) => {
+        if (artifact.status === "Pending") {   
+            handleArtifactUpdate(artifact.id, "In Progress");
+    
+            dispatch(updateArtifact({
+                artifactId: artifact.id,
+                artifactData: { status: "In Progress" }
+            }));
+        }
+    
         setSelectedArtifact(artifact);
         setIsArtifactModalOpen(true);
     };
+    
 
     const handleCloseArtifactModal = () => {
         setIsArtifactModalOpen(false);
@@ -329,7 +340,7 @@ const Sac = ({ sac, onClose}) => {
             )}
              {isArtifactModalOpen && (
                        <Artifact 
-                       sacId={sac.id} 
+                       sac={sac} 
                        artifactId={selectedArtifact.id} 
                        onUpdate={handleArtifactUpdate} 
                        onClose={handleCloseArtifactModal}

@@ -1,6 +1,8 @@
 import html2pdf from 'html2pdf.js';
 import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import { fetchSACs } from '../../redux/slices/sacsSlice';
+import Logo from '../../assets/logo.gif'
+
 import store from '../../redux/store';
 
 const SacPDF = async (sacId) => {
@@ -13,7 +15,7 @@ const SacPDF = async (sacId) => {
     const client = clientResponse?.payload;
     if (!client) throw new Error('Cliente no encontrado');
 
-    const htmlTemplate = await fetch('/SAC/SAC.html').then((res) => res.text());
+    const htmlTemplate = await fetch('SAC/SAC.html').then((res) => res.text());
     
     const mainContainer = document.createElement('div');
 
@@ -28,11 +30,17 @@ const SacPDF = async (sacId) => {
     const claimantRelationship = sacData.claimantName ? sacData.claimantRelationship : 'Titular';
 
     const artifacts = sacData.artifacts || [];
+
+    const pageContainers = [];  
+    const artifactsPerPage = 3;
+
     if (artifacts.length > 0) {
       for (let i = 0; i < artifacts.length; i += 3) {
         const pageContainer = document.createElement('div');
         pageContainer.innerHTML = htmlTemplate;
 
+        pageContainer.querySelector('#logo').src = Logo
+        pageContainer.querySelector('#logo2').src = Logo
         pageContainer.querySelector('#sacId').textContent = sacData.id || 'N/A';
         pageContainer.querySelector('#talonarioId').textContent = sacData.id || 'N/A';
         pageContainer.querySelector('#accountNumber').textContent = client.accountNumber || 'N/A';
@@ -46,6 +54,8 @@ const SacPDF = async (sacId) => {
         pageContainer.querySelector('#talonarioAccountNumber').textContent = client.accountNumber || 'N/A';
         pageContainer.querySelector('#talonarioSupplyNumber').textContent = client.supply || 'N/A';
         pageContainer.querySelector('#talonarioClaimantName').textContent = claimantName;
+
+        pageContainers.push(pageContainer);
 
         const claimantPhoneSection = pageContainer.querySelector('#claimantPhoneSection');
         if (sacData.claimantName) {
@@ -116,6 +126,8 @@ const SacPDF = async (sacId) => {
       const pageContainer = document.createElement('div');
       pageContainer.innerHTML = htmlTemplate;
 
+      pageContainer.querySelector('#logo').src = Logo
+      pageContainer.querySelector('#logo2').src = Logo
       pageContainer.querySelector('#sacId').textContent = sacData.id || 'N/A';
       pageContainer.querySelector('#talonarioId').textContent = sacData.id || 'N/A';
       pageContainer.querySelector('#accountNumber').textContent = client.accountNumber || 'N/A';
@@ -129,6 +141,8 @@ const SacPDF = async (sacId) => {
       pageContainer.querySelector('#talonarioAccountNumber').textContent = client.accountNumber || 'N/A';
       pageContainer.querySelector('#talonarioSupplyNumber').textContent = client.supply || 'N/A';
       pageContainer.querySelector('#talonarioClaimantName').textContent = claimantName;
+
+      pageContainers.push(pageContainer);
 
       const claimantPhoneSection = pageContainer.querySelector('#claimantPhoneSection');
       if (sacData.claimantName) {
@@ -165,10 +179,17 @@ const SacPDF = async (sacId) => {
       mainContainer.appendChild(pageContainer);
     }
 
+    if(pageContainers.length > 1){
+      pageContainers.forEach((pageContainer, index) => {
+      pageContainer.querySelector('#page-number').style.display = 'block';
+      pageContainer.querySelector('#currentPage').textContent = index + 1;
+      pageContainer.querySelector('#totalPages').textContent = pageContainers.length;
+      mainContainer.appendChild(pageContainer);  
+    });}
    
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = '/SAC/SAC.css';
+    link.href = 'SAC/SAC.css';
     mainContainer.appendChild(link);
 
     const options = {
@@ -178,6 +199,8 @@ const SacPDF = async (sacId) => {
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
+
+    
 
 
     const pdfBlob = await html2pdf().set(options).from(mainContainer).output('blob');

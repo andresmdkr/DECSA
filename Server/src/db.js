@@ -54,7 +54,7 @@ CustomerServiceOrder.belongsTo(SAC, { foreignKey: 'sacId' });
 SAC.hasMany(WorkOrder, { foreignKey: 'sacId', as: 'workOrders' });
 WorkOrder.belongsTo(SAC, { foreignKey: 'sacId', allowNull: true });
 
-BurnedArtifact.hasOne(WorkOrder, { foreignKey: 'burnedArtifactId' });
+BurnedArtifact.hasOne(WorkOrder, { foreignKey: 'burnedArtifactId', as: 'workOrder' });
 WorkOrder.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId', allowNull: true });
 
 SAC.hasMany(Resolution, { foreignKey: 'sacId', as: 'resolutions' });
@@ -63,6 +63,9 @@ Resolution.belongsTo(SAC, { foreignKey: 'sacId' });
 
 BurnedArtifact.hasOne(Resolution, { foreignKey: 'burnedArtifactId', as: 'resolution' });
 Resolution.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId' });
+
+SAC.hasOne(RepairOrder, { foreignKey: 'sacId', as: 'repairOrder' });
+RepairOrder.belongsTo(SAC, { foreignKey: 'sacId', allowNull: true });
 
 BurnedArtifact.hasOne(RepairOrder, { foreignKey: 'burnedArtifactId', as: 'repairOrder' });
 RepairOrder.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId' });

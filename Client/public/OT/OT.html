@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orden de Trabajo PDF</title>
+  <link rel="stylesheet" href="OT.css">
+</head>
+<body>
+  <div class="pdf-container">
+    <div class="header">
+      <div class="logo">
+        <img id="company-logo" alt="Logo de la empresa">
+      </div>
+      <div class="company-info">
+        <p><strong>DISTRIBUIDORA ELECTRICA DE CAUCETE S.A</strong></p>
+        <p>Diag. Sarmiento 259 - C.P 5442 - Caucete</p>
+        <p>Tel. 4961784 / 0800-66668456 / 4961696</p>
+      </div>
+      <div class="order-info">
+        <p>ORDEN DE TRABAJO N°: <span id="otId"></span></p>
+        <p>RECLAMO N°:  <span id="sacId"></span></p>
+      </div>
+    </div>
+
+    <div class="service-info">
+        <div class="row">
+            <p>SERVICIO TÉCNICO: <span id="technicalService"></span></p> 
+            <p>FECHA O.T.: <span id="otDate"></span></p> 
+        </div>
+        <div class="row">
+            <p>USUARIO TITULAR:  <span id="holderName"></span></p>
+            <p>SUMINISTRO N°: <span id="supply"></span></p> 
+        </div>
+        <div class="row">
+            <p>RECLAMANTE: <span id="claimantName"></span></p> 
+            <p>FECHA EVENTO: <span id="eventDate"></span></p> 
+        </div>
+        <div class="row">
+            <p>DOMICILIO: <span id="address">N/A</span></p> 
+            <p>TELÉFONO: <span id="claimantPhone"></span></p> 
+        </div>
+
+
+        <div class="artifact-table" id="artifact-table" style="display: none;">
+            <p><strong>ARTEFACTO Y/O EQUIPO A INSPECCIONAR</strong></p>
+            <table>
+              <tr>
+                <th>Artefacto</th>
+                <th>Marca/Modelo/Número de Serie</th>
+              </tr>
+              <tr>
+                <td id="artifact-name"></td>
+                <td id="artifact-details"></td>
+              </tr>
+            </table>
+        </div>
+
+
+        <div class="conditional-section">
+            <p class="subtitle" id="conditional-subtitle"></p>
+            <p id="description-text" class="text-area-simulated"></p>
+          </div>
+          
+
+          <div class="signature-section">
+            <div class="signature-line">
+              <span class="dashed-line"></span>
+              <p>AUTORIZA DECSA</p>
+            </div>
+            <div class="signature-line">
+              <span class="dashed-line"></span>
+              <p>CONFORMIDAD USUARIO</p>
+            </div>
+            <div class="signature-line">
+              <span class="dashed-line"></span>
+              <p>FECHA DE TRABAJO</p>
+            </div>
+            <div class="signature-line">
+              <span class="dashed-line"></span>
+              <p>SERVICIO TÉCNICO</p>
+            </div>
+          </div>
+          
+
+    </div>
+    
+
+
+
+  </div>
+</body>
+</html>

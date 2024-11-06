@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Reparación PDF</title>
+    <link rel="stylesheet" href="RepairOrder.css">
+</head>
+<body>
+    <div class="pdf-container">
+        <div class="header">
+            <div class="logo">
+                <img id="company-logo" alt="Logo de la empresa">
+            </div>
+            <div class="company-info">
+                <p><strong>DISTRIBUIDORA ELECTRICA DE CAUCETE S.A</strong></p>
+                <p>Diag. Sarmiento 259 - C.P 5442 - Caucete</p>
+                <p>Tel. 4961784 / 0800-66668456 / 4961696</p>
+            </div>
+            <div class="order-info">
+                <p>ORDEN DE REPARACION N°: <span id="repairOrderId"></span></p>
+                <p>RECLAMO N°:  <span id="sacId"></span></p>
+            </div>
+        </div>
+
+        <div class="date-info">
+            <p id="current-date"></p>
+        </div>
+
+        <div class="technical-service-info">
+            <div class="column">
+                <p><strong>SERVICIO TÉCNICO:</strong> <span id="tech-name">N/A</span></p>
+                <p><strong>DOMICILIO:</strong> <span id="tech-address">N/A</span></p>
+            </div>
+            <div class="column">
+                <p><strong>TIPO:</strong> <span id="tech-type">N/A</span></p>
+                <p><strong>TELÉFONO:</strong> <span id="tech-phone">N/A</span></p>
+            </div>
+        </div>
+        
+        <div class="claimant-info">
+            <p class="title"><strong>Sírvase reparar el/los equipos y/o artefactos correspondientes a:</strong></p>
+            <div class="claimant-details">
+                <p><strong>APELLIDO Y NOMBRE RECLAMANTE:</strong> <span id="claimant-name">N/A</span></p>
+                <p><strong>DOMICILIO SUMINISTRO:</strong> <span id="claimant-address">N/A</span></p>
+                <p>
+                    <strong>TELEFONO:</strong> <span id="claimant-phone">N/A</span>
+                    <span class="separator"></span>
+                    <strong>N° MEDIDOR:</strong> <span id="claimant-meter">N/A</span>
+                    <span class="separator"></span>
+                    <strong>TARIFA:</strong> <span id="claimant-category">N/A</span>
+                </p>
+            </div>
+        </div>
+        
+        <div class="repair-order-detail">
+            <p class="title"><strong>Detalle Orden de Reparación:</strong></p>
+            
+            <div class="artifact-info">
+                <p class="section-title">Descripción de artefactos y/o Equipos a reparar:</p>
+                <p><strong>ARTEFACTO:</strong> <span id="artifact-name">N/A</span> <span id="artifact-brand">N/A</span> <span id="artifact-model">N/A</span></p>
+                
+                <p class="budget"><strong>Importe a cargo de DECSA:</strong> $ <span id="repair-budget">N/A</span></p>
+                
+                <p class="section-title2">DETALLES TECNICOS DE LA REPARACION:</p>
+                <p id="technical-report">N/A</p>
+            </div>
+        </div>
+        
+        <div class="signatures-section">
+            <div class="signature">
+                <div class="signature-line"></div>
+                <p>FIRMA USUARIO</p>
+            </div>
+            <div class="signature">
+                <div class="signature-line"></div>
+                <p>FIRMA SERVICIO TECNICO</p>
+            </div>
+            <div class="signature">
+                <div class="signature-line"></div>
+                <p>AUTORIZA DECSA</p>
+            </div>
+        </div>
+        
+
+    </div>
+</body>
+</html>
