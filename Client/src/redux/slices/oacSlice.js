@@ -37,8 +37,10 @@ export const createOac = createAsyncThunk(
       formData.append('assignedBy', oacData.assignedBy);
       formData.append('assignmentTime', oacData.assignmentTime);
       formData.append('oacReason', oacData.oacReason);
-      formData.append('workDescription', oacData.workDescription);
+      formData.append('tension', oacData.tension);
       formData.append('pendingTasks', oacData.pendingTasks); 
+      formData.append('failureReason' , oacData.failureReason);
+      formData.append('performedWork' , oacData.performedWork);
 
       oacData.files.forEach((file) => {
         formData.append('files', file);
@@ -66,8 +68,10 @@ export const updateOac = createAsyncThunk(
       formData.append('assignedPerson', oacData.assignedPerson);
       formData.append('assignmentTime', oacData.assignmentTime);
       formData.append('oacReason', oacData.oacReason);
-      formData.append('workDescription', oacData.workDescription);
+      formData.append('tension', oacData.tension);
       formData.append('pendingTasks', oacData.pendingTasks); 
+      formData.append('failureReason' , oacData.failureReason);
+      formData.append('performedWork' , oacData.performedWork);
 
       oacData.files.forEach((file) => {
         formData.append('files', file);

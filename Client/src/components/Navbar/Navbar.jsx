@@ -53,8 +53,8 @@ const Navbar = () => {
         <nav className={styles.navbar}>
             <div 
                 className={styles.logoContainer} 
-                onClick={() => navigateTo('/home')} 
-                style={{ cursor: 'pointer' }}
+                /* onClick={() => navigateTo('/home')} 
+                style={{ cursor: 'pointer' }} */
             >
                 <img src={logo} alt="Logo" className={styles.logo} />
             </div>

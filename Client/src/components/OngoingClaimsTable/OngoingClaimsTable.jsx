@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters, AiOutlineFilePdf } from 'react-icons/ai';
-import { fetchSACs,updateSAC } from '../../redux/slices/sacsSlice';
-import styles from './ClaimsTable.module.css';
-import Sac from '../Sac/Sac.jsx';
+import { fetchSACs, updateSAC } from '../../redux/slices/sacsSlice';
+import styles from './OngoingClaimsTable.module.css';
+import OacModal from '../OacModal/OacModal';
 
-
-const ClaimsTable = () => {
+const OngoingClaimsTable = () => {
     const dispatch = useDispatch();
     const { sacs, status, error, total } = useSelector((state) => state.sacs);
 
@@ -19,7 +18,7 @@ const ClaimsTable = () => {
     const sacsPerPage = 10;
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedSac, setSelectedSac] = useState(null);
-    const [showSac, setShowSac] = useState(false); 
+    const [showOacModal, setShowOacModal] = useState(false);  
 
 
     const [searchParams, setSearchParams] = useState({
@@ -51,9 +50,8 @@ const ClaimsTable = () => {
     return statusClasses[status] || 'statusDefault';
 };
 
-
-
     const capitalizePriority = (priority) => priority.charAt(0).toUpperCase() + priority.slice(1);
+    const capitalizeClaimReason = (reason) => reason.charAt(0).toUpperCase() + reason.slice(1); // Capitalizar el motivo
 
     useEffect(() => {
         if (!isRefreshing) {
@@ -62,9 +60,9 @@ const ClaimsTable = () => {
                 limit: sacsPerPage,
                 sacId: searchParams.sacId,
                 clientId: searchParams.clientId,
-                status:  statusFilter ? statusMap[statusFilter] : '',
+                status:  "Open",
                 priority: priorityFilter,
-                area:"artefactos"
+                area:"operaciones"
             }));
         }
     }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
@@ -99,18 +97,6 @@ const ClaimsTable = () => {
                 setIsRefreshing(false);
             }, 300);
         }
-    };
-
-
-
-    const handleStatusChange = (e) => {
-        setSearchParams({
-            sacId: '',
-            clientId: clientIdSearch || '',
-        });
-        setSacIdSearch('');
-        setStatusFilter(e.target.value);
-        setCurrentPage(1);
     };
 
     const handlePriorityChange = (e) => {
@@ -149,38 +135,16 @@ const ClaimsTable = () => {
         }
     };
 
-    const handleViewSac = async (sac) => {
-        setSelectedSac({ ...sac, status: "Open" });
-        try {
-            if(sac.status !== "Closed"){
-                await dispatch(updateSAC({ id: sac.id, sacData: { status: "Open" } }));
-            }
-            setShowSac(true);
-        } catch (error) {
-            console.error("Error al actualizar SAC:", error);
-        }
-    };
-    
-
-    const handleClose = async () => {
-        dispatch(fetchSACs({
-            page: currentPage,
-            limit: sacsPerPage,
-            sacId: searchParams.sacId,
-            clientId: searchParams.clientId,
-            status:  statusFilter ? statusMap[statusFilter] : '',
-            priority: priorityFilter,
-            area:"artefactos"
-        }));
-        setShowSac(false);
+    const handleViewOac = (sac) => {
+        console.log('Ver O.A.Cs', sac);  
+        setSelectedSac(sac);  
+        setShowOacModal(true);  
     };
 
-
-
+    const handleCloseOacModal = () => {
+        setShowOacModal(false);  
+    };
     
-
-
-
 
     return (
         <div className={styles.container}>
@@ -203,45 +167,27 @@ const ClaimsTable = () => {
 
                 {/* Estado Filter */}
                 <div className={styles.filters}>
-                <FormControl variant="outlined" className={styles.filter}>
-                    <InputLabel>Estado</InputLabel>
-                    <Select
-                        value={statusFilter}
-                        onChange={handleStatusChange}
-                        label="Estado"
+                    <FormControl variant="outlined" className={styles.filter}>
+                        <InputLabel>Prioridad</InputLabel>
+                        <Select
+                            value={priorityFilter}
+                            onChange={handlePriorityChange}
+                            label="Prioridad"
+                        >
+                            <MenuItem value=""><em>Ninguno</em></MenuItem>
+                            <MenuItem value="alta">Alta</MenuItem>
+                            <MenuItem value="media">Media</MenuItem>
+                            <MenuItem value="baja">Baja</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <button
+                        onClick={handleReset}
+                        className={`${styles.refreshButton} ${isRefreshing ? styles.spinnerIcon : ''}`}
+                        disabled={isRefreshing}
                     >
-                        <MenuItem value=""><em>Ninguno</em></MenuItem>
-                        <MenuItem value="Pendiente">Pendiente</MenuItem>
-                        <MenuItem value="En Curso">En Curso</MenuItem>
-                        <MenuItem value="Cerrado">Cerrado</MenuItem>
-                    </Select>
-                </FormControl>
-
-                {/* Prioridad Filter */}
-                <FormControl variant="outlined" className={styles.filter}>
-                    <InputLabel>Prioridad</InputLabel>
-                    <Select
-                        value={priorityFilter}
-                        onChange={handlePriorityChange}
-                        label="Prioridad"
-
-                    >
-                        <MenuItem value=""><em>Ninguno</em></MenuItem>
-                        <MenuItem value="alta">Alta</MenuItem>
-                        <MenuItem value="media">Media</MenuItem>
-                        <MenuItem value="baja">Baja</MenuItem>
-                    </Select>
-                </FormControl>
-                {/* Reset Button */}
-                <button
-                    onClick={handleReset}
-                    className={`${styles.refreshButton} ${isRefreshing ? styles.spinnerIcon : ''}`}
-                    disabled={isRefreshing}
-                >
-                    <AiOutlineSync />
-                </button>
+                        <AiOutlineSync />
+                    </button>
                 </div>
-                
             </div>
 
             {/* Nuevo Search Input para Client ID */}
@@ -281,6 +227,7 @@ const ClaimsTable = () => {
                         <thead>
                             <tr>
                                 <th>Número de SAC</th>
+                                <th>Motivo</th> {/* Nueva columna para el Motivo */}
                                 <th>Estado</th>
                                 <th>Prioridad</th>
                                 <th>Numero de Cuenta</th>
@@ -288,13 +235,14 @@ const ClaimsTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                        {sacs.map((sac) => (
-                            <tr key={sac.id} className={`
-                                ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
-                                ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
-                                ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
-                            `}>
+                            {sacs.map((sac) => (
+                                <tr key={sac.id} className={`
+                                    ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
+                                    ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
+                                    ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
+                                `}>
                                     <td>{sac.id}</td>
+                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> {/* Mostrar el motivo con la primera letra en mayúscula */}
                                     <td>
                                         <div className={styles.statusContainer}>
                                             <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
@@ -304,35 +252,34 @@ const ClaimsTable = () => {
                                     <td>{capitalizePriority(sac.priority)}</td>
                                     <td>{sac.clientId || "S/N"}</td>
                                     <td>
-                                        <button 
+                                    <button 
                                             className={styles.viewClaimButton} 
-                                            onClick={() => handleViewSac(sac)}
+                                            onClick={() => handleViewOac(sac)}  
                                         >
-                                            Ver Reclamo
+                                            Ver O.A.Cs
                                         </button>
                                     </td>
-                                   
-
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                    {showSac && selectedSac && (
-                        <Sac sac={selectedSac} onClose={handleClose} />
-                    )}
+
                     {/* Pagination */}
                     <div className={styles.paginationContainer}>
-                    <Pagination
-                        count={Math.ceil(total / sacsPerPage)}
-                        page={currentPage}
-                        onChange={handlePageChange}
-                        color="primary"
-                    />
+                        <Pagination
+                            count={Math.ceil(total / sacsPerPage)}
+                            page={currentPage}
+                            onChange={handlePageChange}
+                            color="primary"
+                        />
                     </div>
+                    {showOacModal && selectedSac && (
+                        <OacModal sac={selectedSac} onClose={handleCloseOacModal} showStatusButton={true} />  
+                    )}
                 </div>
             )}
         </div>
     );
 };
 
-export default ClaimsTable;
+export default OngoingClaimsTable;

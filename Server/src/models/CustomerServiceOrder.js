@@ -9,22 +9,22 @@ module.exports = (sequelize) => {
     },
     status: {
       type: DataTypes.STRING,
-      defaultValue: 'Open', 
+      defaultValue: 'Open',
       allowNull: false,
     },
     issueDate: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
     issueTime: {
       type: DataTypes.STRING,
-      allowNull: true, 
+      allowNull: true,
     },
     assignedPerson: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    assignedBy: { 
+    assignedBy: {
       type: DataTypes.STRING,
       allowNull: true,
     },
@@ -36,20 +36,28 @@ module.exports = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    workDescription: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
     pendingTasks: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
     files: {
-      type: DataTypes.ARRAY(DataTypes.STRING), 
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+    },
+    tension: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    failureReason: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    performedWork: {
+      type: DataTypes.STRING, 
       allowNull: true,
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   });
 };

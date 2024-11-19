@@ -49,7 +49,7 @@ const handleFileUpload = async (files, oacId) => {
 
 
 const createCustomerServiceOrder = async (data) => {
-    const { sacId, status, issueDate, issueTime, assignedPerson, assignedBy, assignmentTime,oacReason, workDescription, pendingTasks } = data;
+    const { sacId, status, issueDate, issueTime, assignedPerson, assignedBy, assignmentTime,oacReason, tension, pendingTasks,failureReason,performedWork } = data;
 
     const newOrder = await CustomerServiceOrder.create({
         sacId,
@@ -60,8 +60,10 @@ const createCustomerServiceOrder = async (data) => {
         assignedBy,
         assignmentTime,
         oacReason,
-        workDescription,
+        tension,
         pendingTasks,
+        failureReason,
+        performedWork,
     });
 
     return newOrder; 
@@ -85,16 +87,18 @@ const updateCustomerServiceOrder = async (id, data, files) => {
     const order = await CustomerServiceOrder.findByPk(id);
     if (!order) throw new Error('Order not found');
 
-    const { status, workDescription, pendingTasks, assignedPerson, assignedBy, assignmentTime,oacReason } = data;
+    const { status, tension, pendingTasks, assignedPerson, assignedBy, assignmentTime,oacReason,failureReason,performedWork } = data;
 
 
     order.status = status || order.status;
-    order.workDescription = workDescription || order.workDescription;
+    order.tension = tension || order.tension;
     order.pendingTasks = pendingTasks || order.pendingTasks;
     order.assignedPerson = assignedPerson || order.assignedPerson;
     order.assignedBy = assignedBy || order.assignedBy;
     order.assignmentTime = assignmentTime || order.assignmentTime;
     order.oacReason = oacReason || order.oacReason;
+    order.failureReason = failureReason || order.failureReason;
+    order.performedWork = performedWork || order.performedWork;
 
    
     if (files && files.length > 0) {

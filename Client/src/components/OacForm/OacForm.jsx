@@ -5,42 +5,53 @@
   import { useDispatch,useSelector } from 'react-redux';
   import OacPDF from '../OacPDF/OacPDF';
   import Swal from 'sweetalert2';
+  import tensionOptions from './tensionOptions.json'
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-  const OacForm = ({ sac, onClose, oac, mode }) => {
-    const eventDate = sac.eventDate ? new Date(sac.eventDate).toISOString().split('T')[0] : '';  
-    const dispatch = useDispatch();
+  const OacForm = ({ sac, onClose, oac, mode: initialMode, onOacCreated }) => {
+  /*   const eventDate = sac.eventDate ? new Date(sac.eventDate).toISOString().split('T')[0] : '';   */
 
+    const now = new Date();
+    const localDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+
+    const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
+
+    const [currentMode, setCurrentMode] = useState(initialMode);
     
     const [status, setStatus] = useState('In Progress');
-    const [issueDate, setIssueDate] = useState(eventDate);
-    const [issueTime, setIssueTime] = useState(sac.startTime);
-    const [workDescription, setWorkDescription] = useState('');
+    const [issueDate, setIssueDate] = useState(localDate.toISOString().split('T')[0]); 
+    const [issueTime, setIssueTime] = useState(now.toTimeString().split(' ')[0].slice(0, 5)); 
+    const [tension, setTension] = useState('');
+    const [failureReason, setFailureReason] = useState('');
+    const [performedWork, setPerformedWork] = useState('');
     const [pendingTasks, setPendingTasks] = useState('');
     const [assignedPerson, setAssignedPerson] = useState('');
     const [assignmentTime, setAssignmentTime] = useState('');
     const [oacReason, setOacReason] = useState(`${sac.claimReason}: ${sac.description}`);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+
+    const failureReasons = tension ? tensionOptions[tension]?.failureReasons || [] : [];
+    const performedWorks = tension ? tensionOptions[tension]?.performedWorks || [] : [];
  
 
     const fileInputRef = useRef(null); 
 
 /*     useEffect(() => {
-      if (mode === 'edit' || mode === 'view') {
+      if (currentMode === 'edit' || currentMode === 'view') {
         if (oac) {
-          setStatus(oac.status);
           setIssueDate(oac.issueDate);
           setIssueTime(oac.issueTime);
-          setWorkDescription(oac.workDescription);
+          setTension(oac.tension);
+          setFailureReason(oac.failureReason);
+          setPerformedWork(oac.performedWork);
           setPendingTasks(oac.pendingTasks);
           setAssignedPerson(oac.assignedPerson);
           setAssignmentTime(oac.assignmentTime);
           setOacReason(oac.oacReason);
-
  
           const existingFiles = oac.files
             ? oac.files.map((file) => ({ name: file.split('\\').pop(), isNew: false, url: `/uploads/oac/OAC-${oac.id}/${file.split('\\').pop()}` }))
@@ -48,15 +59,17 @@
           setSelectedFiles(existingFiles);
         }
       }
-    }, [mode, oac]); */
+    }, [currentMode, oac]); */
 
     useEffect(() => {
-      if (mode === 'edit' || mode === 'view') {
+      if (currentMode === 'edit' || currentMode === 'view') {
         if (oac) {
           setStatus(oac.status);
           setIssueDate(oac.issueDate);
           setIssueTime(oac.issueTime);
-          setWorkDescription(oac.workDescription);
+          setTension(oac.tension);
+          setFailureReason(oac.failureReason);
+          setPerformedWork(oac.performedWork);
           setPendingTasks(oac.pendingTasks);
           setAssignedPerson(oac.assignedPerson);
           setAssignmentTime(oac.assignmentTime);
@@ -77,9 +90,13 @@
           setSelectedFiles(existingFiles);
         }
       }
-    }, [mode, oac]);
+    }, [currentMode, oac]);
     
 
+
+    useEffect(() => {
+      setCurrentMode(initialMode); 
+    }, [initialMode]);
  
     const renameFileIfDuplicate = (file, existingFiles) => {
       let newFileName = file.name;
@@ -136,8 +153,8 @@
     };
 
     const handleEditAlert = async (sacId, oacId, oacData) => {
-      if (status === 'Completed') {
-        
+      console.log(sacId, oacId, oacData);
+      if (oacData.status === 'Completed' || status === 'Completed') {
         Swal.fire({
           title: `¿Está seguro de cerrar la OAC #${oacId}?`,
           text: "Esta acción no se puede deshacer.",
@@ -146,33 +163,51 @@
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Sí, cerrar OAC',
-          cancelButtonText: 'Cancelar'
+          cancelButtonText: 'Cancelar',
         }).then(async (result) => {
           if (result.isConfirmed) {
             await dispatch(updateOac({ sacId, oacId, oacData }));
-            Swal.fire(
-              'Cerrada',
-              `La OAC #${oacId} ha sido cerrada.`,
-              'success'
-            );
+            Swal.fire('Cerrada', `La OAC #${oacId} ha sido cerrada.`, 'success');
+            onClose();
           }
         });
       } else {
         await dispatch(updateOac({ sacId, oacId, oacData }));
-        
         Swal.fire({
           title: `OAC #${oacId} editada con éxito`,
           icon: 'success',
           showConfirmButton: false,
-          timer: 2000
+          timer: 2000,
         });
       }
     };
     
+    
+    
+    const handleEdit = async () => {
+      const oacData = {
+        status: 'Completed',
+        issueDate,
+        issueTime,
+        assignedPerson,
+        assignedBy: `${user?.name} ${user?.lastName}`,
+        assignmentTime,
+        oacReason,
+        tension,
+        failureReason,
+        performedWork,
+        pendingTasks,
+        files: selectedFiles.map(f => f.isNew ? f.file : f.name), 
+      };
+      console.log(status)
+      handleEditAlert(sac.id,oac.id, oacData);          
+      
+    };
           
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+      console.log(status)
 
       const oacData = {
         status,
@@ -182,13 +217,15 @@
         assignedBy: `${user?.name} ${user?.lastName}`,
         assignmentTime,
         oacReason,
-        workDescription,
+        tension,
+        failureReason,
+        performedWork,
         pendingTasks,
         files: selectedFiles.map(f => f.isNew ? f.file : f.name), 
       };
 
       try {
-        if (mode === 'edit') {
+        if (currentMode === 'edit') {
           if (status === 'Completed') {
             const sacId = sac.id;
             const oacId = oac.id;
@@ -201,6 +238,9 @@
           const response = await dispatch(createOac({ sacId: sac.id, oacData }));
           const newOacId = response.payload.id; 
           console.log('OAC creada con éxito con ID:', newOacId);
+          if (onOacCreated) {
+            onOacCreated(sac.id);
+        }
           handleSuccessAlert(newOacId); 
         }
         onClose();
@@ -209,7 +249,12 @@
       }
     };
 
-    const isReadOnly = mode === 'view';
+    const isReadOnly = currentMode === 'view';
+
+    const handleSwitchToEdit = () => {
+      setCurrentMode('edit'); 
+      setStatus('In Progress');
+    };
 
     return (
       <div className={styles.oacModalOverlay}>
@@ -218,25 +263,11 @@
             <AiOutlineClose />
           </button>
           <h2 className={styles.oacTitle}>
-            {mode === 'edit' ? `O.A.C #${oac.id}` : mode === 'view' ? `O.A.C #${oac.id} (Cerrada)` : 'Nueva O.A.C'}
+            {currentMode === 'edit' ? `O.A.C #${oac.id}` : currentMode === 'view' ? `O.A.C #${oac.id} (Cerrada)` : 'Nueva O.A.C'}
           </h2>
     
           <div className={styles.oacFormContainer}>
             <form onSubmit={handleSubmit}>
-              {mode !== 'create' && (
-                <div className={styles.inlineGroup}>
-                  <label className={styles.oacLabel}>Estado:</label>
-                  <select
-                    className={styles.oacSelect}
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
-                    disabled={isReadOnly}
-                  >
-                    <option value="In Progress">En Curso</option>
-                    <option value="Completed">Cerrado</option>
-                  </select>
-                </div>
-              )}
     
               <div className={styles.inlineGroup}>
                 <label className={styles.oacLabel}>Fecha de emisión:</label>
@@ -281,7 +312,7 @@
                 <label className={styles.oacLabel}>Motivo O.A.C:</label>
                 <input
                   type="text"
-                  className={`${styles.oacInput} ${styles.longInput}`}
+                  className={`${styles.oacInput}`}
                   value={oacReason}
                   onChange={(e) => setOacReason(e.target.value)}
                   placeholder="Motivo de la O.A.C"
@@ -293,21 +324,61 @@
 
               <hr className={styles.separator} />
     
-              {mode !== 'create' && (
+              {currentMode !== 'create' && (
                 <>
-                 <div className={styles.textareaGroup}>
-                        <label className={styles.oacLabel}>Descripción del trabajo realizado:</label>
-                        <textarea
-                          className={styles.oacTextarea} 
-                          value={workDescription}
-                          onChange={(e) => setWorkDescription(e.target.value)}
-                          placeholder="Descripción del trabajo"
-                          maxLength={1000}
-                          readOnly={isReadOnly}
-                        />
-                      </div>
 
-                      <div className={styles.textareaGroup}>
+                    <div className={styles.inlineGroup}>
+                      <label className={styles.oacLabel}>Tipo de Falla:</label>
+                      <select
+                        value={tension}
+                        onChange={(e) => setTension(e.target.value)}
+                        className={styles.oacSelect}
+                        disabled={isReadOnly}
+                      >
+                        <option value="">Seleccione</option>
+                        <option value="BT">Baja Tensión (B.T.)</option>
+                        <option value="MT">Media Tensión (M.T.)</option>
+                      </select>
+                    </div>
+
+                    <hr className={styles.separator} />
+                  {tension && (
+                    <>
+                    <div className={styles.inlineGroup}>
+                      <label className={styles.oacLabel}>Motivo de la falla:</label>
+                      <select
+                        value={failureReason}
+                        onChange={(e) => setFailureReason(e.target.value)}
+                        className={styles.oacSelect}
+                        disabled={isReadOnly}
+                      >
+                        <option value="">Seleccione</option>
+                        {failureReasons.map((reason) => (
+                          <option key={reason.code} value={reason.code}>
+                           {reason.code} / {reason.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+          
+                    <div className={styles.inlineGroup}>
+                      <label className={styles.oacLabel}>Trabajos realizados:</label>
+                      <select
+                        value={performedWork}
+                        onChange={(e) => setPerformedWork(e.target.value)}
+                        className={styles.oacSelect}
+                        disabled={isReadOnly}
+                      >
+                        <option value="">Seleccione</option>
+                        {performedWorks.map((work) => (
+                          <option key={work.code} value={work.code}>
+                            {work.code} / {work.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className={styles.textareaGroup}>
                         <label className={styles.oacLabel}>Tareas pendientes:</label>
                         <textarea
                           className={styles.oacTextarea} 
@@ -318,8 +389,11 @@
                           readOnly={isReadOnly}
                         />
                       </div>
+                      <hr className={styles.separator} />
 
-    
+                  </>
+                  )}
+                  
                   {selectedFiles.length > 0 && (
                     <div className={styles.oacFileList}>
                       <h3>Archivos:</h3>
@@ -355,7 +429,8 @@
                   )}
     
                   {!isReadOnly && (
-                    <label className={styles.oacLabel}>
+                    <div className={styles.oacFileList1}>
+                    <label className={styles.oacLabel1}>
                       Subir archivos (máximo 50 MB por archivo):
                       <input
                         ref={fileInputRef}
@@ -365,22 +440,41 @@
                         onChange={handleFileChange}
                       />
                     </label>
+                    </div>
                   )}
                   {errorMessage && <p className={styles.oacErrorMessage}>{errorMessage}</p>}
                 </>
               )}
             </form>
           </div>
+
+          {currentMode === 'view' && (
+            <div className={`${styles.oacButtonContainer} ${(currentMode === 'edit' ? 1 : 0) + 1 === 1 ? styles.singleButton : ''}`}>
+              <button
+                type="button"
+                className={styles.oacSubmitButton}
+                onClick={handleSwitchToEdit}
+              >
+                Modificar
+              </button>
+              </div>
+            )}
     
           {!isReadOnly && (
-            <div className={`${styles.oacButtonContainer} ${(mode === 'edit' ? 1 : 0) + 1 === 1 ? styles.singleButton : ''}`}>
-              {mode === 'edit' && (
+            <div className={`${styles.oacButtonContainer} ${(currentMode === 'edit' ? 1 : 0) + 1 === 1 ? styles.singleButton : ''}`}>
+              
+              {currentMode === 'edit' && (
+                <>
                 <button className={styles.oacSubmitButton} type="button" onClick={() => OacPDF(sac.id, oac.id)}>
                   Imprimir O.A.C
                 </button>
+                 <button className={styles.oacSubmitButton} type="button" onClick={handleEdit}>
+                 Cerrar O.A.C
+               </button>
+               </>
               )}
               <button className={styles.oacSubmitButton} type="submit" onClick={handleSubmit}>
-                {mode === 'edit' ? 'Grabar' : 'Crear O.A.C'}
+                {currentMode === 'edit' ? 'Grabar' : 'Crear O.A.C'}
               </button>
             </div>
           )}

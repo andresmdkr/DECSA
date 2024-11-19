@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineClose, AiOutlineEdit, AiOutlineEye } from 'react-icons/ai'; 
 import { fetchOACs } from '../../redux/slices/oacSlice';
+import { updateSAC } from '../../redux/slices/sacsSlice';
 import styles from './OacModal.module.css';
 import OacForm from '../OacForm/OacForm';
+import Swal from 'sweetalert2';
 
-const OacModal = ({ sac, onClose }) => {
+
+const OacModal = ({ sac, onClose,showStatusButton }) => {
   const dispatch = useDispatch();
   const [showForm, setShowForm] = useState(false);
   const [formMode, setFormMode] = useState(null); 
@@ -53,6 +56,41 @@ const OacModal = ({ sac, onClose }) => {
     }
     return status; 
   };
+
+  const handleCloseSAC = async () => {
+    try {
+      const result = await Swal.fire({
+        icon: 'question',
+        title: '¿Estás seguro?',
+        text: `¿Estás seguro de cerrar la S.A.C. ID ${sac.id}?`,
+        showCancelButton: true,
+        confirmButtonText: 'Sí, cerrar',
+        cancelButtonText: 'Cancelar',
+      });
+  
+      if (result.isConfirmed) {
+    
+        await dispatch(updateSAC({ id: sac.id, sacData: { status: 'Closed' } })).unwrap();
+  
+        Swal.fire({
+          icon: 'success',
+          title: 'S.A.C Cerrado',
+          text: 'El estado del S.A.C se ha actualizado correctamente.',
+          confirmButtonText: 'OK',
+        });
+  
+        onClose(); 
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo cerrar el S.A.C. Por favor, intente nuevamente.',
+        confirmButtonText: 'OK',
+      });
+    }
+  };
+  
 
   return (
     <div className={styles.modalOverlay}>
@@ -125,8 +163,16 @@ const OacModal = ({ sac, onClose }) => {
               <p>No hay ordenes de atención al cliente asociadas a este S.A.C.</p>
               }
             </div>
-
-            <div className={styles.buttonsContainer}>
+            
+            <div className={` ${(showStatusButton ? 1 : 0)+1 === 1 ? styles.singleButton : styles.buttonsContainer}`}>
+            {showStatusButton && (
+                <button
+                  className={styles.actionButton}
+                  onClick={handleCloseSAC}
+                >
+                  Cerrar S.A.C
+                </button>
+              )}
               <button className={styles.actionButton} onClick={handleGenerateOAC}>
                 Generar nueva O.A.C
               </button>

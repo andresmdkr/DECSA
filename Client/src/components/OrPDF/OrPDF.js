@@ -16,10 +16,10 @@ const OrPDF = async ({ burnedArtifact, technicalService,repairOrder }) => {
 
    
     pageContainer.querySelector('#company-logo').src = Logo;
-    pageContainer.querySelector('#sacId').textContent = burnedArtifact.SAC.id || 'N/A';
-    pageContainer.querySelector('#repairOrderId').textContent = repairOrder.id || 'N/A';
+    pageContainer.querySelector('#sacId').textContent = burnedArtifact?.SAC?.id || 'N/A';
+    pageContainer.querySelector('#repairOrderId').textContent = repairOrder?.id || 'N/A';
     pageContainer.querySelector('#claimant-name').textContent =
-    burnedArtifact.SAC.claimantName || client.holderName || 'N/A';
+    burnedArtifact?.SAC?.claimantName || client?.holderName || 'N/A';
 
     pageContainer.querySelector('#artifact-name').textContent = burnedArtifact.name || 'N/A';
     pageContainer.querySelector('#artifact-brand').textContent = burnedArtifact.brand || '';
@@ -32,7 +32,7 @@ const OrPDF = async ({ burnedArtifact, technicalService,repairOrder }) => {
     (client.address ? `${client.address} ${client.extraAddressInfo || ''}` : 'N/A');
 
     pageContainer.querySelector('#claimant-phone').textContent =
-    burnedArtifact.SAC.claimantPhone || client.phone || 'N/A';
+    burnedArtifact?.SAC?.claimantPhone || client.phone || 'N/A';
 
     pageContainer.querySelector('#claimant-meter').textContent = client.device || 'N/A';
     pageContainer.querySelector('#claimant-category').textContent = client.category || 'N/A';

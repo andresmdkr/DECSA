@@ -1,10 +1,20 @@
 .operations {
-    width: 100%;
-    height: 100%;
-    background-color: #dbdffd;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgb(0, 0, 0);
+    width: 100%;
 }
 
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: 100%;
+    overflow: auto;
+}
+
+
+.defaultMessage {
+    color: #888;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 50px;
+}

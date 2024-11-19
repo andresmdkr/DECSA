@@ -186,7 +186,7 @@ const ArtifactTable = () => {
 
             <div className={styles.searchContainer2}>
                 <TextField
-                    label="Buscar por Número de Cliente"
+                    label="Buscar por Número de Cuenta"
                     variant="outlined"
                     value={clientIdSearch}
                     onChange={handleClientIdInputChange}

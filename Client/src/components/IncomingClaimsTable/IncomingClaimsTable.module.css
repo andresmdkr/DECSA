@@ -1,0 +1,148 @@
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.filterContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.filter {
+    width: 200px;
+}
+
+.refreshButton {
+    padding: 10px;
+    font-size: 16px;
+    background: none;
+    color: #4751A8;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    width: 40px;
+    height: 40px;
+    outline: none;
+}
+
+.refreshButton:hover {
+    color: #007bff;
+}
+
+.spinnerIcon {
+    color: #007bff;
+    font-size: 1.2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loadingSpinner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #007bff;
+    font-size: 18px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.table th, .table td {
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+.table th:nth-child(1), .table td:nth-child(1),
+.table th:nth-child(2), .table td:nth-child(2),
+.table th:nth-child(3), .table td:nth-child(3),
+.table th:nth-child(4), .table td:nth-child(4) {
+    width: 15%;
+}
+
+.table th:nth-child(5), .table td:nth-child(5) {
+    width: 10%;
+}
+
+
+.actionButton {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+}
+
+.actionButton:hover {
+    background-color: #0056b3;
+}
+
+.actionButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusCircle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.statusPending {
+    background-color: red;
+}
+
+.statusOpen {
+    background-color: orange;
+}
+
+.statusClosed {
+    background-color: green;
+}
+
+.statusDefault {
+    background-color: gray;
+}
+
+.highPriorityRow {
+    background-color: rgba(255, 0, 0, 0.267);
+}
+
+.mediumPriorityRow {
+    background-color: rgba(255, 117, 4, 0.308);
+}
+
+@media screen and (max-width: 1000px) {
+    .filterContainer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

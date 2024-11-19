@@ -10,14 +10,16 @@ import TechnicalService from "../../components/TechnicalService/TechnicalService
 
 
 const BurnedAppliances = () => {
-    const [selectedAction, setSelectedAction] = useState(null);
 
     const actions = [
         { label: 'Reclamos', component: Claims },
         { label: 'Artefactos Quemados', component: BurnedArtifacts },
         { label: 'Servicio Tecnico', component: TechnicalService },
+        { label: 'Reportes', component: () => <div>Reportes</div> },
         { label: 'Clientes', component: Clients },
     ];
+
+    const [selectedAction, setSelectedAction] = useState(actions[0]);
 
     const renderContent = () => {
         if (!selectedAction) {
@@ -29,7 +31,11 @@ const BurnedAppliances = () => {
 
     return (
         <div className={styles.burnedAppliances}>
-            <Sidebar actions={actions} onSelectAction={setSelectedAction} />
+            <Sidebar 
+                actions={actions} 
+                onSelectAction={setSelectedAction} 
+                defaultAction={selectedAction} 
+            />
             <div className={styles.mainContent}>
                 {renderContent()}
             </div>

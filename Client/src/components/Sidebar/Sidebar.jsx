@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Sidebar.module.css';
 
-const Sidebar = ({ actions, onSelectAction }) => {
-    const [selectedAction, setSelectedAction] = useState(null);
+const Sidebar = ({ actions, onSelectAction, defaultAction }) => {
+    const [selectedAction, setSelectedAction] = useState(defaultAction?.label || null);
+
+    useEffect(() => {
+        if (defaultAction) {
+            setSelectedAction(defaultAction.label);
+        }
+    }, [defaultAction]);
 
     const handleActionClick = (action) => {
         setSelectedAction(action.label);

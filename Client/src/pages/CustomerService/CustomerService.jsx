@@ -4,12 +4,12 @@ import styles from './CustomerService.module.css';
 import { useState } from 'react';
 
 const CustomerService = () => {
-    const [selectedAction, setSelectedAction] = useState(null);
-
     const actions = [
         { label: 'Solicitud de Atención al Cliente (S.A.C)', component: CustomerSearch },
         /* { label: 'Accion 2', component: () => <div>Accion 2</div> }, */
     ];
+
+    const [selectedAction, setSelectedAction] = useState(actions[0]);
 
     const renderContent = () => {
         if (!selectedAction) {
@@ -21,7 +21,11 @@ const CustomerService = () => {
 
     return (
         <div className={styles.customerService}>
-            <Sidebar actions={actions} onSelectAction={setSelectedAction} />
+            <Sidebar 
+                actions={actions} 
+                onSelectAction={setSelectedAction} 
+                defaultAction={selectedAction} 
+            />
             <div className={styles.mainContent}>
                 {renderContent()}
             </div>
