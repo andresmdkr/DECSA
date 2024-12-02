@@ -47,6 +47,7 @@ module.exports = (sequelize) => {
     claimantPhone: {
       type: DataTypes.STRING,
       allowNull: true,
-    }
-  });
+    },
+    
+  }, { timestamps: true });
 }

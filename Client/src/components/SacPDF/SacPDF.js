@@ -11,6 +11,8 @@ const SacPDF = async (sacId) => {
     const sacData = sacResponse?.payload?.sacs?.[0];
     if (!sacData) throw new Error('SAC no encontrada');
 
+    console.log(sacData);
+
     const clientResponse = await store.dispatch(fetchClientByAccountNumber(sacData.clientId));
     const client = clientResponse?.payload;
     if (!client) throw new Error('Cliente no encontrado');
@@ -66,15 +68,41 @@ const SacPDF = async (sacId) => {
         }
 
         const claimReason = sacData.claimReason || '';
-        if (claimReason.includes('facturacion')) {
-          pageContainer.querySelector('#checkbox-billing').textContent = 'X';
-          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Error de Facturación';
-        } else if (claimReason.includes('recepcion')) {
-          pageContainer.querySelector('#checkbox-reception').textContent = 'X';
-          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Inconveniente en Recepción de Factura';
-        } else if (claimReason.includes('artefactos')) {
+    
+      
+        const talonarioClaimReason = pageContainer.querySelector('#talonarioClaimReason');
+        
+        
+        pageContainer.querySelectorAll('.checkbox').forEach(checkbox => {
+          checkbox.textContent = '';
+        });
+        
+       
+        if ([
+          'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
+          'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT',
+          'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
+          'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
+          'Transformador Quemado',
+        ].includes(claimReason)) {
+          pageContainer.querySelector('#checkbox-electrical').textContent = 'X';
+          talonarioClaimReason.textContent = claimReason;
+        } else if (claimReason === 'Rotura de Artefactos') {
           pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
-          pageContainer.querySelector('#talonarioClaimReason').textContent = 'Rotura de Artefacto/s';
+          talonarioClaimReason.textContent = 'Rotura de Artefacto/s';
+        } else if ([
+          'Error de Facturación', 'Inconveniente en Recepción de Factura', 'Solicita Habilitación de Servicio',
+        ].includes(claimReason)) {
+          pageContainer.querySelector('#checkbox-commercial').textContent = 'X';
+          talonarioClaimReason.textContent = claimReason;
+        } else {
+          pageContainer.querySelector('#checkbox-other').textContent = 'X';
+          talonarioClaimReason.textContent = {
+            'Alumbrado Público': 'Alumbrado Público',
+            'Apertura Distribuidor ET Caucete': 'Apertura Distribuidor ET Caucete',
+            'Poste Quebrado': 'Poste Quebrado',
+            'Falta de Poda': 'Falta de Poda',
+          }[claimReason] || 'Otros';
         }
 
         pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
@@ -153,17 +181,44 @@ const SacPDF = async (sacId) => {
       }
 
       const claimReason = sacData.claimReason || '';
-      if (claimReason.includes('facturacion')) {
-        pageContainer.querySelector('#checkbox-billing').textContent = 'X';
-        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Error de Facturación';
-      } else if (claimReason.includes('recepcion')) {
-        pageContainer.querySelector('#checkbox-reception').textContent = 'X';
-        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Inconveniente en Recepción de Factura';
-      } else if (claimReason.includes('artefactos')) {
+    
+      
+      const talonarioClaimReason = pageContainer.querySelector('#talonarioClaimReason');
+      
+      
+      pageContainer.querySelectorAll('.checkbox').forEach(checkbox => {
+        checkbox.textContent = '';
+      });
+      
+     
+      if ([
+        'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
+        'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT',
+        'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
+        'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
+        'Transformador Quemado',
+      ].includes(claimReason)) {
+        pageContainer.querySelector('#checkbox-electrical').textContent = 'X';
+        talonarioClaimReason.textContent = claimReason;
+      } else if (claimReason === 'Rotura de Artefactos') {
         pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
-        pageContainer.querySelector('#talonarioClaimReason').textContent = 'Rotura de Artefacto/s';
+        talonarioClaimReason.textContent = 'Rotura de Artefacto/s';
+      } else if ([
+        'Error de Facturación', 'Inconveniente en Recepción de Factura', 'Solicita Habilitación de Servicio',
+      ].includes(claimReason)) {
+        pageContainer.querySelector('#checkbox-commercial').textContent = 'X';
+        talonarioClaimReason.textContent = claimReason;
+      } else {
+        pageContainer.querySelector('#checkbox-other').textContent = 'X';
+        talonarioClaimReason.textContent = {
+          'Alumbrado Público': 'Alumbrado Público',
+          'Apertura Distribuidor ET Caucete': 'Apertura Distribuidor ET Caucete',
+          'Poste Quebrado': 'Poste Quebrado',
+          'Falta de Poda': 'Falta de Poda',
+        }[claimReason] || 'Otros';
       }
-
+      
+      
       pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
       pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
       pageContainer.querySelector('#phone').textContent = client.phone || ''; 
@@ -182,8 +237,11 @@ const SacPDF = async (sacId) => {
     if(pageContainers.length > 1){
       pageContainers.forEach((pageContainer, index) => {
       pageContainer.querySelector('#page-number').style.display = 'block';
+      pageContainer.querySelector('#page-number2').style.display = 'block';
       pageContainer.querySelector('#currentPage').textContent = index + 1;
+      pageContainer.querySelector('#currentPage2').textContent = index + 1;
       pageContainer.querySelector('#totalPages').textContent = pageContainers.length;
+      pageContainer.querySelector('#totalPages2').textContent = pageContainers.length;
       mainContainer.appendChild(pageContainer);  
     });}
    

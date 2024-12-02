@@ -6,6 +6,7 @@ import Claims from "../../components/Claims/Claims.jsx";
 import BurnedArtifacts from "../../components/BurnedArtifacts/BurnedArtifacts.jsx";
 import Clients from "../../components/Clients/Clients.jsx";
 import TechnicalService from "../../components/TechnicalService/TechnicalService.jsx";
+import ArtifactsReports from "../../components/ArtifactsReports/ArtifactsReports.jsx";
 
 
 
@@ -15,7 +16,7 @@ const BurnedAppliances = () => {
         { label: 'Reclamos', component: Claims },
         { label: 'Artefactos Quemados', component: BurnedArtifacts },
         { label: 'Servicio Tecnico', component: TechnicalService },
-        { label: 'Reportes', component: () => <div>Reportes</div> },
+        { label: 'Reportes', component: ArtifactsReports },
         { label: 'Clientes', component: Clients },
     ];
 

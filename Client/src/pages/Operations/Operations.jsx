@@ -9,7 +9,8 @@ const Operations = () => {
     const actions = [
         { label: 'Reclamos Entrantes', component: IncomingClaims },
         { label: 'Reclamos En Curso', component: OngoingClaims },
-        { label: 'Todos los Reclamos', component: () => <div>Accion 2</div> }
+        { label: 'Todos los Reclamos', component: () => <div>Todos los Reclamos</div> },
+        { label: 'Reportes', component: () => <div>Reportes</div> }
     ];
 
     const [selectedAction, setSelectedAction] = useState(actions[0]);

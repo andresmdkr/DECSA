@@ -30,19 +30,28 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
         dispatch(fetchAllTechnicalServices());
     }, [dispatch]);
 
+    const formatNumber = (number) => {
+        return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+    
     const handleBudgetChange = (e) => {
-        const valueWithoutDollar = e.target.value.replace(/\$/g, '');
-        if (!isNaN(valueWithoutDollar)) {
-            setBudget(valueWithoutDollar);
+        const input = e.target.value.replace(/[^0-9]/g, ''); 
+        if (!isNaN(input)) {
+            setBudget(input); 
         }
     };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         
+        const formattedBudget = `${formatNumber(budget)}`;
+        const repairOrderData = { 
+            technicalService, 
+            budget: formattedBudget, 
+            technicalReport 
+        };
+    
         if (mode === 'edit') {
-            const repairOrderData = { technicalService, budget, technicalReport };
-
             const result = await dispatch(updateRepairOrder({ repairOrderId: repairOrder.id, repairOrderData }));
             if (result.type === 'repairOrders/updateRepairOrder/fulfilled') {
                 Swal.fire({
@@ -60,6 +69,7 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
             }
         }
     };
+    
 
     const handlePrintClick = async () => {
         if (mode === 'edit') {
@@ -92,7 +102,6 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
                 });
             }
         } else {
-            // En caso de que no esté en modo de edición, solo imprime sin actualizar
             const selectedTechnicalService = technicalServices.find(service => service.name === technicalService);
             if (selectedTechnicalService) {
                 OrPDF({
@@ -157,7 +166,7 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
                         <label className={styles.repairOrderLabel}>Presupuesto:</label>
                         <input
                             type="text"
-                            value={`$${budget}`}
+                            value={budget ? `$ ${formatNumber(budget)}` : '$ '}
                             onChange={handleBudgetChange}
                             disabled={isReadOnly}
                             placeholder="Ingresar presupuesto"

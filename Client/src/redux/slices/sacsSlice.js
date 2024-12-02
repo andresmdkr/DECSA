@@ -3,25 +3,29 @@
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    export const fetchSACs = createAsyncThunk(
-      'sacs/fetchSACs',
-      async ({ page = 1, limit = 10, sacId = null,clientId=null,status = null, priority = null,area=null }, { rejectWithValue }) => {
-        try {
-          const token = localStorage.getItem('token');
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            params: { page, limit, sacId,clientId, status, priority,area }, 
-          };
-
-          const response = await axios.get(`${API_BASE_URL}/sacs`, config);
-          return response.data;
-        } catch (error) {
-          return rejectWithValue(error.response?.data || 'Failed to fetch SACs');
-        }
+  export const fetchSACs = createAsyncThunk(
+    'sacs/fetchSACs',
+    async (
+      { page = 1, limit = 10, sacId = null, claimReason = null, clientId = null, status = null, priority = null, area = null, startDate = null, endDate = null },
+      { rejectWithValue }
+    ) => {
+      try {
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: { page, limit, sacId, claimReason, clientId, status, priority, area, startDate, endDate }, 
+        };
+  
+        const response = await axios.get(`${API_BASE_URL}/sacs`, config);
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to fetch SACs');
       }
-    );
+    }
+  );
+  
 
 
 

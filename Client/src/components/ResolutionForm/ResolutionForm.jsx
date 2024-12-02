@@ -45,7 +45,7 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
 //////////////////////////       
 InconvenienteAjenoAlServicioElectrico: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
 
-Mediante Orden de Atencion al Cliente N° ** y  Orden de Trabajo N° ${artifactData?.workOrder?.id ?? 'N/A'} se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: **. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
+Mediante Orden de Atencion al Cliente N°  y  Orden de Trabajo N° ${artifactData?.workOrder?.id ?? 'N/A'} se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: no existe rotura de su artefacto. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
 
 La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.
 
@@ -65,14 +65,14 @@ La presente nota, tiene carácter de resolución definitiva del reclamo menciona
 //////////////////////////   
 ReconocimientoIndemnizaciónConRecibo: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con la rotura del artefacto "${artifactData?.name} / ${artifactData?.brand}" que habría ocurrido el día ${formatEventDate(artifactData?.SAC.eventDate)} a las ${formatStartTime(artifactData?.SAC.startTime)} aproximadamente.
 
-En tal sentido se inició el procedimiento de evaluación de su reclamo según lo indicado en la Resolución 16/97 del E.P.R.E; donde **.
+En tal sentido se inició el procedimiento de evaluación de su reclamo según lo indicado en la Resolución 16/97 del E.P.R.E; donde constató que el artefacto fue reparado por su cuenta, presentando los gastos mediante factura C00002-00000652.
 
 Por ello, DECSA entrega el reintegro del gasto incurrido la suma monetaria de $${artifactData?.repairOrder?.budget ?? 'N/A'}.`,
         
 //////////////////////////   
 ReconocimientoReparacion: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
 
-En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que **.
+En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que se debe reemplazar placa fuente.
 
 Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
 

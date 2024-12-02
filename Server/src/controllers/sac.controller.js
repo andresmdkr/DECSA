@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const createSAC = async (sacData) => {
   const { clientId, claimReason, description, eventDate, startTime, endTime, priority, area, claimantName, claimantRelationship,claimantPhone,artifacts } = sacData;
 
+  
   const newSAC = await SAC.create({
     clientId: clientId || null,
     claimReason,
@@ -35,7 +36,9 @@ const createSAC = async (sacData) => {
 };
 
 const getSACs = async (filters) => {
-  const { sacId, clientId, status, priority, area, page = 1, limit = 10, order = 'DESC' } = filters;
+  const { sacId, clientId,claimReason, status, priority, area, page = 1, limit = 10, order = 'DESC',startDate, endDate, } = filters;
+
+  console.log(claimReason)
 
   const whereClause = {};
   if (sacId) whereClause.id = { [Op.eq]: sacId };  
@@ -43,27 +46,44 @@ const getSACs = async (filters) => {
   if (status) whereClause.status = status;
   if (priority) whereClause.priority = priority;
   if (area) whereClause.area = area;
+  if (claimReason) whereClause.claimReason = { [Op.like]: `%${claimReason}%` };
 
-  const offset = (page - 1) * limit;
+  if (startDate && endDate) {
+    whereClause.createdAt = {
+      [Op.between]: [new Date(startDate), new Date(endDate)],
+    };
+  } else if (startDate) {
+    whereClause.createdAt = {
+      [Op.gte]: new Date(startDate),
+    };
+  } else if (endDate) {
+    whereClause.createdAt = {
+      [Op.lte]: new Date(endDate),
+    };
+  }
 
-  const sacs = await SAC.findAndCountAll({
+  const queryOptions = {
     where: whereClause,
     include: [
       {
         model: BurnedArtifact,
-        as: 'artifacts', 
+        as: 'artifacts',
       },
       {
-        model: Resolution, 
-        as: 'resolutions',   
+        model: Resolution,
+        as: 'resolutions',
       },
     ],
-    distinct: true, 
-    limit: parseInt(limit),
-    offset: offset,
-    order: [['id', order]], 
-  });
+    distinct: true,
+    order: [['id', order]],
+  };
 
+  if (limit !== undefined && limit !== -1) {
+    queryOptions.limit = parseInt(limit);
+    queryOptions.offset = (page - 1) * parseInt(limit);
+  }
+
+  const sacs = await SAC.findAndCountAll(queryOptions);
   return sacs;
 };
 

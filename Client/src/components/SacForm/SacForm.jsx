@@ -135,6 +135,22 @@ const SacForm = ({ client, onClose }) => {
           });
           return;
         }
+        if (!eventDate){
+            Swal.fire({
+              icon: "error",
+              text: "Por favor, ingresa la fecha del evento."
+            });
+            return;
+        }
+        if (!startTime){
+            Swal.fire({
+              icon: "error",
+              text: "Por favor, ingresa la hora de inicio del evento."
+            });
+            return;
+        }
+
+
       
         try {
           let relationship = null;
@@ -152,7 +168,7 @@ const SacForm = ({ client, onClose }) => {
             clientId: client ? client.accountNumber : null,
             claimReason,
             area,
-            artifacts: claimReason === 'artefactos' ? artifacts : [],
+            artifacts: claimReason === 'Rotura de Artefactos' ? artifacts : [],
             description,
             eventDate: eventDate ? new Date(`${eventDate}T00:00:00`).toISOString() : null,
             startTime: startTime ? `${startTime}:00` : null,
@@ -219,7 +235,7 @@ const SacForm = ({ client, onClose }) => {
     };
 
     useEffect(() => {
-        if (claimReason === 'artefactos' && !areaModifiedManually) {
+        if (claimReason === 'Rotura de Artefactos' && !areaModifiedManually) {
             setArea('artefactos');
         }
     }, [claimReason, areaModifiedManually]);
@@ -241,6 +257,7 @@ const SacForm = ({ client, onClose }) => {
                 <div className={styles.modalContent2}>
                 {/* Detalles del Cliente */}
                 {client && (
+                    <div> 
                 <fieldset className={styles.fieldset}>
                     <legend className={styles.legend}>Detalles del Cliente</legend>
                     <div className={styles.section}>
@@ -308,62 +325,64 @@ const SacForm = ({ client, onClose }) => {
                         />
                     </div>
                 </fieldset>
+                 {/* Campos del Reclamante */}
+                 <fieldset className={styles.fieldset}>
+                 <legend className={styles.legend}>Reclamante</legend>
+ 
+                 {/* Select para elegir el tipo de reclamante */}
+                 <div className={styles.formGroup}>
+                     <label className={styles.boldLabel2}>Reclamante:</label>
+                     <select
+                     value={claimantType}
+                     onChange={(e) => setClaimantType(e.target.value)}
+                     className={styles.select}
+                     >
+                     <option value="Titular">Titular</option>
+                     <option value="Inquilino">Inquilino</option>
+                     <option value="Familiar">Familiar</option>
+                     <option value="Apoderado">Apoderado</option>
+                     <option value="Otro">Otro</option>
+                     </select>
+                 </div>
+ 
+                 {claimantType !== 'Titular' && (
+                     <>
+                     <div className={styles.formGroup4}>
+                         <label className={styles.boldLabel2}>Nombre y Apellido del Reclamante:</label>
+                         <input
+                         type="text"
+                         value={claimantName}
+                         onChange={(e) => setClaimantName(e.target.value)}
+                         className={styles.inputField}
+                         />
+                     </div>
+                     <div className={styles.formGroup4}>
+                         <label className={styles.boldLabel2}>Teléfono:</label>
+                         <input
+                         type="text"
+                         value={claimantPhone}
+                         onChange={(e) => setClaimantPhone(e.target.value)}
+                         className={styles.inputField}
+                         />
+                     </div>
+                     {claimantType === 'Otro' && (
+                         <div className={styles.formGroup4}>
+                         <label className={styles.boldLabel2}>Relación con el Titular:</label>
+                         <input
+                             type="text"
+                             value={claimantRelationship}
+                             onChange={(e) => setClaimantRelationship(e.target.value)}
+                             className={styles.inputField}
+                         />
+                         </div>
+                     )}
+                     </>
+                 )}
+                 </fieldset>
+                 </div>
                 )}
 
-                {/* Campos del Reclamante */}
-                <fieldset className={styles.fieldset}>
-                <legend className={styles.legend}>Reclamante</legend>
-
-                {/* Select para elegir el tipo de reclamante */}
-                <div className={styles.formGroup}>
-                    <label className={styles.boldLabel2}>Reclamante:</label>
-                    <select
-                    value={claimantType}
-                    onChange={(e) => setClaimantType(e.target.value)}
-                    className={styles.select}
-                    >
-                    <option value="Titular">Titular</option>
-                    <option value="Inquilino">Inquilino</option>
-                    <option value="Familiar">Familiar</option>
-                    <option value="Apoderado">Apoderado</option>
-                    <option value="Otro">Otro</option>
-                    </select>
-                </div>
-
-                {claimantType !== 'Titular' && (
-                    <>
-                    <div className={styles.formGroup4}>
-                        <label className={styles.boldLabel2}>Nombre y Apellido del Reclamante:</label>
-                        <input
-                        type="text"
-                        value={claimantName}
-                        onChange={(e) => setClaimantName(e.target.value)}
-                        className={styles.inputField}
-                        />
-                    </div>
-                    <div className={styles.formGroup4}>
-                        <label className={styles.boldLabel2}>Teléfono:</label>
-                        <input
-                        type="text"
-                        value={claimantPhone}
-                        onChange={(e) => setClaimantPhone(e.target.value)}
-                        className={styles.inputField}
-                        />
-                    </div>
-                    {claimantType === 'Otro' && (
-                        <div className={styles.formGroup4}>
-                        <label className={styles.boldLabel2}>Relación con el Titular:</label>
-                        <input
-                            type="text"
-                            value={claimantRelationship}
-                            onChange={(e) => setClaimantRelationship(e.target.value)}
-                            className={styles.inputField}
-                        />
-                        </div>
-                    )}
-                    </>
-                )}
-                </fieldset>
+               
 
 
                 {/* Motivo del Reclamo */}
@@ -377,10 +396,42 @@ const SacForm = ({ client, onClose }) => {
                             className={styles.select}
                         >
                             <option value="">Seleccionar...</option>
-                            <option value="facturacion">Error de Facturación</option>
-                            <option value="recepcion" >Inconveniente en Recepción de Factura</option>
-                            <option value="artefactos">Rotura de Artefacto/s</option>
+                            <optgroup label="Problema Eléctrico">
+                                <option value="Sin Corriente">Sin Corriente</option>
+                                <option value="Acometida Cortada">Acometida Cortada</option>
+                                <option value="Corte Programado">Afectado a Corte Programado</option>
+                                <option value="Cables Cortados">Cables Cortados de BT o MT</option>
+                                <option value="Columna al Caer">Columna al Caer</option>
+                                <option value="Falta de Fase">Falta de Fase</option>
+                                <option value="Problemas de Tensión">Problemas de Tensión</option>
+                                <option value="Incendio en LBT/LMT">Incendio en LBT/LMT</option>
+                                <option value="Incendio en Puesto">Incendio en Puesto de Medición</option>
+                                <option value="Incendio en SETA">Incendio en SETA</option>
+                                <option value="Medidor Quemado">Medidor Quemado</option>
+                                <option value="Problema con el Alumbrado Público">Problema con el Alumbrado Público</option>
+                                <option value="Problema en Acometida">Problema en Acometida</option>
+                                <option value="Problema en Puesto">Problema en Puesto de Medición</option>
+                                <option value="Rama sobre Cable o Acometida">Rama sobre Cable o Acometida</option>
+                                <option value="Peligro de Electrocución">Peligro de Electrocución</option>
+                                <option value="Transformador Quemado">Transformador Quemado</option>
+                            </optgroup>
+                            <optgroup label="Artefacto Quemado">
+                                <option value="Rotura de Artefactos">Rotura de Artefacto/s</option>
+                            </optgroup>
+                            <optgroup label="Problema Comercial">
+                                <option value="Error de Facturación">Error de Facturación</option>
+                                <option value="Inconveniente en Recepción de Factura">Inconveniente en Recepción de Factura</option>
+                                <option value="Solicita Habilitación de Servicio">Solicita Habilitación de Servicio</option>
+                            </optgroup>
+                            <optgroup label="Otros">
+                                <option value="Alumbrado Público">Alumbrado Público</option>
+                                <option value="Apertura Distribuidor ET Caucete">Apertura Distribuidor ET Caucete</option>
+                                <option value="Poste Quebrado">Poste Quebrado</option>
+                                <option value="Falta de Poda">Falta de Poda</option>
+                            </optgroup>
                         </select>
+
+
                     </div>
 
                     {/* Descripción */}
@@ -449,7 +500,7 @@ const SacForm = ({ client, onClose }) => {
                 </fieldset>
 
                 {/* Artefactos Quemados */}
-                {claimReason === 'artefactos' && (
+                {claimReason === 'Rotura de Artefactos' && (
                     <fieldset className={styles.fieldset}>
                         <legend className={styles.legend}>Artefactos Quemados</legend>
                         <table className={styles.artifactTable}>

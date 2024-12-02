@@ -267,7 +267,7 @@ const ArtifactTable = () => {
 
             {isArtifactModalOpen && selectedArtifact && (
                 <Artifact 
-                    sacId={selectedArtifact.sacId} 
+                    sac={selectedArtifact.SAC} 
                     artifactId={selectedArtifact.id} 
                     onUpdate={handleArtifactUpdate} 
                     onClose={handleCloseArtifactModal}

@@ -7,7 +7,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 10px;
     border-bottom: 1px solid black;
 }
 
@@ -20,31 +19,44 @@
     font-size: 12px;
 }
 
+.company-info p{
+    margin: 2px;
+}
+
 .order-info {
+    width:250px;
     display: flex;
-    text-align: center;
-    align-items: center;
     flex-direction: column;
     font-size: 12px;
     font-weight: bold; 
-    padding: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
     border: 1px solid black; 
-    border-radius: 5px;
+    -webkit-box-shadow: 5px 5px 0px 1px #000000; 
+    box-shadow: 5px 5px 0px 1px #000000 inset; 
     
 }
+
+.order-info p{
+    text-align: left;
+    margin:5px;
+}
+
 
 .date-info {
     text-align: right;
     font-weight: bold;
     font-size: 14px;
-    margin-top: 10px;
+}
+
+.date-info p{
+    margin: 5px 0;
 }
 
 .technical-service-info {
     border: 1px solid black;
     border-radius: 8px;
-    padding: 15px;
-    margin-top: 15px;
+    padding:8px 15px;
     font-size: 14px;
     display: flex;
     justify-content: space-between;
@@ -67,13 +79,13 @@
 }
 
 .claimant-details {
-    padding: 15px;
+    padding:5px 15px;
     border: 1px solid black;
     border-radius: 8px;
 }
 
 .claimant-info p {
-    margin: 8px 0;
+    margin:5px;
     font-size: 14px;
 }
 
@@ -83,12 +95,11 @@
 .title{
     font-style: italic;
     font-size: 13px;
-    margin-top:15px;
+    margin:5px;
 }
 
 
 .repair-order-detail {
-    margin-top: 15px;
     font-size: 14px;
 }
 
@@ -103,7 +114,11 @@
 .section-title {
     font-weight: bold;
     font-style: italic;
-    margin-top: 10px;
+    margin: 5px 0 0 0;
+}
+
+.section-description{
+    margin:5px 0 0 0;
 }
 
 .section-title2 {
@@ -111,12 +126,13 @@
     margin-top: 10px;
 }
 
-.artifact-info p {
-    margin-bottom: 15px;
+.section-title2 span{
+    font-weight: normal;
 }
 
+
 .budget{
-    margin-left: 20px;
+    margin:10px 0 0 20px;
 }
 
 
@@ -144,6 +160,7 @@
     font-weight: bold;
 }
 
-
-
-
+.dotted-line {
+    border-top: 1px dashed black;
+    margin: 10px 0;
+}

@@ -2,7 +2,7 @@ import html2pdf from 'html2pdf.js';
 import { fetchResolutions, fetchResolutionById } from '../../redux/slices/resolutionSlice';
 import store from '../../redux/store';
 import Logo from '../../assets/logo.gif';
-import Sj from '../../assets/sj.png';
+import Menbrete from '../../assets/menbrete.jpg';
 
 const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
   try {
@@ -37,8 +37,7 @@ const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
     console.log(pageContainer);
 
     // Rellenar datos comunes
-    pageContainer.querySelector('#logo-izq').src = Logo;
-    pageContainer.querySelector('#logo-der').src = Sj;
+    pageContainer.querySelector('#menbrete').src = Menbrete;
     pageContainer.querySelector('#fechaActual').textContent = formattedDate;
     pageContainer.querySelector('#sacId').textContent = sacId || 'N/A';
     pageContainer.querySelector('#resolutionId').textContent = resolutionData.id || 'N/A';

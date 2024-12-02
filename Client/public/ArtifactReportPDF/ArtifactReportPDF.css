@@ -1,0 +1,122 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.artifact-report-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.artifact-report-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+.artifact-report-title {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.artifact-report-date-range {
+  font-size: 10px;
+  margin: 0;
+}
+
+/* Table Styles */
+.artifact-report-table-container {
+  width: 100%;
+  overflow-x: auto; /* Prevent table overflow */
+}
+
+.artifact-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* Columns have a fixed width */
+  word-wrap: break-word; /* Prevent text overflow in cells */
+}
+
+.artifact-report-table th,
+.artifact-report-table td {
+  text-align: left;
+  padding: 5px;
+  border: 1px solid #ccc; /* Add border to table cells */
+  font-size: 9px;
+}
+
+.artifact-report-table th {
+  background-color: #f2f2f2; /* Light gray background for header */
+  font-weight: bold;
+  text-align: center;
+}
+
+.artifact-report-table td {
+  text-align: center;
+}
+
+/* Add some spacing between rows */
+.artifact-report-table tr {
+  height: 20px;
+}
+
+/* Alternate row colors for readability */
+.artifact-report-table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.artifact-report-table tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+/* Reduce table size on smaller screens or when printing */
+@media print, (max-width: 768px) {
+  .artifact-report-table {
+    font-size: 8px;
+  }
+  .artifact-report-table th,
+  .artifact-report-table td {
+    padding: 3px;
+  }
+}
+
+
+.artifact-report-table th:nth-child(1), /* Número de Suministro */
+.artifact-report-table td:nth-child(1) {
+  width: 12%; 
+}
+
+.artifact-report-table th:nth-child(2), /* Reclamante */
+.artifact-report-table td:nth-child(2),
+.artifact-report-table th:nth-child(3), /* Domicilio Suministro */
+.artifact-report-table td:nth-child(3) {
+  width: 20%; 
+}
+
+.artifact-report-table th:nth-child(4), /* Motivo Reclamo */
+.artifact-report-table td:nth-child(4),
+.artifact-report-table th:nth-child(5), /* Artefactos */
+.artifact-report-table td:nth-child(5) {
+  width: 15%; 
+}
+
+.artifact-report-table th:nth-child(6), /* Fecha Reclamo */
+.artifact-report-table td:nth-child(6),
+.artifact-report-table th:nth-child(7), /* Número de Medidor */
+.artifact-report-table td:nth-child(7),
+.artifact-report-table th:nth-child(8), /* Número de SETA */
+.artifact-report-table td:nth-child(8),
+.artifact-report-table th:nth-child(9), /* Fecha Evento */
+.artifact-report-table td:nth-child(9) {
+  width: 10%; 
+}
+
+.artifact-report-table th:nth-child(10), /* Hora Inicio */
+.artifact-report-table td:nth-child(10),
+.artifact-report-table th:nth-child(11), /* Hora Fin */
+.artifact-report-table td:nth-child(11) {
+  width: 7%; 
+}
+

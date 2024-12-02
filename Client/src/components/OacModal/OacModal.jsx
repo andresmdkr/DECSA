@@ -174,7 +174,7 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                 </button>
               )}
               <button className={styles.actionButton} onClick={handleGenerateOAC}>
-                Generar nueva O.A.C
+                Generar nueva O.A.C (Contratista)
               </button>
             </div>
           </>
