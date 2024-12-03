@@ -11,8 +11,6 @@ const SacPDF = async (sacId) => {
     const sacData = sacResponse?.payload?.sacs?.[0];
     if (!sacData) throw new Error('SAC no encontrada');
 
-    console.log(sacData);
-
     const clientResponse = await store.dispatch(fetchClientByAccountNumber(sacData.clientId));
     const client = clientResponse?.payload;
     if (!client) throw new Error('Cliente no encontrado');
@@ -77,10 +75,9 @@ const SacPDF = async (sacId) => {
           checkbox.textContent = '';
         });
         
-       
         if ([
           'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
-          'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT',
+          'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT','Pilastra Electrificada',
           'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
           'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
           'Transformador Quemado',
@@ -193,7 +190,7 @@ const SacPDF = async (sacId) => {
      
       if ([
         'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
-        'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT',
+        'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT','Pilastra Electrificada',
         'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
         'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
         'Transformador Quemado',

@@ -67,6 +67,52 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
         }
     }, [artifact]);
 
+
+    const handleStatusChange = async (e) => {
+        const newStatus = e.target.value;
+    
+        if (newStatus === 'Completed') {
+            const result = await Swal.fire({
+                title: '¿Seguro que quieres cerrar el artefacto?',
+                text: 'El estado pasará a "Cerrado" y no podrás modificarlo.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cerrar',
+                cancelButtonText: 'No, mantener "En curso"',
+            });
+    
+            if (!result.isConfirmed) {
+                return setFormData((prev) => ({ ...prev, status: 'In Progress' }));
+            }else{
+                onClose();
+            }
+        }
+    
+        const updatedFormData = { ...formData, status: newStatus };
+    
+        await dispatch(updateArtifact({ artifactId, artifactData: updatedFormData }))
+            .then(() => {
+                onUpdate(artifactId, updatedFormData.status);
+    
+                Swal.fire({
+                    title: '¡Estado actualizado!',
+                    text: `El artefacto #${artifactId} ahora está en estado "${newStatus === 'Completed' ? 'Cerrado' : 'En curso'}".`,
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                });
+            })
+            .catch((error) => {
+                console.error('Error al actualizar el estado:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Hubo un problema al actualizar el estado. Intenta nuevamente.',
+                    icon: 'error',
+                    confirmButtonText: 'Aceptar',
+                });
+            });
+    };
+    
+
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -183,7 +229,7 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
        
             const newWorkOrder = {
                 reason: 'Artefacto Quemado',
-                description: `Reparar artefacto ${artifact.name} / ${artifact.model} / ${artifact.serialNumber}`,
+                description:'',
                 status: 'In Progress'
             };
             const createdWorkOrder = await dispatch(createWorkOrder({ 
@@ -271,13 +317,14 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                     id="status"
                                     name="status"
                                     value={formData.status}
-                                    onChange={handleChange}
+                                    onChange={handleStatusChange}
                                     className={styles.statusSelect}
-                                    disabled={currentMode === 'view'}  
+                                    disabled={currentMode === 'view'}
                                 >
                                     <option value="In Progress">En curso</option>
                                     <option value="Completed">Cerrado</option>
                                 </select>
+
                             </div>
                         <hr className={styles.divider} />
 
@@ -286,18 +333,18 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
                         {currentMode === 'edit' && ( 
                             <div className={styles.buttonContainer}>
-                                 <button onClick={handleResolutionClick} className={styles.resolutionButton}>
-                                Resolución
-                                </button>
                                 <button onClick={handleWorkOrderClick} className={styles.printButton}>
                                     O.Trabajo
                                 </button>
                                 <button onClick={handleRepairOrderClick} className={styles.printButton}>
                                     O.Reparacion
                                 </button>
-                                <button onClick={handleSave} className={styles.saveButton}>
-                                    Grabar
+                                <button onClick={handleResolutionClick} className={styles.resolutionButton}>
+                                Resolución
                                 </button>
+{/*                                 <button onClick={handleSave} className={styles.saveButton}>
+                                    Grabar
+                                </button> */}
                             </div>
                         )}
                         {currentMode === 'view' && (
@@ -305,14 +352,14 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                                 <button onClick={onClose} className={styles.cancelButton}>
                                     Cerrar
                                 </button>
-                                <button onClick={handleResolutionClick} className={styles.resolutionButton}>
-                                Resolución
-                                </button>
                                 <button onClick={handleWorkOrderClick} className={styles.printButton}>
                                     O.Trabajo
                                 </button>
                                 <button onClick={handleRepairOrderClick} className={styles.printButton}>
                                     O.Reparacion
+                                </button>
+                                <button onClick={handleResolutionClick} className={styles.resolutionButton}>
+                                Resolución
                                 </button>
                                 <button onClick={handleEdit} className={styles.editButton}>
                                    Modificar

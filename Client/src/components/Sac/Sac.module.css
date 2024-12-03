@@ -257,3 +257,29 @@
 .greenCircle {
     background-color: green;
 }
+
+
+.statusCircle2 {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+.closeSacButton{
+    background-color: #ff4d4f
+}
+
+.closeSacButton:hover{
+    background-color: #c82d3f;
+}
+
+.reopenSacButton{
+    background-color: #1b6fa0;
+}
+
+.reopenSacButton:hover{
+    background-color: #135496;
+}

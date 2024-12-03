@@ -9,7 +9,7 @@ const ArtifactReportPDF = async (startDate, endDate) => {
     const startUTC = new Date(`${startDate}T00:00:00`).toISOString();
     const endUTC = new Date(`${endDate}T23:59:59`).toISOString();
 
-    // Obtener SACs para el rango de fechas
+
     const response = await store.dispatch(
       fetchSACs({
         startDate: startUTC,
@@ -44,7 +44,7 @@ const ArtifactReportPDF = async (startDate, endDate) => {
           console.warn(`Error al obtener el cliente para SAC ID ${sac.id}:`, error.message);
         }
       
-        // Asignar valores predeterminados si el cliente no se encuentra
+  
         const artifacts = sac.artifacts || [];
         const artifactList = artifacts.map((artifact) => artifact.name || 'N/A').join(' // ');
       
@@ -55,17 +55,17 @@ const ArtifactReportPDF = async (startDate, endDate) => {
         // Crear una fila en la tabla
         const row = document.createElement('tr');
         const columns = {
-          supply: client?.supply || 'N/A',
-          claimantName:claimantName || 'N/A',
-          fullAddress: fullAddress || 'N/A',
-          claimReason: sac.claimReason || 'N/A',
-          artifacts: artifactList || 'N/A',
-          createdAt: new Date(sac.createdAt).toLocaleDateString('es-AR'),
-          device: client?.device || 'N/A',
-          substation: client?.substation || 'N/A',
-          eventDate: sac.eventDate ? new Date(sac.eventDate).toLocaleDateString('es-AR') : 'N/A',
-          startTime: sac.startTime ? sac.startTime.slice(0, 5) : 'N/A', 
-          endTime: sac.endTime ? sac.endTime.slice(0, 5) : 'N/A',    
+          accountNumber: sac.clientId || 'N/A', // Número de cuenta
+          supply: client?.supply || 'N/A', // Número de suministro
+          claimantName: claimantName || 'N/A', // Reclamante
+          fullAddress: fullAddress || 'N/A', // Domicilio suministro
+          claimNumber: sac.id || 'N/A', // Número de reclamo
+          artifacts: artifactList || 'N/A', // Artefactos reclamados
+          device: client?.device || 'N/A', // Número de medidor
+          substation: client?.substation || 'N/A', // Número de SETA
+          eventDate: sac.eventDate ? new Date(sac.eventDate).toLocaleDateString('es-AR') : 'N/A', // Fecha evento
+          startTime: sac.startTime ? sac.startTime.slice(0, 5) : 'N/A', // Hora inicio
+          endTime: sac.endTime ? sac.endTime.slice(0, 5) : 'N/A', // Hora fin
         };
       
         // Rellenar las celdas con los datos
@@ -86,19 +86,16 @@ const ArtifactReportPDF = async (startDate, endDate) => {
       }
       
 
-    // Asignar datos con querySelector
-    console.log('entre')
+
     pageContainer.querySelector('#artifact-report-date-range').textContent = `Reporte del ${startDate} al ${endDate}`;
-    console.log('entre')
-    // Agregar estilos
+
     mainContainer.appendChild(pageContainer);
-    console.log('entre')
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'ArtifactReportPDF/ArtifactReportPDF.css';
     mainContainer.appendChild(link);
 
-    // Configuración del PDF
+
     const options = {
       margin: 10,
       filename: `Reporte_SACs_${startDate}_to_${endDate}.pdf`,

@@ -52,7 +52,7 @@ const OtPDF = async ({ sac, ot, artifact }) => {
         }
 
         if (descriptionText) {
-          descriptionText.textContent = ot.description || 'Sin descripción disponible';
+          descriptionText.textContent = ot.description || '';
         }
 
     

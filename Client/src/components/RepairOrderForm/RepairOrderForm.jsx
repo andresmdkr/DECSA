@@ -31,15 +31,36 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
     }, [dispatch]);
 
     const formatNumber = (number) => {
-        return number.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const [integerPart, decimalPart] = number.split(',');
+    
+        const formattedInteger = integerPart
+            ? integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+            : '';
+    
+        return decimalPart !== undefined
+            ? `${formattedInteger},${decimalPart}`
+            : formattedInteger;
     };
     
+    
     const handleBudgetChange = (e) => {
-        const input = e.target.value.replace(/[^0-9]/g, ''); 
-        if (!isNaN(input)) {
-            setBudget(input); 
-        }
+        let input = e.target.value;
+    
+        input = input.replace(/[^0-9,]/g, '');
+
+        const [integerPart, decimalPart] = input.split(',');
+
+        const formattedInteger = integerPart
+            ? integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+            : '';
+    
+        const formattedValue = decimalPart !== undefined
+            ? `${formattedInteger},${decimalPart}`
+            : formattedInteger;
+    
+        setBudget(formattedValue);
     };
+    
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();

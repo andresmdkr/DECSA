@@ -94,7 +94,7 @@ const Sac = ({ sac, onClose}) => {
     const [isArtifactModalOpen, setIsArtifactModalOpen] = useState(false);
     const [selectedArtifact, setSelectedArtifact] = useState(null);
     const [artifacts, setArtifacts] = useState(sac.artifacts);
-
+    const [status, setStatus] = useState(sac.status);
 
     useEffect(() => {
         if (sac.clientId) {
@@ -135,6 +135,76 @@ const Sac = ({ sac, onClose}) => {
     const handleMissingValue = (value) => {
         return value ? value : 'S/N';
     };
+
+
+    const handleCloseSAC = async () => {
+        const result = await Swal.fire({
+            title: `¿Estás seguro de cerrar la S.A.C #${sac.id}?`,
+            text: "El estado se cambiará a 'Cerrado' y no podrás modificarlo.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cerrar',
+            cancelButtonText: 'Cancelar',
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                // Actualizar el estado del SAC en el backend
+                await dispatch(updateSAC({ id: sac.id, sacData: { ...sac, status: 'Closed' } }));
+                setStatus('Closed');
+                Swal.fire({
+                    title: '¡S.A.C Cerrada!',
+                    text: `El estado de la S.A.C #${sac.id} fue actualizado a 'Cerrado'.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+    
+                // Aquí puedes agregar cualquier lógica adicional, como recargar la página o actualizar el estado en la UI
+                onClose();
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo cerrar la S.A.C.',
+                    icon: 'error',
+                });
+            }
+        }
+    };
+
+
+    const handleReopenSAC = async () => {
+        const result = await Swal.fire({
+            title: `¿Estás seguro de reabrir la S.A.C #${sac.id}?`,
+            text: "El estado se cambiará a 'Abierto' y podrás continuar editándola.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, reabrir',
+            cancelButtonText: 'Cancelar',
+        });
+    
+        if (result.isConfirmed) {
+            try {
+                setStatus('Open')              
+                Swal.fire({
+                    title: '¡S.A.C Reabierta!',
+                    text: `El estado de la S.A.C #${sac.id} fue actualizado a 'Abierto'.`,
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false,
+                });
+    
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo reabrir la S.A.C.',
+                    icon: 'error',
+                });
+            }
+        }
+    };
+    
+    
 
     const handleDerivar = async () => {
         const result = await Swal.fire({
@@ -243,15 +313,24 @@ const Sac = ({ sac, onClose}) => {
     };
     
 
+console.log(sac)
+
+const handleClose=()=>{
+    if(status==='Open' && sac.status==='Closed'){
+        dispatch(updateSAC({ id: sac.id, sacData: { ...sac, status: 'Open' } }));
+    }
+    onClose()
+}
+
 
     
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>
-                <button className={styles.closeButton} onClick={onClose}>
+                <button className={styles.closeButton} onClick={handleClose}>
                     <AiOutlineClose />
                 </button>
-            <h2 className={styles.title}>Reclamo S.A.C #{sac.id}</h2>
+            <h2 className={styles.title}>Reclamo S.A.C #{sac.id}  <span className={styles.statusCircle2} style={{backgroundColor: status !== 'Closed' ? 'orange' : 'green'}}></span></h2>
             <hr />
             <div className={styles.modalContent2}>
             
@@ -555,18 +634,26 @@ const Sac = ({ sac, onClose}) => {
                     <button className={styles.actionButton} onClick={handleDerivar}>
                         Derivar
                     </button>
-                    <button className={styles.actionButton} onClick={handleOpenResolutionModal}>
+{/*                     <button className={styles.actionButton} onClick={handleOpenResolutionModal}>
                         Resolucion
                     </button>
+ */}
 
-                    
-                    <button className={styles.actionButton} onClick={handleOpenOtModal}>
+{/*                     <button className={styles.actionButton} onClick={handleOpenOtModal}>
                         O.Trabajo
+                    </button> */}
+                   <button className={styles.actionButton} onClick={handleOpenOacModal}>
+                        O.A.Cs
                     </button>
-                    <button className={styles.actionButton} onClick={handleOpenOacModal}>
-                        O.A.C
-                    </button>
-                    
+                    { status !== 'Closed' ? (
+                        <button className={`${styles.actionButton} ${styles.closeSacButton}`} onClick={handleCloseSAC}>
+                            Cerrar S.A.C
+                        </button>
+                    ) : (
+                        <button className={`${styles.actionButton} ${styles.reopenSacButton}`} onClick={handleReopenSAC}>
+                            Reabrir S.A.C
+                        </button>
+                    )}                    
                 </div>
             </div>
             {isResolutionModalOpen && (

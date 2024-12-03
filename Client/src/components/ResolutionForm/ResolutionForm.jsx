@@ -45,7 +45,7 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
 //////////////////////////       
 InconvenienteAjenoAlServicioElectrico: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
 
-Mediante Orden de Atencion al Cliente N°  y  Orden de Trabajo N° ${artifactData?.workOrder?.id ?? 'N/A'} se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: no existe rotura de su artefacto. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
+Se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: no existe rotura de su artefacto. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
 
 La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.
 

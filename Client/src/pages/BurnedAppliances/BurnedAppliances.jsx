@@ -14,10 +14,10 @@ const BurnedAppliances = () => {
 
     const actions = [
         { label: 'Reclamos', component: Claims },
-        { label: 'Artefactos Quemados', component: BurnedArtifacts },
-        { label: 'Servicio Tecnico', component: TechnicalService },
+        { label: 'Artefactos', component: BurnedArtifacts },
+        { label: 'Cargar Servicio Tecnico', component: TechnicalService },
         { label: 'Reportes', component: ArtifactsReports },
-        { label: 'Clientes', component: Clients },
+        { label: 'Datos Clientes', component: Clients },
     ];
 
     const [selectedAction, setSelectedAction] = useState(actions[0]);

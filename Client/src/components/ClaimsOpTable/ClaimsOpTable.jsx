@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters, AiOutlineFilePdf } from 'react-icons/ai';
-import { fetchSACs } from '../../redux/slices/sacsSlice';
-import styles from './SacTable.module.css';
-import SacPDF from '../SacPDF/SacPDF';
+import { fetchSACs,updateSAC } from '../../redux/slices/sacsSlice.js';
+import styles from './ClaimsTableOp.module.css';
+import Sac from '../Sac/Sac.jsx';
 
-const SacTable = () => {
+
+const ClaimsOpTable = () => {
     const dispatch = useDispatch();
     const { sacs, status, error, total } = useSelector((state) => state.sacs);
 
@@ -17,6 +18,9 @@ const SacTable = () => {
     const [priorityFilter, setPriorityFilter] = useState('');
     const sacsPerPage = 10;
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [selectedSac, setSelectedSac] = useState(null);
+    const [showSac, setShowSac] = useState(false); 
+
 
     const [searchParams, setSearchParams] = useState({
         sacId: '',
@@ -59,9 +63,11 @@ const SacTable = () => {
                 sacId: searchParams.sacId,
                 clientId: searchParams.clientId,
                 status:  statusFilter ? statusMap[statusFilter] : '',
-                priority: priorityFilter
+                priority: priorityFilter,
+                area:"operaciones"
             }));
         }
+       
     }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
 
     const handlePageChange = (event, value) => {
@@ -92,7 +98,7 @@ const SacTable = () => {
 
             setTimeout(() => {
                 setIsRefreshing(false);
-            }, 1000);
+            }, 300);
         }
     };
 
@@ -101,7 +107,7 @@ const SacTable = () => {
     const handleStatusChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: clientIdSearch || ''
+            clientId: clientIdSearch || '',
         });
         setSacIdSearch('');
         setStatusFilter(e.target.value);
@@ -111,7 +117,7 @@ const SacTable = () => {
     const handlePriorityChange = (e) => {
         setSearchParams({
             sacId: '',
-            clientId: clientIdSearch || ''
+            clientId: clientIdSearch || '',
         });
         setSacIdSearch('');
         setPriorityFilter(e.target.value);
@@ -144,16 +150,38 @@ const SacTable = () => {
         }
     };
 
-    const handleGeneratePDF = (sacId) => {
-        SacPDF(sacId); 
-        if(!sacIdSearch&&!clientIdSearch&&!statusFilter&&!priorityFilter) {
-        handleReset();
+    const handleViewSac = async (sac) => {
+        setSelectedSac(sac);
+        try {
+            if(sac.status !== "Closed"){
+                await dispatch(updateSAC({ id: sac.id, sacData: { status: "Open" } }));
+            }
+            setShowSac(true);
+        } catch (error) {
+            console.error("Error al actualizar SAC:", error);
         }
-        setTimeout(() => {
-            handleSearch();
-        }, 10);
-        
     };
+    
+
+    const handleClose = async () => {
+        dispatch(fetchSACs({
+            page: currentPage,
+            limit: sacsPerPage,
+            sacId: searchParams.sacId,
+            clientId: searchParams.clientId,
+            status:  statusFilter ? statusMap[statusFilter] : '',
+            priority: priorityFilter,
+            area:"operaciones"
+        }));
+        setShowSac(false);
+    };
+
+
+
+    
+
+
+
 
     return (
         <div className={styles.container}>
@@ -277,19 +305,22 @@ const SacTable = () => {
                                     <td>{capitalizePriority(sac.priority)}</td>
                                     <td>{sac.clientId || "S/N"}</td>
                                     <td>
-                                    <AiOutlineFilePdf
-                                        className={styles.pdfIcon} 
-                                        onClick={() => handleGeneratePDF(sac.id)} 
-                                        title="Descargar PDF"
-                                        size={24} 
-                                        style={{ cursor: 'pointer' }} 
-                                    />
+                                        <button 
+                                            className={styles.viewClaimButton} 
+                                            onClick={() => handleViewSac(sac)}
+                                        >
+                                            Ver Reclamo
+                                        </button>
                                     </td>
+                                   
+
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-
+                    {showSac && selectedSac && (
+                        <Sac sac={selectedSac} onClose={handleClose} />
+                    )}
                     {/* Pagination */}
                     <div className={styles.paginationContainer}>
                     <Pagination
@@ -305,4 +336,4 @@ const SacTable = () => {
     );
 };
 
-export default SacTable;
+export default ClaimsOpTable;

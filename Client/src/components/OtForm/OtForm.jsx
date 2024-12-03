@@ -55,7 +55,8 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
         setStatus(ot.status);
         setReason(ot.reason);
         setDescription(ot.description);
-  
+        setTechnicalService(ot.technicalService);
+
         // Actualizamos el manejo de archivos para sistemas Unix/Linux
         const existingFiles = ot.files
           ? ot.files.map((file) => {

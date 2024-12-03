@@ -4,7 +4,7 @@ import { fetchSACs } from '../../redux/slices/sacsSlice';
 import store from '../../redux/store'; 
 
 const OacPDF = async (sacId) => {
-  try {
+/*   try {
     
     const sacResponse = await store.dispatch(fetchSACs({ sacId }));
     const sacData = sacResponse?.payload?.sacs?.length > 0 ? sacResponse.payload.sacs[0] : null;
@@ -100,7 +100,7 @@ const OacPDF = async (sacId) => {
     window.open(pdfUrl, '_blank');
   } catch (error) {
     console.error('Error al generar el PDF:', error.message);
-  }
+  } */
 };
 
 export default OacPDF;

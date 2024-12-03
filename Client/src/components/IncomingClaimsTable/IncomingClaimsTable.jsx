@@ -121,7 +121,7 @@ const IncomingClaimsTable = () => {
 
             {status === 'failed' && <p className={styles.error}>Error: {error}</p>}
 
-            {status === 'succeeded' && sacs.length === 0 && <p>No hay SACs disponibles.</p>}
+            {status === 'succeeded' && sacs.length === 0 && <p>No hay SACs pendientes.</p>}
 
             {status === 'succeeded' && sacs?.length > 0 && (
                 <div>

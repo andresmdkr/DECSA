@@ -1,16 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './ArtifactsReports.module.css';
-import ArtifactReportPDF from '../ArtifactReportPDF/ArtifactReportPDF.js'
+import ArtifactReportPDF from '../ArtifactReportPDF/ArtifactReportPDF.js';
+import ArtifactReportXLSX from '../ArtifactReportXLSX/ArtifactReportXLSX.js';
 
 const ArtifactsReports = () => {
   const [activeTab, setActiveTab] = useState('reports');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [error, setError] = useState('');
+
+  // Validar las fechas en cada cambio
+  useEffect(() => {
+    if (startDate && endDate) {
+      if (new Date(startDate) >= new Date(endDate)) {
+        setError('La fecha final debe ser mayor que la fecha inicial.');
+      } else {
+        setError('');
+      }
+    } else {
+      setError(''); // Resetear el error si faltan fechas
+    }
+  }, [startDate, endDate]);
 
   const handleGenerateReport = () => {
-    ArtifactReportPDF(startDate, endDate);
+    if (!error) {
+      ArtifactReportPDF(startDate, endDate);
+    }
   };
-  
+
+  const handleGenerateReportXLS = () => {
+    if (!error) {
+      ArtifactReportXLSX(startDate, endDate);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.tabs}>
@@ -44,13 +67,22 @@ const ArtifactsReports = () => {
               className={styles.dateInput}
             />
           </div>
-          {startDate && endDate && (
-            <button
-              onClick={handleGenerateReport}
-              className={styles.generateButton}
-            >
-              Generar Reporte
-            </button>
+          {error && <p className={styles.error}>{error}</p>}
+          {startDate && endDate && !error && (
+            <>
+              <button
+                onClick={handleGenerateReport}
+                className={styles.generateButton}
+              >
+                Generar Reporte (PDF)
+              </button>
+              <button
+                onClick={handleGenerateReportXLS}
+                className={styles.generateButton}
+              >
+                Generar Reporte (XLSX)
+              </button>
+            </>
           )}
         </div>
       )}

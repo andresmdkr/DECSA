@@ -44,7 +44,7 @@
     background-color: #4751A8;
 }
 
-/* Estilo para los elementos del reporte */
+
 .reportsTab {
     display: flex;
     flex-direction: column;
@@ -81,3 +81,9 @@
 .generateButton:hover {
     background-color: #121d80;
 }
+
+.error {
+    color: red;
+    margin-top: 10px;
+  }
+  

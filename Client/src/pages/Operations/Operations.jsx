@@ -3,13 +3,14 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import styles from './Operations.module.css';
 import IncomingClaims from '../../components/IncomingClaims/IncomingClaims';
 import OngoingClaims from '../../components/OngoingClaims/OngoingClaims';
+import ClaimsOp from "../../components/ClaimsOp/ClaimsOp";
 import { useState } from 'react';
 
 const Operations = () => {
     const actions = [
         { label: 'Reclamos Entrantes', component: IncomingClaims },
         { label: 'Reclamos En Curso', component: OngoingClaims },
-        { label: 'Todos los Reclamos', component: () => <div>Todos los Reclamos</div> },
+        { label: 'Todos los Reclamos', component: ClaimsOp },
         { label: 'Reportes', component: () => <div>Reportes</div> }
     ];
 

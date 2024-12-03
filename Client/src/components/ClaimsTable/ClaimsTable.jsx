@@ -67,6 +67,7 @@ const ClaimsTable = () => {
                 area:"artefactos"
             }));
         }
+       
     }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
 
     const handlePageChange = (event, value) => {
@@ -150,7 +151,7 @@ const ClaimsTable = () => {
     };
 
     const handleViewSac = async (sac) => {
-        setSelectedSac({ ...sac, status: "Open" });
+        setSelectedSac(sac);
         try {
             if(sac.status !== "Closed"){
                 await dispatch(updateSAC({ id: sac.id, sacData: { status: "Open" } }));
