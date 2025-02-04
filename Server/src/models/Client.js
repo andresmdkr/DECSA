@@ -6,6 +6,7 @@ module.exports = (sequelize) => {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
+            allowNull: true,
         },
         accountNumber: {
             type: DataTypes.STRING,
@@ -19,7 +20,6 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
-
         address: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -90,9 +90,6 @@ module.exports = (sequelize) => {
         distributor: {
             type: DataTypes.STRING,
         },
-        consumption2024: {
-            type: DataTypes.FLOAT,
-        },
         dni: {
             type: DataTypes.STRING,
         },
@@ -100,6 +97,12 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
         },
         auxPhone: {
+            type: DataTypes.STRING,
+        },
+        outputBT: {  
+            type: DataTypes.STRING,
+        },
+        connection: {  
             type: DataTypes.STRING,
         },
     }, { timestamps: false });

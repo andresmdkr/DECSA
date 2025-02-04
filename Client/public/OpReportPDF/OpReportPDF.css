@@ -1,0 +1,125 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.artifact-report-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.artifact-report-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+
+.artifact-report-title {
+  font-size: 14px;
+  margin: 5px 0;
+}
+
+.artifact-report-date-range {
+  font-size: 10px;
+  margin: 0;
+}
+
+/* Table Styles */
+.artifact-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif; /* Fuente legible para PDF */
+  font-size: 10px; /* Tamaño compacto para encajar todo */
+  text-align: center; /* Centrar texto en celdas */
+  table-layout: auto; /* Ajuste automático basado en el contenido */
+}
+
+.artifact-report-table th,
+.artifact-report-table td {
+  padding: 5px; /* Espaciado interno para legibilidad */
+  border: 1px solid #000; /* Bordes negros para mejor visibilidad en PDF */
+}
+
+.artifact-report-table th {
+  background-color: #e0e0e0; /* Fondo gris claro para encabezados */
+  font-weight: bold;
+  text-transform: uppercase; /* Encabezados en mayúsculas para claridad */
+}
+
+.artifact-report-table tbody tr:nth-child(odd) {
+  background-color: #f9f9f9; /* Color alterno para filas */
+}
+
+.artifact-report-table tbody tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+/* Ajustar anchos de las columnas para encajar todo */
+.artifact-report-table th:nth-child(1),
+.artifact-report-table td:nth-child(1) { /* N° CUENTA */
+  width: 8%;
+}
+
+.artifact-report-table th:nth-child(2),
+.artifact-report-table td:nth-child(2) { /* N° SUMINISTRO */
+  width: 10%;
+}
+
+.artifact-report-table th:nth-child(3),
+.artifact-report-table td:nth-child(3) { /* RECLAMANTE */
+  width: 12%;
+}
+
+.artifact-report-table th:nth-child(4),
+.artifact-report-table td:nth-child(4) { /* DOMICILIO SUMINISTRO */
+  width: 18%;
+}
+
+.artifact-report-table th:nth-child(5),
+.artifact-report-table td:nth-child(5) { /* N° RECLAMO */
+  width: 8%;
+}
+
+.artifact-report-table th:nth-child(6),
+.artifact-report-table td:nth-child(6) { /* ARTEFACTOS RECLAMADOS */
+  max-width: 100px;
+  word-wrap: break-word;
+}
+
+.artifact-report-table th:nth-child(7),
+.artifact-report-table td:nth-child(7) { /* N° MEDIDOR */
+  width: 8%;
+}
+
+.artifact-report-table th:nth-child(8),
+.artifact-report-table td:nth-child(8) { /* N° SETA */
+  width: 8%;
+}
+
+.artifact-report-table th:nth-child(9),
+.artifact-report-table td:nth-child(9) { /* FECHA EVENTO */
+  width: 8%;
+}
+
+.artifact-report-table th:nth-child(10),
+.artifact-report-table td:nth-child(10) { /* HORA INICIO */
+  width: 6%;
+}
+
+.artifact-report-table th:nth-child(11),
+.artifact-report-table td:nth-child(11) { /* HORA FIN */
+  width: 6%;
+}
+
+
+@media print, (max-width: 768px) {
+  .artifact-report-table {
+    font-size: 8px;
+  }
+  .artifact-report-table th,
+  .artifact-report-table td {
+    padding: 3px;
+  }
+}

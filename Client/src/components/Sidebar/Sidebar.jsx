@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Sidebar.module.css';
 
-const Sidebar = ({ actions, onSelectAction, defaultAction }) => {
+const Sidebar = ({ actions, onSelectAction, defaultAction,admin }) => {
     const [selectedAction, setSelectedAction] = useState(defaultAction?.label || null);
 
     useEffect(() => {
@@ -16,7 +16,7 @@ const Sidebar = ({ actions, onSelectAction, defaultAction }) => {
     };
 
     return (
-        <div className={styles.sidebar}>
+        <div className={admin ? styles.sidebarAdmin : styles.sidebar}>
             <ul>
                 {actions.map((action, index) => (
                     <li

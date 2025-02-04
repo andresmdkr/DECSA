@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { fetchAllArtifacts } from '../../redux/slices/artifactsSlice';
+import { fetchAllArtifacts,updateArtifact } from '../../redux/slices/artifactsSlice';
 import styles from './ArtifactTable.module.css';
 import Artifact from '../Artifact/Artifact';
 
@@ -117,11 +117,19 @@ const ArtifactTable = () => {
         }
     };
 
+   
+
  
     const handleViewArtifact = (artifact) => {
+        if(artifact.status === 'Pending'){
+            handleArtifactUpdate(artifact.id, "In Progress");
+            dispatch(updateArtifact({ artifactId: artifact.id, artifactData: { status: 'In Progress' } }));
+        }
         setSelectedArtifact(artifact);
         setIsArtifactModalOpen(true);
     };
+
+
 
     const handleCloseArtifactModal = () => {
         setIsArtifactModalOpen(false);

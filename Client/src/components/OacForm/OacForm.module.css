@@ -1,212 +1,359 @@
-.oacModalOverlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-  }
+  .oacModalOverlay {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+    }
+    
+    .oacModalContent {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      width: 90%;
+      max-width: 580px;
+      max-height: 90%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .oacFormContainer {
+      overflow-y: auto;
+      flex-grow: 1;
+      margin-bottom: 90px;
+    }
+    
+    .oacButtonContainer {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .singleButton {
+      justify-content: flex-end;
+    }
+    
+    .oacCloseButton {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      border: none;
+      background: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #ff6b6b;
+    }
+    
+    .oacTitle {
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .oacLabel {
+      font-weight: 500;
+      color: #333;
+      font-size: 15px;
+    }
+    
+    .oacLabel1 {
+      margin:100;
+      font-weight: 500;
+      color: #333;
+      font-size: 15px;
+    }
+
+    .oacInput,
+    .oacSelect {
+      width:100%;
+      padding: 12px;
+      margin-top: 8px;
+      margin-right: 15px;
+      font-size: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      transition: border-color 0.3s ease;
+    }
+    
+    .oacInput:focus,
+    .oacSelect:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+    }
+    
+    .inlineGroup {
+      display: flex;
+      align-items: center;
+    }
+    
   
-  .oacModalContent {
-    background-color: white;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 800px;
-    max-height: 90%;
-    overflow: hidden;
+    .inlineGroup .oacLabel {
+      margin-left: 15px;
+      min-width: 80px; 
+    }
+
+
+    .longInput {
+      font-size: 14px;
+      width: 300px; 
+    }
+    
+    .shortInput {
+      width: 30%; 
+    }
+
+
+    .separator {
+      margin: 10px 0;
+      border: none;
+      border-top: 2px solid #ddd;
+    }
+
+    .textareaGroup {
+    margin:15px;
+      display: flex;
+      flex-direction: column; 
+    }
+    
+    .textareaGroup .oacLabel {
+      margin-bottom: 5px; 
+    }
+    
+    .oacTextarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      margin-top: 8px;
+      font-size: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      resize: none;  
+      transition: border-color 0.3s ease;
+    }
+    
+    .oacTextarea:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+    }
+    
+    .oacFileList1 {
+      margin-top: 20px;
+    }
+    
+    
+    .oacFileList {
+      margin-top: 20px;
+      background-color: #e0e0e0;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    .oacFileList ul {
+      padding-left: 20px;
+      list-style-type: none;
+    }
+    
+    .oacFileList li {
+      margin-bottom: 10px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .oacFileRemoveButton {
+      background-color: #ff4d4f;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .oacFileRemoveButton:hover {
+      background-color: #ff7875;
+    }
+    
+    .oacFileLinkButton {
+      background: none;
+      border: none;
+      color: #007bff;
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .oacFileLinkButton:hover {
+      color: #0056b3;
+    }
+    
+    .oacSubmitButton {
+      background-color: #000f97;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .oacSubmitButton:hover {
+      background-color: #0056b3;
+    }
+    
+
+  .oacErrorMessage {
+      color: #ff4d4f;
+      margin-top: 10px;
+      font-size: 14px;
+      background-color: #ffe6e6;
+      padding: 8px;
+      border-radius: 6px;
+  }
+
+  .oacButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 0;
+  }
+
+  .oacSubmitButton:disabled {
+    background-color: #5f5e5e;
+    cursor: not-allowed;
+  }
+
+  .mainFile{
     display: flex;
     flex-direction: column;
-    position: relative;
-  }
-  
-  .oacFormContainer {
-    overflow-y: auto;
-    flex-grow: 1;
-    margin-bottom: 60px;
-  }
-  
-  .oacButtonContainer {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .singleButton {
-    justify-content: flex-end;
-  }
-  
-  .oacCloseButton {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    border: none;
-    background: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #ff6b6b;
-  }
-  
-  .oacTitle {
-    font-size: 26px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 25px;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .oacLabel {
-    font-weight: 500;
-    color: #333;
-    font-size: 15px;
-  }
-  
-  .oacLabel1 {
-    margin:100;
-    font-weight: 500;
-    color: #333;
-    font-size: 15px;
-  }
-
-  .oacInput,
-  .oacSelect {
-    width:100%;
-    padding: 12px;
-    margin-top: 8px;
-    margin-right: 15px;
-    font-size: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-  }
-  
-  .oacInput:focus,
-  .oacSelect:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
-  }
-  
-  .inlineGroup {
-    display: flex;
     align-items: center;
+
   }
   
- 
-  .inlineGroup .oacLabel {
-    margin-left: 15px;
-    min-width: 80px; 
-  }
-
-
-  .longInput {
-    font-size: 14px;
-    width: 300px; 
-  }
-  
-  .shortInput {
-    width: 30%; 
-  }
-
-
   .separator {
-    margin: 10px 0;
+    margin: 15px 0;
     border: none;
-    border-top: 2px solid #ddd;
+    border-top: 2px solid #ccc;
   }
+  
 
-  .textareaGroup {
-   margin:15px;
-    display: flex;
-    flex-direction: column; 
+  .mainFileText {
+    font-size: 18px; /* Tamaño del texto más grande */
+    font-weight: bold;
+    color: #333;
   }
   
-  .textareaGroup .oacLabel {
-    margin-bottom: 5px; 
+  .mainFileText span {
+    margin-right: 5px;
   }
   
-  .oacTextarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 12px;
-    margin-top: 8px;
-    font-size: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    resize: none;  
-    transition: border-color 0.3s ease;
-  }
-  
-  .oacTextarea:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
-  }
-  
-  .oacFileList1 {
-    margin-top: 20px;
-  }
-  
-  
-  .oacFileList {
-    margin-top: 20px;
-    background-color: #e0e0e0;
-    padding: 10px;
-    border-radius: 8px;
-  }
-  
-  .oacFileList ul {
-    padding-left: 20px;
-    list-style-type: none;
-  }
-  
-  .oacFileList li {
-    margin-bottom: 10px;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .oacFileRemoveButton {
-    background-color: #ff4d4f;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 12px;
-    margin-left: 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .oacFileRemoveButton:hover {
-    background-color: #ff7875;
-  }
-  
-  .oacFileLinkButton {
-    background: none;
-    border: none;
+  .mainFileLink {
     color: #007bff;
-    text-decoration: underline;
-    cursor: pointer;
-    font-size: 14px;
+    text-decoration: none;
   }
   
-  .oacFileLinkButton:hover {
+  .mainFileLink:hover {
+    text-decoration: underline;
     color: #0056b3;
   }
   
-  .oacSubmitButton {
+  .mainFileDownloadButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mainFileDownloadButton:hover {
+    color: #0056b3;
+  }
+  
+
+  .fileActions {
+    display: flex;
+    gap: 10px; /* Espacio entre los botones */
+    margin-top: 10px; /* Margen superior para separar de "ARCHIVO:" */
+  }
+  
+  .actionButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    padding: 8px 12px; /* Botones más pequeños */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+  }
+  
+  .actionButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .hiddenInput {
+    display: none; /* Oculta el input de tipo file */
+  }
+  
+  
+  .mainFileUpdateInput {
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .mainFileActionButton {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .mainFileActionButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .mainFileActionButton input[type="file"] {
+    display: none; /* Asegura que el input esté oculto */
+  }
+
+
+  .uploadedFileName {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333; /* Color del texto */
+  }
+
+  .oacFileInput{
+    margin-top: 20px;
+  }
+
+  .oacFinalizeButton{
     background-color: #000f97;
     color: white;
     padding: 12px 24px;
@@ -216,17 +363,17 @@
     font-size: 14px;
     transition: background-color 0.3s ease;
   }
-  
-  .oacSubmitButton:hover {
-    background-color: #0056b3;
+
+  .oacButtonContainer {
+    display: flex;
+    align-items: center;
   }
   
-
-.oacErrorMessage {
-    color: #ff4d4f;
-    margin-top: 10px;
-    font-size: 14px;
-    background-color: #ffe6e6;
-    padding: 8px;
-    border-radius: 6px;
-}
+  .spaceBetween {
+    justify-content: space-between;
+  }
+  
+  .flexEnd {
+    justify-content: flex-end;
+  }
+  

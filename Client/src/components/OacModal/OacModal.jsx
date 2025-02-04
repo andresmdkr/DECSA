@@ -41,7 +41,7 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
   };
 
   const renderStatus = (status) => {
-    if (status === 'In Progress') {
+    if (status === 'Open') {
       return (
         <span className={styles.statusInProgress}>
           <span className={styles.circleRed}></span> En curso
@@ -119,10 +119,10 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                     <tr>
                       <th>N° OAC</th>
                       <th>Estado</th>
-                      <th>Ordenó</th>
+{/*                    <th>Ordenó</th>
                       <th>Realizó</th>
                       <th>Fecha</th>
-                      <th>Hora</th>
+                      <th>Hora</th> */}
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -134,10 +134,10 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                       <tr key={oac.id}>
                         <td>{oac.id}</td>
                         <td>{renderStatus(oac.status)}</td>
-                        <td>{oac.assignedBy}</td>
+{/*                         <td>{oac.assignedBy}</td>
                         <td>{oac.assignedPerson || 'No asignado'}</td>
                         <td>{new Date(oac.issueDate).toLocaleDateString()}</td>
-                        <td>{oac.assignmentTime}</td>   
+                        <td>{oac.assignmentTime}</td>   */} 
                         <td className={styles.tdButton}>
                           {oac.status === 'Completed' ? (
                             <button
@@ -174,7 +174,7 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                 </button>
               )}
               <button className={styles.actionButton} onClick={handleGenerateOAC}>
-                Generar nueva O.A.C (Contratista)
+                Generar nueva O.A.C
               </button>
             </div>
           </>

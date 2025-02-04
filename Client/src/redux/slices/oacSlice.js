@@ -21,8 +21,79 @@ export const fetchOACs = createAsyncThunk(
   }
 );
 
-
 export const createOac = createAsyncThunk(
+  'oacs/createOac',
+  async ({ sacId, oacData }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+
+      // Parámetros principales
+      formData.append('sacId', sacId);
+      Object.keys(oacData).forEach(key => {
+        if (key === 'files' || key === 'mainFile') return;
+        formData.append(key, oacData[key]);
+      });
+
+      // Archivo principal (mainFile)
+      if (oacData.mainFile) {
+        formData.append('mainFile', oacData.mainFile, `OAC_${oacData.id}.xlsx`);
+
+      } else {
+        throw new Error('mainFile is required');
+      }
+
+      // Otros archivos
+      oacData.files.forEach(file => {
+        formData.append('files', file);
+      });
+
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      const response = await axios.post(`${API_BASE_URL}/oac`, formData, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message || 'Error creating OAC');
+    }
+  }
+);
+
+export const updateOac = createAsyncThunk(
+  'oacs/updateOac',
+  async ({ oacId, oacData }, { rejectWithValue }) => {
+    try {
+      console.log(oacId, oacData);
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      console.log("ENTRE")
+      // Parámetros principales
+      Object.keys(oacData).forEach(key => {
+        if (key === 'files' || key === 'mainFile') return;
+        formData.append(key, oacData[key]);
+      });
+      console.log("ENTRE")
+      // Archivo principal (mainFile)
+      if (oacData.mainFile) {
+        formData.append('mainFile', oacData.mainFile);
+      }
+      console.log("ENTRE")
+      // Otros archivos
+      if (oacData.files) {
+      oacData.files.forEach(file => {
+        formData.append('files', file);
+      });
+    }
+      console.log("ENTRE")
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      console.log("ENTRE")
+      const response = await axios.put(`${API_BASE_URL}/oac/${oacId}`, formData, config);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message || 'Error updating OAC');
+    }
+  }
+);
+/* export const createOac = createAsyncThunk(
   'oacs/createOac',
   async ({ sacId, oacData }, { rejectWithValue }) => {
     try {
@@ -84,7 +155,7 @@ export const updateOac = createAsyncThunk(
       return rejectWithValue(error.response?.data || 'Error updating OAC');
     }
   }
-);
+); */
 
 
 const oacSlice = createSlice({

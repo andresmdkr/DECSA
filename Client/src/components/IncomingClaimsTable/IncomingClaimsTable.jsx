@@ -5,6 +5,7 @@ import { AiOutlineSync, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { fetchSACs, updateSAC } from '../../redux/slices/sacsSlice';
 import styles from './IncomingClaimsTable.module.css';
 import OacForm from '../OacForm/OacForm';
+import Sac from '../Sac/Sac.jsx';
 
 const IncomingClaimsTable = () => {
     const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const IncomingClaimsTable = () => {
     const [isOacFormOpen, setOacFormOpen] = useState(false);
     const [selectedSac, setSelectedSac] = useState(null);
     const [formMode, setFormMode] = useState('create'); 
+    const [showSac, setShowSac] = useState(false); 
 
     useEffect(() => {
         if (!isRefreshing) {
@@ -54,6 +56,19 @@ const IncomingClaimsTable = () => {
         }
     };
 
+    const handleClose = async () => {
+        dispatch(fetchSACs({
+            page: currentPage,
+            limit: sacsPerPage,
+            priority: priorityFilter,
+            area: 'operaciones',
+            status: 'Pending',
+        }));
+        handleReset();
+        setShowSac(false);
+    };
+    
+
     const handleActionClick = (sac, mode = 'create') => {
         setSelectedSac(sac); 
         setFormMode(mode); 
@@ -85,6 +100,15 @@ const IncomingClaimsTable = () => {
             Closed: 'statusClosed',
         };
         return statusClasses[status] || 'statusDefault';
+    };
+
+    const handleViewSac = async (sac) => {
+        setSelectedSac(sac);
+        try {
+            setShowSac(true);
+        } catch (error) {
+            console.error("Error al actualizar SAC:", error);
+        }
     };
 
     return (
@@ -155,17 +179,26 @@ const IncomingClaimsTable = () => {
                                     </td>
                                     <td>{capitalizeText(sac.priority)}</td>
                                     <td>
-                                        <button
+{/*                                         <button
                                             className={styles.actionButton}
                                             onClick={() => handleActionClick(sac, 'create')}
                                         >
-                                            Generar O.A.C
+                                            Asignar O.A.C
+                                        </button> */}
+                                        <button
+                                            className={styles.actionButton}
+                                            onClick={() => handleViewSac(sac)}
+                                        >   
+                                            Ver Reclamo
                                         </button>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {showSac && selectedSac && (
+                        <Sac sac={selectedSac} onClose={handleClose} />
+                    )}
                     <div className={styles.paginationContainer}>
                         <Pagination
                             count={Math.ceil(total / sacsPerPage)}

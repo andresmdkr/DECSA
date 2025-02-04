@@ -1,4 +1,4 @@
-const { getAllUsers, getUserById, getUserByName, updateUser, deleteUser } = require("../controllers/user.controller.js");
+const { getAllUsers,createUser, getUserById, getUserByName, updateUser, deleteUser } = require("../controllers/user.controller.js");
 
 
 const handleError = (res, error, message = "Error interno del servidor") => {
@@ -16,6 +16,17 @@ const allUsersHandler = async (req, res) => {
     }
 };
 
+
+const createUserHandler = async (req, res) => {
+    const userData = req.body;
+
+    try {
+        const newUser = await createUser(userData);
+        res.status(201).json(newUser);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+};
 
 const byIdHandler = async (req, res) => {
     const { id } = req.params;
@@ -46,13 +57,15 @@ const byNameHandler = async (req, res) => {
 const updateUserHandler = async (req, res) => {
     const { id } = req.params;
     const userData = req.body;
+  
     try {
-        const updatedUser = await updateUser(id, userData);
-        res.json(updatedUser);
+  
+      const updatedUser = await updateUser(id, userData);
+      res.json(updatedUser);
     } catch (error) {
-        handleError(res, error);
+      handleError(res, error);
     }
-};
+  };
 
 const deleteHandler = async (req, res) => {
     const { id } = req.params;
@@ -64,4 +77,4 @@ const deleteHandler = async (req, res) => {
     }
 };
 
-module.exports = { allUsersHandler, byIdHandler, byNameHandler, updateUserHandler, deleteHandler };
+module.exports = { allUsersHandler,createUserHandler, byIdHandler, byNameHandler, updateUserHandler, deleteHandler };

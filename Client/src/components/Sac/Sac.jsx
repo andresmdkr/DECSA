@@ -3,14 +3,155 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchClientByAccountNumber, updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import { fetchSACs } from '../../redux/slices/sacsSlice';
 import { updateSAC } from '../../redux/slices/sacsSlice';
+import { fetchOACs } from '../../redux/slices/oacSlice.js';
 import {updateArtifact} from '../../redux/slices/artifactsSlice.js'
 import Swal from 'sweetalert2';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import styles from './Sac.module.css';
 import OacModal from '../OacModal/OacModal';
+import OacForm from '../OacForm/OacForm.jsx';
 import OtModal from '../OtModal/OtModal';
 import ResolutionModal from '../ResolutionModal/ResolutionModal.jsx';
 import Artifact from '../Artifact/Artifact';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { FaCopy, FaWhatsapp } from 'react-icons/fa';
+'AIzaSyDsOGP7vyWVBiZUpyE1uiHg43oNGFgLCPo'
+const MapComponent = ({ latitude, longitude,client,sac}) => {
+  const [mapCenter] = useState({ lat: latitude, lng: longitude });
+  const [isInteractive, setIsInteractive] = useState(false);
+  const mapRef = useRef(null);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyDsOGP7vyWVBiZUpyE1uiHg43oNGFgLCPo',
+  });
+
+  if (loadError || !navigator.onLine)
+    return (
+      <div className={styles.mapError}>
+        <p>Error al cargar el mapa: no se puede establecer conexión a internet.</p>
+      </div>
+    );
+
+  if (!isLoaded)
+    return <div className={styles.mapLoading}>Cargando mapa...</div>;
+
+  const mapOptions = {
+    streetViewControl: false,
+    gestureHandling: isInteractive ? "auto" : "none",
+  };
+
+  const address = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address).then(() => {
+      Swal.fire({
+        icon: "success",
+        title: "¡Dirección copiada!",
+        text: "La dirección ha sido copiada al portapapeles.",
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "top-end",
+      });
+    });
+  };
+
+  const handleShareWhatsApp = () => {
+    const {
+      accountNumber,
+      holderName,
+      address,
+      extraAddressInfo,
+      phone,
+      supply,
+      substation,
+      device,
+      wsg84Lati,
+      wsg84Long,
+    } = client;
+  
+    const direccionCompleta = extraAddressInfo
+      ? `${address} ${extraAddressInfo}`
+      : address;
+  
+    const ubicacionLink = `https://maps.google.com/?q=${wsg84Lati},${wsg84Long}&z=18`;
+  
+    const formatNumber = (number) =>
+      number.replace(/(\d)/g, '$1\u200B'); 
+  
+    const sacInfo = sac
+      ? [
+          `*Numero de Reclamo:* ${sac.id}`,
+          `*Motivo del reclamo:* ${sac.claimReason}`,
+          sac.artifacts?.length
+            ? `*Artefactos asociados:* \n${sac.artifacts
+                .map((artifact, index) => `${index + 1}: ${artifact.name} / ${artifact.brand}`)
+                .join('\n')}`
+            : '',
+        ].filter(Boolean).join('\n')
+      : '';
+  
+    const mensaje = [
+      `*Número de Cuenta:* ${formatNumber(accountNumber)}`,
+      `*Nombre:* ${holderName}`,
+      `*Dirección:* ${direccionCompleta}`,
+      phone ? `*Teléfono:* ${phone}` : '',
+      `*Número de Suministro:* ${formatNumber(supply)}`,
+      `*SETA:* ${formatNumber(substation)}`,
+      `*Medidor:* ${formatNumber(device)}`,
+      ` `,
+      sacInfo,
+      ` `,
+      `*Ubicación:*`,
+      ubicacionLink,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  
+    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappURL, '_blank');
+  };
+  
+  
+  
+  
+
+  return (
+    <div>
+      <div
+        className={styles.mapWrapper}
+        onClick={() => setIsInteractive(true)}
+        onMouseLeave={() => setIsInteractive(false)}
+      >
+        <GoogleMap
+          center={mapCenter}
+          zoom={18}
+          mapContainerStyle={{ width: "100%", height: "100%" }}
+          options={mapOptions}
+          onLoad={(map) => {
+            mapRef.current = map;
+          }}
+        >
+          <Marker position={{ lat: latitude, lng: longitude }} />
+        </GoogleMap>
+        {!isInteractive && (
+          <div className={styles.mapOverlay}>
+            Haz clic para interactuar con el mapa
+          </div>
+        )}
+      </div>
+
+      <div className={styles.mapButtons}>
+        <button className={styles.mapButton} onClick={handleCopyAddress}>
+          <FaCopy className={styles.mapButtonIcon} /> Copiar Dirección
+        </button>
+        <button className={styles.mapButton2} onClick={handleShareWhatsApp}>
+          <FaWhatsapp className={styles.mapButtonIcon} /> Compartir por WhatsApp
+        </button>
+      </div>
+    </div>
+  );
+};
 
 
 const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text', maxLength = 250 }) => {
@@ -87,7 +228,9 @@ const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text'
 const Sac = ({ sac, onClose}) => {  
     const dispatch = useDispatch();
     const client = useSelector((state) => state.clients.client);
+    const oacs = useSelector((state) => state.oacs.oacs || []);
     const [isOacModalOpen, setIsOacModalOpen] = useState(false);
+    const [isOacFormOpen, setIsOacFormOpen] = useState(false);
     const [isOtModalOpen, setIsOtModalOpen] = useState(false);
     const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
     const [isEditable, setIsEditable] = useState({});
@@ -95,18 +238,31 @@ const Sac = ({ sac, onClose}) => {
     const [selectedArtifact, setSelectedArtifact] = useState(null);
     const [artifacts, setArtifacts] = useState(sac.artifacts);
     const [status, setStatus] = useState(sac.status);
-
+    const [client2, setClient2] = useState(null);
+    const [wsg84Lati, setWsg84Lati] = useState(null);
+    const [wsg84Long, setWsg84Long] = useState(null);
+    
     useEffect(() => {
-        if (sac.clientId) {
-            dispatch(fetchClientByAccountNumber(sac.clientId));
-        }
-    
+      if (sac.clientId) {
+        dispatch(fetchClientByAccountNumber(sac.clientId));
+        setClient2(client)
+      }
     }, [dispatch, sac.clientId]);
-
- 
-
-
     
+    // Asignar valores después de recibir el cliente
+    useEffect(() => {
+      if (client2) {
+        setWsg84Lati(client2.wsg84Lati || null);
+        setWsg84Long(client2.wsg84Long || null);
+      }
+    }, [client2]);
+    
+    useEffect(() => {
+        if (sac) {
+          dispatch(fetchOACs(sac.id));
+        }
+      }, [dispatch, sac]);
+ 
 
     const toggleEdit = (field) => {
         setIsEditable((prev) => ({ ...prev, [field]: !prev[field] }));
@@ -149,7 +305,6 @@ const Sac = ({ sac, onClose}) => {
     
         if (result.isConfirmed) {
             try {
-                // Actualizar el estado del SAC en el backend
                 await dispatch(updateSAC({ id: sac.id, sacData: { ...sac, status: 'Closed' } }));
                 setStatus('Closed');
                 Swal.fire({
@@ -160,7 +315,6 @@ const Sac = ({ sac, onClose}) => {
                     showConfirmButton: false,
                 });
     
-                // Aquí puedes agregar cualquier lógica adicional, como recargar la página o actualizar el estado en la UI
                 onClose();
             } catch (error) {
                 Swal.fire({
@@ -222,6 +376,7 @@ const Sac = ({ sac, onClose}) => {
                 inputOptions: {
                     artefactos: 'Artefactos',
                     operaciones: 'Operaciones',
+                    comercial: 'Comercial',
                 },
                 inputPlaceholder: 'Selecciona un área',
                 showCancelButton: true,
@@ -262,9 +417,22 @@ const Sac = ({ sac, onClose}) => {
         setIsOacModalOpen(false);
     };
 
+    const handleOpenOacForm = () => setIsOacFormOpen(true);
+    const handleCloseOacForm = () => setIsOacFormOpen(false);
+
     const handleOpenOtModal = () => {
         setIsOtModalOpen(true);
     };
+
+    const handleOacCreated = async (sacId) => {
+        const sacData = { status: 'Open' }; 
+        try {
+            await dispatch(updateSAC({ id: sacId, sacData }));
+            setIsOacFormOpen(false); 
+        } catch (error) {
+            console.error('Error al actualizar el SAC:', error);
+        }
+    };  
 
     const handleCloseOtModal = () => {
         setIsOtModalOpen(false);
@@ -551,22 +719,13 @@ const handleClose=()=>{
                     </div>
                     <hr className={styles.sectionSeparator} />
                     <div className={styles.section}>
-                        <EditableField
-                            label="Dispositivo"
-                            value={client.device}
-                            isEditable={isEditable.device}
-                            onEdit={() => toggleEdit('device')}
-                            onSave={(newValue) => handleSave('device', newValue)}
+                         <EditableField
+                            label="N° Suministro"
+                            value={client.supply}
+                            isEditable={isEditable.supply}
+                            onEdit={() => toggleEdit('supply')}
+                            onSave={(newValue) => handleSave('supply', newValue)}
                         />
-                        <EditableField
-                            label="SETA"
-                            value={client.substation}
-                            isEditable={isEditable.substation}
-                            onEdit={() => toggleEdit('substation')}
-                            onSave={(newValue) => handleSave('substation', newValue)}
-                        />
-                    </div>
-                    <div className={styles.section}>
                         <EditableField
                             label="Disribuidor"
                             value={client.distributor}
@@ -574,12 +733,41 @@ const handleClose=()=>{
                             onEdit={() => toggleEdit('distributor')}
                             onSave={(newValue) => handleSave('distributor', newValue)}
                         />
+                        
+                        
+                    </div>
+                    <div className={styles.section}>
+                         <EditableField
+                            label="SETA"
+                            value={client.substation}
+                            isEditable={isEditable.substation}
+                            onEdit={() => toggleEdit('substation')}
+                            onSave={(newValue) => handleSave('substation', newValue)}
+                        />
                         <EditableField
-                            label="Suministro"
-                            value={client.supply}
-                            isEditable={isEditable.supply}
-                            onEdit={() => toggleEdit('supply')}
-                            onSave={(newValue) => handleSave('supply', newValue)}
+                            label="Salida BT"
+                            value={client.outputBT}
+                            isEditable={isEditable.outputBT}
+                            onEdit={() => toggleEdit('outputBT')}
+                            onSave={(newValue) => handleSave('outputBT', newValue)}
+                        />
+                        
+                        
+                    </div>
+                    <div className={styles.section}>
+                    <EditableField
+                            label="N° Medidor"
+                            value={client.device}
+                            isEditable={isEditable.device}
+                            onEdit={() => toggleEdit('device')}
+                            onSave={(newValue) => handleSave('device', newValue)}
+                        />
+                        <EditableField
+                            label="Acometida"
+                            value={client.connection}
+                            isEditable={isEditable.connection}
+                            onEdit={() => toggleEdit('connection')}
+                            onSave={(newValue) => handleSave('connection', newValue)}
                         />
                     </div>
                     <hr className={styles.sectionSeparator} />
@@ -599,6 +787,16 @@ const handleClose=()=>{
                             onSave={(newValue) => handleSave('wsg84Lati', newValue)}
                         />
                     </div>
+                   
+                    {wsg84Lati && wsg84Long && (
+                        <>
+                            <hr className={styles.sectionSeparator} />
+                            <div className={styles.mapContainer}>
+                                <MapComponent latitude={parseFloat(wsg84Lati)} longitude={parseFloat(wsg84Long) } client={client} sac={sac} />
+                            </div>
+                        </>
+                    )}
+                    <hr className={styles.sectionSeparator} />
                     <div className={styles.section}>
                         <EditableField
                             label="Zona"
@@ -642,12 +840,21 @@ const handleClose=()=>{
 {/*                     <button className={styles.actionButton} onClick={handleOpenOtModal}>
                         O.Trabajo
                     </button> */}
-                   <button className={styles.actionButton} onClick={handleOpenOacModal}>
+{/*                    <button className={styles.actionButton} onClick={handleOpenOacModal}>
                         O.A.Cs
-                    </button>
+                    </button> */}
+                    {oacs.length === 0 ? (
+                        <button className={styles.actionButton} onClick={handleOpenOacForm}>
+                        Generar OAC
+                        </button>
+                    ) : (
+                        <button className={styles.actionButton} onClick={handleOpenOacModal}>
+                        O.A.Cs
+                        </button>
+                    )}
                     { status !== 'Closed' ? (
                         <button className={`${styles.actionButton} ${styles.closeSacButton}`} onClick={handleCloseSAC}>
-                            Cerrar S.A.C
+                            Finalizar S.A.C
                         </button>
                     ) : (
                         <button className={`${styles.actionButton} ${styles.reopenSacButton}`} onClick={handleReopenSAC}>
@@ -660,6 +867,15 @@ const handleClose=()=>{
                 <ResolutionModal
                 sac={sac}
                 onClose={handleCloseResolutionModal}
+                />
+            )}
+           {isOacFormOpen && (
+                <OacForm
+                sac={sac}
+                client={client}
+                onClose={handleCloseOacForm}
+                onOacCreated={() => handleOacCreated(sac.id)}
+                mode="create"
                 />
             )}
 

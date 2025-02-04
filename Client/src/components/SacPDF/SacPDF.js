@@ -77,10 +77,10 @@ const SacPDF = async (sacId) => {
         
         if ([
           'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
-          'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT','Pilastra Electrificada',
+          'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT', 'Pilastra Electrificada',
           'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
           'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
-          'Transformador Quemado',
+          'Transformador Quemado'
         ].includes(claimReason)) {
           pageContainer.querySelector('#checkbox-electrical').textContent = 'X';
           talonarioClaimReason.textContent = claimReason;
@@ -88,7 +88,7 @@ const SacPDF = async (sacId) => {
           pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
           talonarioClaimReason.textContent = 'Rotura de Artefacto/s';
         } else if ([
-          'Error de Facturación', 'Inconveniente en Recepción de Factura', 'Solicita Habilitación de Servicio',
+          'Reclamo de Facturación', 'Hurto de Energia', 'Reclamo Comercial', 'Otro problema comercial'
         ].includes(claimReason)) {
           pageContainer.querySelector('#checkbox-commercial').textContent = 'X';
           talonarioClaimReason.textContent = claimReason;
@@ -99,8 +99,10 @@ const SacPDF = async (sacId) => {
             'Apertura Distribuidor ET Caucete': 'Apertura Distribuidor ET Caucete',
             'Poste Quebrado': 'Poste Quebrado',
             'Falta de Poda': 'Falta de Poda',
+            'Otros': 'Otros'
           }[claimReason] || 'Otros';
         }
+        
 
         pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
         pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
@@ -190,10 +192,10 @@ const SacPDF = async (sacId) => {
      
       if ([
         'Sin Corriente', 'Acometida Cortada', 'Afectado a Corte Programado', 'Cables Cortados de BT o MT',
-        'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT','Pilastra Electrificada',
+        'Columna al Caer', 'Falta de Fase', 'Problemas de Tensión', 'Incendio en LBT/LMT', 'Pilastra Electrificada',
         'Incendio en Puesto de Medición', 'Incendio en SETA', 'Medidor Quemado', 'Problema con el Alumbrado Público',
         'Problema en Acometida', 'Problema en Puesto de Medición', 'Rama sobre Cable o Acometida', 'Peligro de Electrocución',
-        'Transformador Quemado',
+        'Transformador Quemado'
       ].includes(claimReason)) {
         pageContainer.querySelector('#checkbox-electrical').textContent = 'X';
         talonarioClaimReason.textContent = claimReason;
@@ -201,7 +203,7 @@ const SacPDF = async (sacId) => {
         pageContainer.querySelector('#checkbox-artifacts').textContent = 'X';
         talonarioClaimReason.textContent = 'Rotura de Artefacto/s';
       } else if ([
-        'Error de Facturación', 'Inconveniente en Recepción de Factura', 'Solicita Habilitación de Servicio',
+        'Reclamo de Facturación', 'Hurto de Energia', 'Reclamo Comercial', 'Otro problema comercial'
       ].includes(claimReason)) {
         pageContainer.querySelector('#checkbox-commercial').textContent = 'X';
         talonarioClaimReason.textContent = claimReason;
@@ -212,8 +214,10 @@ const SacPDF = async (sacId) => {
           'Apertura Distribuidor ET Caucete': 'Apertura Distribuidor ET Caucete',
           'Poste Quebrado': 'Poste Quebrado',
           'Falta de Poda': 'Falta de Poda',
+          'Otros': 'Otros'
         }[claimReason] || 'Otros';
       }
+      
       
       
       pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';

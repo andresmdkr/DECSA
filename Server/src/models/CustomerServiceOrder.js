@@ -3,6 +3,36 @@ const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
   sequelize.define('CustomerServiceOrder', {
     id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false,
+    },
+    status: {
+      type: DataTypes.STRING,
+      defaultValue: 'Open',
+      allowNull: false,
+    },
+    mainFile: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    files: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: [],
+    },
+  },
+  {
+    timestamps: true,
+  });
+};
+
+
+/* const { DataTypes } = require('sequelize');
+
+module.exports = (sequelize) => {
+  sequelize.define('CustomerServiceOrder', {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
@@ -61,3 +91,5 @@ module.exports = (sequelize) => {
     timestamps: true,
   });
 };
+ */
+

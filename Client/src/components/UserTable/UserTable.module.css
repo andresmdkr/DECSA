@@ -1,0 +1,88 @@
+
+/* Tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .ellipsis {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Botones de acción */
+  .iconButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  
+  .editButton:hover {
+    color: #007bff;
+  }
+  
+  .deleteButton:hover {
+    color: #f44336;
+  }
+
+  .statusCircle {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  
+  .active {
+    background: #4caf50;
+  }
+  
+  .inactive {
+    background: #f44336;
+  }
+  
+
+  .createButton {
+    background: #363636;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s ease;
+  }
+  
+  .createButton:hover {
+    background: #5a5a5a;
+  }
+  
+
+  .paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .error {
+    color: #d32f2f;
+    font-size: 1em;
+    margin-top: 10px;
+  }
+  
+  .error2 {
+    color: #757575;
+    font-size: 1em;
+    margin: 20px 0;
+  }
+  

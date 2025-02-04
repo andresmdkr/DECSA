@@ -1,0 +1,20 @@
+.burnedAppliances {
+    display: flex;
+    width: 100%;
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: 100%;
+    overflow: auto;
+}
+
+
+.defaultMessage {
+    color: #888;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 50px;
+}

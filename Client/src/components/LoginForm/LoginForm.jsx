@@ -44,7 +44,27 @@ const LoginForm = () => {
                 dispatch(loginStart());
                 const data = await login(username, password);
                 dispatch(loginSuccess({ user: { role: data.role, username: data.username, name:data.name, lastName:data.lastName}, token: data.token }));
-                navigate('/customer-service');
+                let defaultRoute;
+                switch (data.role) {
+                    case 'Atencion al cliente':
+                        defaultRoute = '/customer-service';
+                        break;
+                    case 'Artefactos Quemados':
+                        defaultRoute = '/burned-appliances';
+                        break;
+                    case 'Operaciones':
+                        defaultRoute = '/operations';
+                        break;
+                    case 'Admin':
+                        defaultRoute = '/customer-service'; 
+                        break;
+                    case 'Comercial':
+                        defaultRoute = '/home';
+                        break;
+                    default:
+                        defaultRoute = '/login'; 
+                }
+                navigate(defaultRoute);
             } catch (error) {
                 if (!error.response) {
                     setServerError('Error en el servidor, intente nuevamente');

@@ -9,7 +9,7 @@ import OacModal from '../OacModal/OacModal';
 const OngoingClaimsTable = () => {
     const dispatch = useDispatch();
     const { sacs, status, error, total } = useSelector((state) => state.sacs);
-
+    console.log(sacs);
     const [currentPage, setCurrentPage] = useState(1);
     const [sacIdSearch, setSacIdSearch] = useState('');
     const [clientIdSearch, setClientIdSearch] = useState('');
@@ -51,7 +51,7 @@ const OngoingClaimsTable = () => {
 };
 
     const capitalizePriority = (priority) => priority.charAt(0).toUpperCase() + priority.slice(1);
-    const capitalizeClaimReason = (reason) => reason.charAt(0).toUpperCase() + reason.slice(1); // Capitalizar el motivo
+    const capitalizeClaimReason = (reason) => reason.charAt(0).toUpperCase() + reason.slice(1); 
 
     useEffect(() => {
         if (!isRefreshing) {
@@ -142,6 +142,7 @@ const OngoingClaimsTable = () => {
     };
 
     const handleCloseOacModal = () => {
+        handleReset();
         setShowOacModal(false);  
     };
     
@@ -227,7 +228,7 @@ const OngoingClaimsTable = () => {
                         <thead>
                             <tr>
                                 <th>Número de SAC</th>
-                                <th>Motivo</th> {/* Nueva columna para el Motivo */}
+                                <th>Motivo</th> 
                                 <th>Estado</th>
                                 <th>Prioridad</th>
                                 <th>Numero de Cuenta</th>
@@ -242,7 +243,7 @@ const OngoingClaimsTable = () => {
                                     ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
                                 `}>
                                     <td>{sac.id}</td>
-                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> {/* Mostrar el motivo con la primera letra en mayúscula */}
+                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> 
                                     <td>
                                         <div className={styles.statusContainer}>
                                             <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>

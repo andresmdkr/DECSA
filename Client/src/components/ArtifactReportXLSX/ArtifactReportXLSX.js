@@ -75,6 +75,11 @@ const ArtifactReportXLS = async (startDate, endDate) => {
     ];
     XLSX.utils.sheet_add_aoa(worksheet, [headers], { origin: 'A1' });
 
+    const columnWidths = headers.map(header => {
+      return { wch: Math.max(header.length, ...rows.map(row => String(row[header]).length)) };
+    });
+    worksheet['!cols'] = columnWidths;
+
     const filename = `Reporte_SACs_${startDate}_hasta_${endDate}.xlsx`;
     XLSX.writeFile(workbook, filename);
   } catch (error) {

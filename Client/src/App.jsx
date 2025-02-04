@@ -1,6 +1,6 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch} from 'react-redux';
 import Home from './pages/Home/Home';
 import CustomerService from './pages/CustomerService/CustomerService.jsx';
 import BurnedAppliances from './pages/BurnedAppliances/BurnedAppliances.jsx';
@@ -15,9 +15,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
 
-
     //HACER QUE EL SERVIDOR NO SE REINCIE
-    const dispatch = useDispatch();
+/*     const dispatch = useDispatch();
 
     useEffect(() => {
         const intervalId = setInterval(async () => {
@@ -25,7 +24,7 @@ function App() {
         }, 40000);
 
         return () => clearInterval(intervalId); 
-    }, [dispatch]);
+    }, [dispatch]); */
 
     return (
         <Router>
@@ -33,18 +32,11 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route
-                        path="/home"
-                        element={
-                            <ProtectedRoute>
-                                <Home />
-                            </ProtectedRoute>
-                        }
-                    />
+
                     <Route
                         path="/customer-service"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute allowedRoles={['Admin','Atencion al cliente']}>
                                 <CustomerService />
                             </ProtectedRoute>
                         }
@@ -52,7 +44,7 @@ function App() {
                     <Route
                         path="/burned-appliances"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute allowedRoles={['Admin','Artefactos Quemados']}>
                                 <BurnedAppliances />
                             </ProtectedRoute>
                         }
@@ -60,7 +52,7 @@ function App() {
                     <Route
                         path="/operations"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute allowedRoles={['Admin','Operaciones']}>
                                 <Operations />
                             </ProtectedRoute>
                         }
@@ -68,12 +60,20 @@ function App() {
                     <Route
                         path="/admin"
                         element={
-                            <AdminRoute>
+                            <ProtectedRoute allowedRoles={['Admin']}>
                                 <Admin />
-                            </AdminRoute>
+                            </ProtectedRoute>
                         }
                     />
-                    <Route path="*" element={<ProtectedRoute />} />
+                    <Route
+                        path="/home"
+                        element={
+                            <ProtectedRoute allowedRoles={['Admin', 'Atencion al cliente', 'Operaciones']}>
+                                <Home />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="*" element={<Navigate to="/home" replace />} />
                 </Routes>
             </Layout>
         </Router>

@@ -4,10 +4,140 @@ import styles from './CustomerDetails.module.css';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import Swal from 'sweetalert2';
+import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { FaCopy, FaWhatsapp } from 'react-icons/fa';
+'AIzaSyDsOGP7vyWVBiZUpyE1uiHg43oNGFgLCPo'
+const MapComponent = ({ latitude, longitude,client }) => {
+  const [mapCenter] = useState({ lat: latitude, lng: longitude });
+  const [isInteractive, setIsInteractive] = useState(false);
+  const mapRef = useRef(null);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyDsOGP7vyWVBiZUpyE1uiHg43oNGFgLCPo',
+  });
+
+  if (loadError || !navigator.onLine)
+    return (
+      <div className={styles.mapError}>
+        <p>Error al cargar el mapa: no se puede establecer conexión a internet.</p>
+      </div>
+    );
+
+  if (!isLoaded)
+    return <div className={styles.mapLoading}>Cargando mapa...</div>;
+
+  const mapOptions = {
+    streetViewControl: false,
+    gestureHandling: isInteractive ? "auto" : "none",
+  };
+
+  const address = `https://www.google.com/maps?q=${latitude},${longitude}`;
+
+  const handleCopyAddress = () => {
+    navigator.clipboard.writeText(address).then(() => {
+      Swal.fire({
+        icon: "success",
+        title: "¡Dirección copiada!",
+        text: "La dirección ha sido copiada al portapapeles.",
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: "top-end",
+      });
+    });
+  };
+
+  const handleShareWhatsApp = () => {
+    const {
+      accountNumber,
+      holderName,
+      address,
+      extraAddressInfo,
+      phone,
+      supply,
+      substation,
+      device,
+      wsg84Lati,
+      wsg84Long,
+    } = client;
+  
+    const direccionCompleta = extraAddressInfo
+      ? `${address} ${extraAddressInfo}`
+      : address;
+  
+    const ubicacionLink = `https://maps.google.com/?q=${wsg84Lati},${wsg84Long}&z=18`;
+  
+    const formatNumber = (number) =>
+      number.replace(/(\d)/g, '$1\u200B'); // Inserta un espacio de ancho cero entre los dígitos.
+  
+    const mensaje = [
+      `*Número de Cuenta:* ${formatNumber(accountNumber)}`,
+      `*Nombre:* ${holderName}`,
+      `*Dirección:* ${direccionCompleta}`,
+      phone ? `*Teléfono:* ${phone}` : '',
+      `*Número de Suministro:* ${formatNumber(supply)}`,
+      `*SETA:* ${formatNumber(substation)}`,
+      `*Medidor:* ${formatNumber(device)}`,
+      ` `,
+      ` `, 
+      `*Ubicacion:*`,
+      ubicacionLink,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  
+    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+    window.open(whatsappURL, '_blank');
+  };
+  
+  
+  
+
+  return (
+    <div>
+      <div
+        className={styles.mapWrapper}
+        onClick={() => setIsInteractive(true)}
+        onMouseLeave={() => setIsInteractive(false)}
+      >
+        <GoogleMap
+          center={mapCenter}
+          zoom={18}
+          mapContainerStyle={{ width: "100%", height: "100%" }}
+          options={mapOptions}
+          onLoad={(map) => {
+            mapRef.current = map;
+          }}
+        >
+          <Marker position={{ lat: latitude, lng: longitude }} />
+        </GoogleMap>
+        {!isInteractive && (
+          <div className={styles.mapOverlay}>
+            Haz clic para interactuar con el mapa
+          </div>
+        )}
+      </div>
+
+      <div className={styles.mapButtons}>
+        <button className={styles.mapButton} onClick={handleCopyAddress}>
+          <FaCopy className={styles.mapButtonIcon} /> Copiar Dirección
+        </button>
+        <button className={styles.mapButton2} onClick={handleShareWhatsApp}>
+          <FaWhatsapp className={styles.mapButtonIcon} /> Compartir por WhatsApp
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
+
+
 
 const CustomerDetails = ({ client, onClose }) => {
   const dispatch = useDispatch();
   const [editableFields, setEditableFields] = useState({});
+  const { wsg84Lati, wsg84Long } = client;
   const [labelText, setLabelText] = useState('');
   const inputRefs = useRef({});
   
@@ -137,7 +267,7 @@ const CustomerDetails = ({ client, onClose }) => {
   }, [editableFields]);
   
 
-  const renderEditableField = (field, label, isDate = false, isStatus = false, isVoltage = false) => {
+  const renderEditableField = (field, label, isDate = false, isStatus = false, isVoltage = false,isDistributor = false) => {
     const isFieldEditing = editableFields[field] !== undefined;
     
 
@@ -184,6 +314,35 @@ const CustomerDetails = ({ client, onClose }) => {
               <option value="220">220</option>
               <option value="380">380</option>
               <option value="Sin Tension">Sin Tension</option>
+            </select>
+            {!isFieldEditing ? (
+              <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />
+            ) : (
+              <AiOutlineCheck className={styles.saveIcon} onClick={() => handleSaveClick(field, label)} />
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    if (isDistributor) {
+      return (
+        <div className={styles.fieldGroup}>
+          <label className={styles.boldLabel}>{label}:</label>
+          <div className={styles.fieldWrapper}>
+            <select
+              ref={(el) => (inputRefs.current[field] = el)}
+              value={editableFields[field] !== undefined ? editableFields[field] : client[field] || ''}
+              disabled={!isFieldEditing}
+              onChange={(e) => handleInputChange(field, e.target.value)}
+              className={`${styles.inputSelect} ${isFieldEditing ? styles.editable : styles.readOnly}`}
+              autoComplete="nope"
+            >
+              <option value="CAUCETE CENTRO">CAUCETE CENTRO</option>
+              <option value="COOPERATIVA">COOPERATIVA</option>
+              <option value="DE LOS RIOS">DE LOS RIOS</option>
+              <option value="SANTA ROSA">SANTA ROSA</option>
+              <option value="URBANO">URBANO</option>
             </select>
             {!isFieldEditing ? (
               <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />
@@ -266,28 +425,39 @@ const CustomerDetails = ({ client, onClose }) => {
               {renderEditableField('status', 'Estado', false, true)}
               {renderEditableField('service', 'Servicio')}
               {renderEditableField('category', 'Categoría')}
-         
               {renderEditableField('voltage', 'Voltaje', false,false, true)}
             </div>
             
          
             <hr className={styles.sectionSeparator} />
             <div className={styles.section}>
-            {renderEditableField('device', 'Numero de Medidor')}
+           
+            {renderEditableField('supply', 'Numero de Suministro')}
+            {renderEditableField('distributor', 'Distribuidor', false, false, false, true)}
               {renderEditableField('substation', 'Subestación SETA')}
-              {renderEditableField('distributor', 'Distribuidor')}
-              {renderEditableField('supply', 'Numero de Suministro')}
+              {renderEditableField('outputBT', 'Salida BT')}
+              {renderEditableField('device', 'Numero de Medidor')}
+              {renderEditableField('connection', 'Acometida')}
+             
             </div>
             
             <hr className={styles.sectionSeparator} /> 
          <div className={styles.section}>
          {renderEditableField('wsg84Long', 'Longitud (WSG84)')}
          {renderEditableField('wsg84Lati', 'Latitud (WSG84)')}
-        {renderEditableField('zone', 'Zona')}
-        {renderEditableField('sector', 'Sector')}
-        {renderEditableField('route', 'Ruta')}
         
       </div>
+      {wsg84Lati && wsg84Long && (
+          <div className={styles.mapContainer}>
+            <MapComponent latitude={parseFloat(wsg84Lati)} longitude={parseFloat(wsg84Long)} client={client}/>
+          </div>
+        )}
+      <hr className={styles.sectionSeparator} /> 
+      <div className={styles.section}>
+      {renderEditableField('zone', 'Zona')}
+        {renderEditableField('sector', 'Sector')}
+        {renderEditableField('route', 'Ruta')}
+        </div>
           </fieldset>
             
             {/* Sección de Estado Actual */}
@@ -296,10 +466,6 @@ const CustomerDetails = ({ client, onClose }) => {
             <div className={styles.section}>
             {renderEditableField('dateOfEntry', 'Fecha de Alta', true)} 
             {renderEditableField('dateOfTermination', 'Fecha de Baja', true)} 
-            </div>
-            <hr className={styles.sectionSeparator} /> 
-            <div className={styles.section}>
-              {renderEditableField('consumption2024', 'Consumo 2024')}
             </div>
           </fieldset>
 

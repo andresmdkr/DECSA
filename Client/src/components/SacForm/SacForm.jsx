@@ -235,8 +235,45 @@ const SacForm = ({ client, onClose }) => {
     };
 
     useEffect(() => {
-        if (claimReason === 'Rotura de Artefactos' && !areaModifiedManually) {
-            setArea('artefactos');
+        if (!areaModifiedManually) {
+            if (['Rotura de Artefactos'].includes(claimReason)) {
+                setArea('artefactos');
+            } else if ([
+                'Reclamo de Facturación',
+                'Hurto de Energia',
+                'Reclamo Comercial',
+                'Otro problema comercial'
+            ].includes(claimReason)) {
+                setArea('comercial');
+            } else if ([
+                'Sin Corriente',
+                'Acometida Cortada',
+                'Corte Programado',
+                'Cables Cortados',
+                'Columna al Caer',
+                'Falta de Fase',
+                'Incendio en LBT/LMT',
+                'Incendio en Puesto',
+                'Incendio en SETA',
+                'Medidor Quemado',
+                'Transformador Quemado',
+                'Peligro de Electrocución',
+                'Pilastra Electrificada',
+                'Problema con el Alumbrado Público',
+                'Problema en Acometida',
+                'Problema en Puesto',
+                'Problemas de Tensión',
+                'Rama sobre Cable o Acometida',
+                'Alumbrado Público',
+                'Apertura Distribuidor ET Caucete',
+                'Falta de Poda',
+                'Poste Quebrado',
+                'Otros'
+            ].includes(claimReason)) {
+                setArea('operaciones');
+            } else {
+                setArea('');
+            }
         }
     }, [claimReason, areaModifiedManually]);
 
@@ -392,43 +429,45 @@ const SacForm = ({ client, onClose }) => {
                         <label className={styles.boldLabel}>Motivo:</label>
                         <select
                             value={claimReason}
-                            onChange={(e) => setClaimReason(e.target.value)}
+                            onChange={(e) =>{ setClaimReason(e.target.value), setAreaModifiedManually(false)}}
                             className={styles.select}
                         >
                             <option value="">Seleccionar...</option>
                             <optgroup label="Problema Eléctrico">
-                                <option value="Acometida Cortada">F00 / Acometida Cortada</option>
-                                <option value="Corte Programado">F01 / Afectado a Corte Programado</option>
-                                <option value="Cables Cortados">F05 / Cables Cortados de BT o MT</option>
-                                <option value="Columna al Caer">F06 / Columna al Caer</option>
-                                <option value="Falta de Fase">F07 / Falta de Fase</option>
-                                <option value="Incendio en LBT/LMT">F09 / Incendio en LBT/LMT</option>
-                                <option value="Incendio en Puesto">F10 / Incendio en Puesto de Medición</option>
-                                <option value="Incendio en SETA">F11 / Incendio en SETA</option>
-                                <option value="Medidor Quemado">F12 / Medidor Quemado</option>
-                                <option value="Peligro de Electrocución">F13 / Peligro de Electrocución</option>
-                                <option value="Pilastra Electrificada">F14 / Pilastra Electrificada</option>
-                                <option value="Problema con el Alumbrado Público">F16 / Problema con el Alumbrado Público</option>
-                                <option value="Problema en Acometida">F17 / Problema en Acometida</option>
-                                <option value="Problema en Puesto">F18 / Problema en Puesto de Medición</option>
-                                <option value="Problemas de Tensión">F19 /Problemas de Tensión</option>
-                                <option value="Rama sobre Cable o Acometida">F20 / Rama sobre Cable o Acometida</option>
-                                <option value="Sin Corriente">F21 / Sin Corriente</option>
-                                <option value="Transformador Quemado">F23 / Transformador Quemado</option>
+                                <option value="Sin Corriente">Sin Corriente</option>
+                                <option value="Acometida Cortada">Acometida Cortada</option>
+                                <option value="Corte Programado">Afectado a Corte Programado</option>
+                                <option value="Cables Cortados">Cables Cortados de BT o MT</option>
+                                <option value="Columna al Caer">Columna al Caer</option>
+                                <option value="Falta de Fase">Falta de Fase</option>
+                                <option value="Incendio en LBT/LMT">Incendio en LBT/LMT</option>
+                                <option value="Incendio en Puesto">Incendio en Puesto de Medición</option>
+                                <option value="Incendio en SETA">Incendio en SETA</option>
+                                <option value="Medidor Quemado">Medidor Quemado</option>
+                                <option value="Transformador Quemado">Transformador Quemado</option>
+                                <option value="Peligro de Electrocución">Peligro de Electrocución</option>
+                                <option value="Pilastra Electrificada">Pilastra Electrificada</option>
+                                <option value="Problema con el Alumbrado Público">Problema con el Alumbrado Público</option>
+                                <option value="Problema en Acometida">Problema en Acometida</option>
+                                <option value="Problema en Puesto">Problema en Puesto de Medición</option>
+                                <option value="Problemas de Tensión">Problemas de Tensión</option>
+                                <option value="Rama sobre Cable o Acometida">Rama sobre Cable o Acometida</option>
                             </optgroup>
                             <optgroup label="Artefacto Quemado">
-                                <option value="Rotura de Artefactos">F04 /  Rotura de Artefacto/s  </option>
+                                <option value="Rotura de Artefactos">Rotura de Artefacto/s  </option>
                             </optgroup>
                             <optgroup label="Problema Comercial">
-                                <option value="Error de Facturación">Error de Facturación</option>
-                                <option value="Inconveniente en Recepción de Factura">Inconveniente en Recepción de Factura</option>
-                                <option value="Solicita Habilitación de Servicio">Solicita Habilitación de Servicio</option>
+                                <option value="Reclamo de Facturación">Reclamo de Facturación</option>
+                                <option value="Hurto de Energia">Hurto de Energia</option>
+                                <option value="Reclamo Comercial">Reclamo Comercial</option>
+                                <option value="Otro problema comercial">Otro problema comercial</option>
                             </optgroup>
                             <optgroup label="Otros">
-                                <option value="Alumbrado Público">F02 / Alumbrado Público</option>
-                                <option value="Apertura Distribuidor ET Caucete">F03 / Apertura Distribuidor ET Caucete</option>
-                                <option value="Falta de Poda">F08 / Falta de Poda</option>
-                                <option value="Poste Quebrado">F15 / Poste Quebrado</option>
+                                <option value="Alumbrado Público">Alumbrado Público</option>
+                                <option value="Apertura Distribuidor ET Caucete">Apertura Distribuidor ET Caucete</option>
+                                <option value="Falta de Poda">Falta de Poda</option>
+                                <option value="Poste Quebrado">Poste Quebrado</option>
+                                <option value="Otros">Otros</option>
                                 
                             </optgroup>
                         </select>
@@ -497,6 +536,7 @@ const SacForm = ({ client, onClose }) => {
                         onChange={handleAreaChange}>
                             <option value="operaciones">Operaciones</option>
                             <option value="artefactos">Artefactos Quemados</option>
+                            <option value="comercial">Comercial</option>
                         </select>
                         </div>
                 </fieldset>

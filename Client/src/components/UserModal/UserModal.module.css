@@ -1,0 +1,239 @@
+/* Fondo del modal */
+.modalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro translúcido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* Contenedor del modal */
+  .modalContainer {
+    background-color: #fff;
+    border-radius: 10px;
+    width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    text-align: center;
+  }
+  
+  /* Animación de entrada */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Título */
+  .modalContainer h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Grupo de formulario */
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  
+  /* Estilo de los labels */
+  .formGroup label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Estilo de los inputs */
+  .input, .select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .input:focus, .select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Contenedor de contraseña */
+  .passwordContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .eyeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: -30px;
+    color: #888;
+  }
+  
+  .eyeButton:hover {
+    color: #007bff;
+  }
+  
+  /* Botones */
+  .modalActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .saveButton, .cancelButton {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+  
+  .saveButton {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .saveButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .cancelButton {
+    background-color: #ddd;
+    color: #555;
+  }
+  
+  .cancelButton:hover {
+    background-color: #bbb;
+  }
+
+  .changePasswordButton {
+    background-color: #c54d4d; /* Color azul principal */
+    color: #fff; /* Texto blanco */
+    font-size: 15px; /* Tamaño de fuente */
+    font-weight: bold; /* Texto en negrita */
+    padding: 10px 10px; /* Espaciado interno */
+    border: none; /* Sin borde */
+    border-radius: 8px; /* Bordes redondeados */
+    cursor: pointer; /* Indicador de clic */
+  }
+  
+  .changePasswordButton:hover {
+    background-color: #a84a4a; 
+  }
+
+
+ /* Fondo negro translúcido con desenfoque para el mini-modal */
+ .miniModalBackdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro translúcido */
+    backdrop-filter: blur(4px); /* Efecto desenfoque */
+    display: flex; /* Usamos flexbox para centrar */
+    align-items: center; /* Centrado vertical */
+    justify-content: center; /* Centrado horizontal */
+    z-index: 1002; /* Aseguramos que esté por encima de otros elementos */
+  }
+  
+  /* Contenedor del mini-modal */
+  .miniModal {
+    position: relative;
+    background-color: #fff;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Estilo para título del mini-modal */
+  .miniModal h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Input en el mini-modal */
+  .miniModal .input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    autoComplete: off; /* Desactiva autocompletado */
+  }
+  
+  /* Acciones del mini-modal */
+  .miniModal .modalActions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .miniModal .cancelButton,
+  .miniModal .saveButton {
+    flex: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .miniModal .cancelButton {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .miniModal .cancelButton:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .miniModal .saveButton {
+    background-color: #007bff; /* Azul para consistencia */
+    color: #fff;
+  }
+  
+  .miniModal .saveButton:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Animación de entrada */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  

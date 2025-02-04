@@ -8,6 +8,7 @@ import otReducer from './slices/otSlice';
 import resolutionReducer from './slices/resolutionSlice.js';
 import technicalServiceReducer from './slices/technicalServiceSlice';
 import repairOrderReducer from './slices/repairOrderSlice'
+import userReducer from './slices/userSlice.js'
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
     ot: otReducer,
     resolution: resolutionReducer,
     technicalService: technicalServiceReducer,
-    repairOrder: repairOrderReducer
+    repairOrder: repairOrderReducer,
+    users: userReducer,
 });
 
 export default rootReducer;

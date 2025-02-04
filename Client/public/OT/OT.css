@@ -78,8 +78,7 @@
 
   .conditional-section {
     font-size: 12px;
-    margin-top: 20px;
-    padding: 10px;
+    padding: 0 10px 10px 10px;
   }
   
   .subtitle {
@@ -94,10 +93,9 @@
     width: 100%;
     min-height: 70px; 
     padding: 10px;
-    margin-top: 10px;
+    margin-top: 0px;
     border: 1px solid #ccc;
-    border-radius: 8px; 
-    background-color: #f9f9f9; 
+    border-radius: 8px;   
     font-family: inherit;
     font-size: 13px; 
     white-space: pre-wrap; 

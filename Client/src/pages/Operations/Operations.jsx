@@ -4,6 +4,8 @@ import styles from './Operations.module.css';
 import IncomingClaims from '../../components/IncomingClaims/IncomingClaims';
 import OngoingClaims from '../../components/OngoingClaims/OngoingClaims';
 import ClaimsOp from "../../components/ClaimsOp/ClaimsOp";
+import OpReports from "../../components/OpReport/OpReports.jsx";
+import Clients from "../../components/Clients/Clients.jsx";
 import { useState } from 'react';
 
 const Operations = () => {
@@ -11,7 +13,9 @@ const Operations = () => {
         { label: 'Reclamos Entrantes', component: IncomingClaims },
         { label: 'Reclamos En Curso', component: OngoingClaims },
         { label: 'Todos los Reclamos', component: ClaimsOp },
-        { label: 'Reportes', component: () => <div>Reportes</div> }
+        { label: 'Buscador de Clientes', component: Clients },
+        { label: 'Reportes', component: OpReports },
+
     ];
 
     const [selectedAction, setSelectedAction] = useState(actions[0]);

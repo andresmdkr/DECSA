@@ -21,6 +21,7 @@ const ClaimsOpTable = () => {
     const [selectedSac, setSelectedSac] = useState(null);
     const [showSac, setShowSac] = useState(false); 
 
+    const capitalizeClaimReason = (reason) => reason.charAt(0).toUpperCase() + reason.slice(1); 
 
     const [searchParams, setSearchParams] = useState({
         sacId: '',
@@ -153,9 +154,6 @@ const ClaimsOpTable = () => {
     const handleViewSac = async (sac) => {
         setSelectedSac(sac);
         try {
-            if(sac.status !== "Closed"){
-                await dispatch(updateSAC({ id: sac.id, sacData: { status: "Open" } }));
-            }
             setShowSac(true);
         } catch (error) {
             console.error("Error al actualizar SAC:", error);
@@ -282,6 +280,7 @@ const ClaimsOpTable = () => {
                         <thead>
                             <tr>
                                 <th>Número de SAC</th>
+                                <th>Motivo</th>
                                 <th>Estado</th>
                                 <th>Prioridad</th>
                                 <th>Numero de Cuenta</th>
@@ -296,6 +295,7 @@ const ClaimsOpTable = () => {
                                 ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
                             `}>
                                     <td>{sac.id}</td>
+                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> 
                                     <td>
                                         <div className={styles.statusContainer}>
                                             <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>

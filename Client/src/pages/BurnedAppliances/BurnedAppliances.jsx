@@ -1,4 +1,3 @@
-import UnderConstruction from "../UnderConstruction/UnderConstruction";
 import styles from "./BurnedAppliances.module.css";
 import { useState } from "react";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -16,8 +15,8 @@ const BurnedAppliances = () => {
         { label: 'Reclamos', component: Claims },
         { label: 'Artefactos', component: BurnedArtifacts },
         { label: 'Cargar Servicio Tecnico', component: TechnicalService },
+        { label: 'Buscador de Clientes', component: Clients },
         { label: 'Reportes', component: ArtifactsReports },
-        { label: 'Datos Clientes', component: Clients },
     ];
 
     const [selectedAction, setSelectedAction] = useState(actions[0]);

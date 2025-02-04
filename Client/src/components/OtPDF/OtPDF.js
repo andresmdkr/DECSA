@@ -12,8 +12,8 @@ function formatDate(dateString) {
 }
 
 
-const OtPDF = async ({ sac, ot, artifact }) => {
-  const client = store.getState().clients.client;
+const OtPDF = async ({ sac, ot, artifact,client }) => {
+/*   const client = store.getState().clients.client; */
 
   try {
     const htmlTemplate = await fetch('OT/OT.html').then((res) => res.text());

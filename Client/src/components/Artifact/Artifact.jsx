@@ -35,8 +35,7 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
     const [repairOrderModalOpen, setRepairOrderModalOpen] = useState(false);
     const [repairOrderMode, setRepairOrderMode] = useState('view');
-
-
+    const [sacData, setSacData] = useState(null);
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -55,6 +54,8 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
         dispatch(fetchAllTechnicalServices());
     }, [dispatch]);
 
+
+
     useEffect(() => {
         if (artifact) {
             setFormData({
@@ -65,7 +66,14 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                 budget: artifact.budget || '',
             });
         }
+        if(sac){
+            setSacData(sac);
+        }else{
+            setSacData(artifact.sac);
+        }
     }, [artifact]);
+
+    console.log('sacData', sacData);
 
 
     const handleStatusChange = async (e) => {
@@ -178,7 +186,7 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
 
     const openWorkOrderForm = () => {
         <OtForm 
-            sac={sac} 
+            sac={sacData} 
             onClose={closeWorkOrderForm} 
             ot={workOrder} 
             mode={otMode} 

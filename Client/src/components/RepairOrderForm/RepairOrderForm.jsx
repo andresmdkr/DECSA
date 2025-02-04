@@ -47,13 +47,17 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
         let input = e.target.value;
     
         input = input.replace(/[^0-9,]/g, '');
-
-        const [integerPart, decimalPart] = input.split(',');
+    
+        let [integerPart, decimalPart] = input.split(',');
+    
+        if (decimalPart) {
+            decimalPart = decimalPart.substring(0, 2).padEnd(2, '0');
+        }
 
         const formattedInteger = integerPart
             ? integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
             : '';
-    
+            
         const formattedValue = decimalPart !== undefined
             ? `${formattedInteger},${decimalPart}`
             : formattedInteger;

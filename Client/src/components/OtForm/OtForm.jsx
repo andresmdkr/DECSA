@@ -3,11 +3,13 @@ import { AiOutlineClose } from 'react-icons/ai';
 import styles from './OtForm.module.css';
 import { createWorkOrder, updateWorkOrder } from '../../redux/slices/otSlice';
 import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
+import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
 import OtPDF from '../OtPDF/OtPDF';
 import { useDispatch, useSelector} from 'react-redux';
 import Select from 'react-select';
 
 import Swal from 'sweetalert2';
+import { use } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -18,6 +20,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
   const [status, setStatus] = useState('In Progress');
   const [reason, setReason] = useState('Personalizado');
   const [description, setDescription] = useState('');
+  const [client, setClient] = useState(null);
   const [technicalService, setTechnicalService] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -27,7 +30,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
   const technicalServices = useSelector(state => state.technicalService.technicalServices);
 
 
-/*   useEffect(() => {
+  useEffect(() => {
     console.log(ot,artifact);
     if (mode === 'edit' || mode === 'view') {
       if (ot) {
@@ -46,10 +49,10 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
         setSelectedFiles(existingFiles);
       }
     }
-  }, [mode, ot]); */
+  }, [mode, ot]);
 
 
-  useEffect(() => {
+/*   useEffect(() => {
     if (mode === 'edit' || mode === 'view') {
       if (ot) {
         setStatus(ot.status);
@@ -72,12 +75,22 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
         setSelectedFiles(existingFiles);
       }
     }
-  }, [mode, ot]);
+  }, [mode, ot]); */
   
 
   useEffect(() => {
     dispatch(fetchAllTechnicalServices());
   }, [dispatch]);
+
+  useEffect(() => {
+        if (sac.clientId) {
+          dispatch(fetchClientByAccountNumber(sac.clientId))
+            .unwrap()
+            .then(setClient)
+            .catch((error) => console.error('Error fetching client:', error));
+        }
+      }, [sac.clientId, dispatch]);
+
 
   const renameFileIfDuplicate = (file, existingFiles) => {
     let newFileName = file.name;
@@ -153,7 +166,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
           cancelButtonText: 'Cerrar',
         }).then((result) => {
           if (result.isConfirmed) {
-            OtPDF({sac, ot, artifact });
+            OtPDF({sac, ot, artifact,client });
           }
           onClose(); 
         });
@@ -167,7 +180,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
           cancelButtonText: 'Cerrar',
         }).then((result) => {
           if (result.isConfirmed) {
-            OtPDF({sac, ot, artifact });
+            OtPDF({sac, ot, artifact,client });
           }
           onClose();            
         });
@@ -200,7 +213,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
       
       try {
         await dispatch(updateWorkOrder({ workOrderId: ot.id, workOrderData: updatedWorkOrderData }));
-        OtPDF({ sac, ot: { ...ot, ...updatedWorkOrderData }, artifact });
+        OtPDF({ sac, ot: { ...ot, ...updatedWorkOrderData }, artifact,client });
       } catch (error) {
         console.error('Error al actualizar antes de imprimir:', error);
         Swal.fire({
@@ -210,7 +223,7 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
         });
       }
     } else {
-      OtPDF({ sac, ot, artifact });
+      OtPDF({ sac, ot, artifact,client });
     }
   };
 

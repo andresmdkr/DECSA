@@ -6,6 +6,28 @@ const getAllUsers = async () => {
     return User.findAll();
 };
 
+
+const createUser = async (userData) => {
+    const { username, name, lastName, password, role, status } = userData;
+    console.log(userData)
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+        throw new Error("El nombre de usuario ya está en uso");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+        username,
+        name,
+        lastName,
+        password: hashedPassword,
+        role,
+        status,
+    });
+
+    return newUser;
+};
+
 const getUserById = async (id) => {
     const user = await User.findByPk(id);
     if (!user) throw new Error('Usuario no encontrado');
@@ -18,14 +40,16 @@ const getUserByName = async (name) => {
 
 
 const updateUserFields = (user, userData) => {
-    const fields = ['username', 'name','password', 'lastName', 'role', 'status'];
-    fields.forEach(field => {
-        if (userData[field]) user[field] = userData[field];
+    const fields = ['username', 'name', 'password', 'lastName', 'role', 'status'];
+    fields.forEach((field) => {
+      if (userData[field]) user[field] = userData[field];
     });
-};
+  };
+  
 
 const updateUser = async (id, userData) => {
     const user = await getUserById(id);
+    console.log(userData)
 
     if (userData.password) {
         console.log(userData.password);
@@ -46,6 +70,7 @@ const deleteUser = async (id) => {
 
 module.exports = {
     getAllUsers,
+    createUser,
     getUserById,
     getUserByName,
     updateUser,
