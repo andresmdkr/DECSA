@@ -14,7 +14,7 @@ const TechnicalServiceTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create');
   const [currentPage, setCurrentPage] = useState(1);
-  const servicesPerPage = 6;
+  const servicesPerPage = 9;
 
   useEffect(() => {
     dispatch(fetchAllTechnicalServices());
@@ -62,9 +62,11 @@ const TechnicalServiceTable = () => {
   };
 
 
-  const sortedTechnicalServices = [...technicalServices].sort((a, b) =>
-    a.name.localeCompare(b.name)
-  );
+const filteredTechnicalServices = technicalServices.filter(service => service.area === 'artefactos');
+
+const sortedTechnicalServices = [...filteredTechnicalServices].sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
 
 
   const indexOfLastService = currentPage * servicesPerPage;
@@ -74,7 +76,7 @@ const TechnicalServiceTable = () => {
   return (
     <div className={styles.tableContainer}>
       {error && <div className={styles.error}>Error: {error}</div>}
-      {technicalServices.length === 0 ? (
+      {filteredTechnicalServices.length === 0 ? (
         <p className={styles.error2}>No se encontraron servicios técnicos</p>
       ) : (
         <table className={styles.table}>
@@ -82,14 +84,16 @@ const TechnicalServiceTable = () => {
             <tr>
               <th>Nombre</th>
               <th>Tipo</th>
+              <th>Teléfono</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {currentServices.map((service) => (
               <tr key={service.id}>
-                <td>{service.name}</td>
-                <td>{service.type.charAt(0).toUpperCase() + service.type.slice(1)}</td> 
+                <td className={styles.truncateCell} title={service.name}>{service.name}</td>
+                <td>{service.type.charAt(0).toUpperCase() + service.type.slice(1)}</td>
+                <td className={styles.truncateCell} title={service.phone}>{service.phone?.trim() ? service.phone : 'N/A'}</td>
                 <td>
                   <button
                     onClick={() => handleEdit(service)}
@@ -113,7 +117,7 @@ const TechnicalServiceTable = () => {
 
       <div className={styles.paginationContainer}>
         <Pagination
-          count={Math.ceil(technicalServices.length / servicesPerPage)}
+          count={Math.ceil(filteredTechnicalServices.length / servicesPerPage)}
           page={currentPage}
           onChange={handlePageChange}
           className={styles.pagination}

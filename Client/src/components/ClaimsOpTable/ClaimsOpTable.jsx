@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters, AiOutlineFilePdf } from 'react-icons/ai';
+import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice.js';
 import { fetchSACs,updateSAC } from '../../redux/slices/sacsSlice.js';
 import styles from './ClaimsTableOp.module.css';
 import Sac from '../Sac/Sac.jsx';
@@ -16,10 +17,11 @@ const ClaimsOpTable = () => {
     const [clientIdSearch, setClientIdSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
-    const sacsPerPage = 10;
+    const sacsPerPage = 20;
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedSac, setSelectedSac] = useState(null);
     const [showSac, setShowSac] = useState(false); 
+    const [clients, setClients] = useState({}); 
 
     const capitalizeClaimReason = (reason) => reason.charAt(0).toUpperCase() + reason.slice(1); 
 
@@ -70,6 +72,28 @@ const ClaimsOpTable = () => {
         }
        
     }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
+
+
+    useEffect(() => {
+            const fetchClients = async () => {
+                const clientData = {};
+                for (const sac of sacs) {
+                    if (sac.clientId && !clients[sac.clientId]) { 
+                        try {
+                            const response = await dispatch(fetchClientByAccountNumber(sac.clientId)).unwrap();
+                            clientData[sac.clientId] = response;
+                        } catch (error) {
+                            console.error(`Error obteniendo cliente ${sac.clientId}:`, error);
+                        }
+                    }
+                }
+                setClients((prev) => ({ ...prev, ...clientData }));
+            };
+    
+            if (sacs.length > 0) {
+                fetchClients();
+            }
+        }, [sacs, dispatch]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -279,16 +303,32 @@ const ClaimsOpTable = () => {
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>Número de SAC</th>
+                                <th>SAC</th>
                                 <th>Motivo</th>
                                 <th>Estado</th>
                                 <th>Prioridad</th>
-                                <th>Numero de Cuenta</th>
+                                <th>Cuenta</th>
+                                <th>Nombre Titular</th>
+                                <th>Dirección</th>
+                                <th>Responsable</th> 
+                                <th>Fecha</th>                                 
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                        {sacs.map((sac) => (
+                        {sacs.map((sac) => {
+                             const customerServiceOrders = sac.customerServiceOrders || [];
+                             const lastOrder = customerServiceOrders[customerServiceOrders.length - 1];
+                             const assignedPerson = lastOrder?.assignedPerson || sac.assignedTo || "N/A";
+
+ 
+                             const formattedDate = new Date(sac.createdAt).toLocaleDateString("es-AR", {
+                             day: "2-digit",
+                             month: "2-digit",
+                             year: "numeric",
+                             });
+                            const client = clients[sac.clientId] || {};
+                            return (
                             <tr key={sac.id} className={`
                                 ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
                                 ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
@@ -304,6 +344,10 @@ const ClaimsOpTable = () => {
                                     </td>
                                     <td>{capitalizePriority(sac.priority)}</td>
                                     <td>{sac.clientId || "S/N"}</td>
+                                    <td>{client.holderName || "N/A"}</td>
+                                    <td>{client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}</td>
+                                    <td>{assignedPerson}</td>
+                                    <td>{formattedDate}</td>
                                     <td>
                                         <button 
                                             className={styles.viewClaimButton} 
@@ -315,7 +359,8 @@ const ClaimsOpTable = () => {
                                    
 
                                 </tr>
-                            ))}
+                            );
+                        })}
                         </tbody>
                     </table>
                     {showSac && selectedSac && (

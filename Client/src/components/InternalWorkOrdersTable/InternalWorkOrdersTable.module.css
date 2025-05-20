@@ -1,0 +1,307 @@
+
+.container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  
+    
+}
+
+
+.filterContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.searchBar {
+    width: 250px;
+
+}
+
+.filter{
+    width: 150px;
+}
+
+.searchContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 30px;
+    
+}
+
+.searchContainer2 {
+    margin-top: 10px;
+    min-width: 400px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.searchButton {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background-color: #4751A8;
+    color: white;
+    border: none;
+    padding: 12px 12px; 
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.searchButton:hover {
+    background-color: #3a3f8a;
+}
+
+.searchButton:focus {
+    outline: none;
+}
+
+.statusContainer {
+    display: flex;
+    align-items: center;
+    gap: 8px; 
+}
+
+.statusCircle {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+
+.statusPending {
+    background-color: red;
+}
+
+.statusOpen {
+    background-color: orange;
+}
+
+.statusClosed {
+    background-color: green;
+}
+
+
+.statusDefault {
+    background-color: gray;
+}
+
+
+.refreshButton {
+    padding: 10px;
+    font-size: 16px;
+    background: none;
+    color: #4751A8;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    width: 40px;
+    height: 40px;
+    outline: none;
+}
+
+.refreshButton {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.refreshButton:hover {
+    outline: none;
+    color: #007bff;
+}
+
+.refreshButton:focus {
+    box-shadow: none;
+}
+
+.spinnerIcon {
+    color: #007bff;
+    font-size: 1.2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.loadingSpinner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #007bff;
+    font-size: 18px;
+}
+
+
+.createOrderButton {
+    background-color: #d9534f; /* Rojo pastel */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+}
+
+.createOrderButton:hover {
+    background-color: #c9302c; 
+}
+
+.createOrderButton:focus {
+    outline: none;
+}
+
+
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px; 
+}
+
+.table th, .table td {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+/* Estilo para encabezados */
+.table th {
+    background-color: #f4f4f4;
+}
+
+/* Alternar colores en filas */
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Resaltar fila al pasar el mouse */
+.table tr:hover {
+    background-color: #e6e6e6;
+}
+
+
+.table th:nth-child(1), .table td:nth-child(1), /* N° SAC */
+.table th:nth-child(2), .table td:nth-child(2)  /* N° O.T.I */ { 
+    width: 6%;
+}
+
+.table th:nth-child(3), .table td:nth-child(3), /* Dirección */
+.table th:nth-child(4), .table td:nth-child(4)  /* Tarea */ { 
+    width: 25%;
+}
+
+.table th:nth-child(5), .table td:nth-child(5) { /* Responsable */
+    width: 15%;
+}
+
+.table th:nth-child(6), .table td:nth-child(6) { /* Estado */
+    width: 10%;
+}
+
+.table th:nth-child(7), .table td:nth-child(7) { /* Acciones */
+    width: 10%;
+    text-align: center;
+}
+
+.actionButton {
+    background-color: #007bff;
+    color: white;
+    padding: 3px 7px;
+    border: none;
+    cursor: pointer;
+    font-size: 12px; 
+}
+
+
+.table, .paginationContainer {
+    margin: 0 auto; 
+}
+
+
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+
+.highPriorityRow {
+    background-color: rgba(255, 0, 0, 0.267); 
+}
+
+
+.mediumPriorityRow {
+    background-color: rgba(255, 117, 4, 0.308); 
+}
+
+.viewClaimButton {
+    background-color: #1d8622;
+    color: white;
+    padding: 8px 16px;
+    border:none;
+    border-radius: 5px ;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 2px;
+    width:100%;
+}
+
+.viewClaimButton:hover {
+    background-color: #1a6e1a;;
+}
+
+.viewClaimButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+
+.viewOtiButton {
+    background-color: #007bff; /* Azul */
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    width:100%;
+}
+
+.viewOtiButton:hover {
+    background-color: #003063; 
+}
+
+.viewOtiButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+@media screen and (max-width: 1000px) {
+    .filterContainer{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

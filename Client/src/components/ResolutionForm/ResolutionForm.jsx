@@ -45,13 +45,9 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
 //////////////////////////       
 InconvenienteAjenoAlServicioElectrico: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
 
-Se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; de lo observado en ambas órdenes se constató que: no existe rotura de su artefacto. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
+Se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; donde se constató que: no han existido perturbaciones en la red en la fecha reclamada, las instalaciones de DECSA están en buenas condiciones, la rotura de su artefacto no fue originada por el servicio eléctrico. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
 
-La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.
-
-Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
-
-La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual firma en conformidad, entregandose el artefacto reparado donde constata el normal funcionamiento.`,
+La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.`,
         
 //////////////////////////   
 FCFuerzaMayor: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con la rotura del artefacto "${artifactData?.name} / ${artifactData?.brand}" que habría ocurrido el día ${formatEventDate(artifactData?.SAC.eventDate)} a las ${formatStartTime(artifactData?.SAC.startTime)} aproximadamente.
@@ -74,10 +70,15 @@ ReconocimientoReparacion: `Me dirijo a Ud. en relación al reclamo de la referen
 
 En tal sentido se inició el proceso de evaluación del reclamo según lo indicado en Resolucion 16/97 del E.P.R.E; donde se constató que se debe reemplazar placa fuente.
 
-Por ello mediante la Orden de Reparación N° ${artifactData?.repairOrder?.id ?? 'N/A'} se dispuso la reparación de su artefacto.
-
 La presente nota, tiene caracter de resolución definitiva a su reclamo,la cual firma en conformidad, entregandose el artefacto reparado donde constata el normal funcionamiento.`,
         
+//////////////////////////   
+ArtefactoSinRotura: `Me dirijo a Ud. en relación al reclamo de la referencia, el cual se corresponde con el artefacto "${artifactData?.name} / ${artifactData?.brand}" reclamado por Usted.
+
+Se inició el procedimiento de evaluación del reclamo según lo indicado en la Resolucion 16/97 del E.P.R.E; donde se constató que: no existe rotura de su artefacto. Por lo que no corresponde hacer lugar a su reclamo N° ${sacId} del artefacto antes mencionado.
+
+La presente nota, tiene caracter de resolución definitiva del reclamo mencionado en el primer párrafo.`,
+
 //////////////////////////   
 Personalizado: "" 
     };
@@ -183,6 +184,8 @@ Personalizado: ""
                     <option value="InconvenienteAjenoAlServicioElectrico">Inconveniente ajeno al servicio eléctrico</option>
                     <option value="ReconocimientoIndemnizaciónConRecibo">Reconocimiento de indemnización con recibo</option>
                     <option value="FCFuerzaMayor">Caso fuerza mayor</option>
+                    <option value="ArtefactoSinRotura">Artefacto sin rotura</option>
+                    <option value="Personalizado">Personalizado</option>
                 </>
             );
         } else {

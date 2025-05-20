@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Pagination, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { AiOutlineSearch, AiOutlineSync, AiOutlineLoading3Quarters, AiOutlineFilePdf } from 'react-icons/ai';
 import { fetchSACs, updateSAC } from '../../redux/slices/sacsSlice';
+import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice.js';
 import styles from './OngoingClaimsTable.module.css';
 import OacModal from '../OacModal/OacModal';
+import Sac from '../Sac/Sac.jsx';
 
 const OngoingClaimsTable = () => {
     const dispatch = useDispatch();
@@ -15,11 +17,12 @@ const OngoingClaimsTable = () => {
     const [clientIdSearch, setClientIdSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
-    const sacsPerPage = 10;
+    const sacsPerPage = 20;
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedSac, setSelectedSac] = useState(null);
-    const [showOacModal, setShowOacModal] = useState(false);  
-
+    const [showOacModal, setShowOacModal] = useState(false);
+    const [showSac, setShowSac] = useState(false);  
+    const [clients, setClients] = useState({}); 
 
     const [searchParams, setSearchParams] = useState({
         sacId: '',
@@ -66,6 +69,27 @@ const OngoingClaimsTable = () => {
             }));
         }
     }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
+
+    useEffect(() => {
+            const fetchClients = async () => {
+                const clientData = {};
+                for (const sac of sacs) {
+                    if (sac.clientId && !clients[sac.clientId]) { 
+                        try {
+                            const response = await dispatch(fetchClientByAccountNumber(sac.clientId)).unwrap();
+                            clientData[sac.clientId] = response;
+                        } catch (error) {
+                            console.error(`Error obteniendo cliente ${sac.clientId}:`, error);
+                        }
+                    }
+                }
+                setClients((prev) => ({ ...prev, ...clientData }));
+            };
+    
+            if (sacs.length > 0) {
+                fetchClients();
+            }
+        }, [sacs, dispatch]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -147,6 +171,16 @@ const OngoingClaimsTable = () => {
     };
     
 
+    const handleViewSac = (sac) => {
+        setSelectedSac(sac);
+        setShowSac(true);
+      };
+      
+      const handleCloseSac = () => {
+        setShowSac(false);
+        setSelectedSac(null);
+      };
+
     return (
         <div className={styles.container}>
             <div className={styles.filterContainer}>
@@ -220,50 +254,86 @@ const OngoingClaimsTable = () => {
 
             {/* No SACs Available */}
             {status === 'succeeded' && sacs.length === 0 && <p>No hay SACs disponibles.</p>}
-
+            {console.log(sacs)}
             {/* SAC Table */}
             {status === 'succeeded' && sacs?.length > 0 && (
                 <div>
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Número de SAC</th>
-                                <th>Motivo</th> 
-                                <th>Estado</th>
-                                <th>Prioridad</th>
-                                <th>Numero de Cuenta</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {sacs.map((sac) => (
-                                <tr key={sac.id} className={`
-                                    ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
-                                    ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
-                                    ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
-                                `}>
-                                    <td>{sac.id}</td>
-                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> 
-                                    <td>
-                                        <div className={styles.statusContainer}>
-                                            <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
-                                            {mapStatusToSpanish(sac.status)}
-                                        </div>
-                                    </td>
-                                    <td>{capitalizePriority(sac.priority)}</td>
-                                    <td>{sac.clientId || "S/N"}</td>
-                                    <td>
-                                    <button 
-                                            className={styles.viewClaimButton} 
-                                            onClick={() => handleViewOac(sac)}  
-                                        >
-                                            Ver O.A.Cs
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                   <table className={styles.table}>
+  <thead>
+    <tr>
+      <th>SAC</th>
+      <th>Motivo</th>
+      <th>Estado</th>
+      <th>Prioridad</th>
+      <th>Cuenta</th>
+      <th>Nombre Titular</th>
+      <th>Dirección</th>
+      <th>Responsable</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {sacs.map((sac) => {
+      const customerServiceOrders = sac.customerServiceOrders || [];
+      const lastOrder = customerServiceOrders[customerServiceOrders.length - 1];
+      const assignedPerson = lastOrder?.assignedPerson || "N/A";
+
+      const formattedDate = new Date(sac.createdAt).toLocaleDateString("es-AR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+
+      const client = clients[sac.clientId] || {};
+
+      return (
+        <tr
+          key={sac.id}
+          className={`
+            ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
+            ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
+            ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
+          `}
+        >
+          <td>{sac.id}</td>
+          <td>{capitalizeClaimReason(sac.claimReason)}</td>
+          <td>
+            <div className={styles.statusContainer}>
+              <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
+              {mapStatusToSpanish(sac.status)}
+            </div>
+          </td>
+          <td>{capitalizePriority(sac.priority)}</td>
+          <td>{sac.clientId || "S/N"}</td>
+          <td className={styles.ellipsisCell}>{client.holderName || "N/A"}</td>
+          <td className={styles.ellipsisCell}>
+            {client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}
+          </td>
+          <td className={styles.ellipsisCell}>{assignedPerson}</td>
+          <td>{formattedDate}</td>
+          <td className={styles.actionsCell}>
+            <div className={styles.buttonGroup}>
+              <button
+                className={`${styles.buttonBase} ${styles.viewClaimButton}`}
+                onClick={() => handleViewOac(sac)}
+              >
+                Ver O.A.Cs
+              </button>
+              <button
+                className={`${styles.buttonBase} ${styles.viewReclamoButton}`}
+                onClick={() => handleViewSac(sac)}
+              >
+                Ver Reclamo
+              </button>
+            </div>
+          </td>
+        </tr>
+      );
+    })}
+  </tbody>
+</table>
+
 
                     {/* Pagination */}
                     <div className={styles.paginationContainer}>
@@ -276,6 +346,9 @@ const OngoingClaimsTable = () => {
                     </div>
                     {showOacModal && selectedSac && (
                         <OacModal sac={selectedSac} onClose={handleCloseOacModal} showStatusButton={true} />  
+                    )}
+                    {showSac && (
+                    <Sac sac={selectedSac} onClose={handleCloseSac} />
                     )}
                 </div>
             )}

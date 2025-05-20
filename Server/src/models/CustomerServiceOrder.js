@@ -12,6 +12,14 @@ module.exports = (sequelize) => {
       defaultValue: 'Open',
       allowNull: false,
     },
+    assignedPerson: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    assignedBy: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     mainFile: {
       type: DataTypes.STRING,
       allowNull: true,

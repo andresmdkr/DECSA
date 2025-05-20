@@ -35,7 +35,7 @@ const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
     pageContainer.innerHTML = htmlTemplate;
 
     console.log(pageContainer);
-
+    console.log(Menbrete)
     // Rellenar datos comunes
     pageContainer.querySelector('#menbrete').src = Menbrete;
     pageContainer.querySelector('#fechaActual').textContent = formattedDate;

@@ -43,7 +43,7 @@ const ArtifactReportXLS = async (startDate, endDate) => {
       rows.push({
         'N° CUENTA':  Number(sac.clientId) || 'N/A',
         'N° SUMINISTRO':  Number(client?.supply) || 'N/A',
-        RECLAMANTE: claimantName,
+        'RECLAMANTE': claimantName,
         'DOMICILIO SUMINISTRO': fullAddress || 'N/A',
         'N° RECLAMO':  Number(sac.id) || 'N/A',
         'ARTEFACTOS RECLAMADOS': artifactList || 'N/A',

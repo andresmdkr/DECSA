@@ -151,25 +151,70 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px; 
+    font-size: 15px;
+    table-layout: fixed; /* Hace que el ancho respete lo que se define en cada columna */
 }
 
 .table th, .table td {
-    padding: 5px; 
+    padding: 8px;
     border-bottom: 1px solid #ccc;
     text-align: left;
+    vertical-align: center;
+    word-wrap: break-word;
 }
 
-.table th:nth-child(1), .table td:nth-child(1),
-.table th:nth-child(2), .table td:nth-child(2),
-.table th:nth-child(3), .table td:nth-child(3),
-.table th:nth-child(4), .table td:nth-child(4),
-.table th:nth-child(5), .table td:nth-child(5) { 
-    width: 15%;
+.table th {
+    background-color: #f4f4f4;
 }
 
-.table th:nth-child(6), .table td:nth-child(6) { 
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:hover {
+    background-color: #e6e6e6;
+}
+
+/* Ajuste de anchos para 10 columnas */
+.table th:nth-child(1), .table td:nth-child(1) { /* N° SAC */
+    width: 7%;
+}
+
+.table th:nth-child(2), .table td:nth-child(2) { /* Motivo */
     width: 10%;
+}
+
+.table th:nth-child(3), .table td:nth-child(3) { /* Estado */
+    width: 10%;
+}
+
+.table th:nth-child(4), .table td:nth-child(4) { /* Prioridad */
+    width: 8%;
+}
+
+.table th:nth-child(5), .table td:nth-child(5) { /* Nº Cuenta */
+    width: 8%;
+}
+
+.table th:nth-child(6), .table td:nth-child(6) { /* Titular */
+    width: 13%;
+}
+
+.table th:nth-child(7), .table td:nth-child(7) { /* Dirección */
+    width: 13%;
+}
+
+.table th:nth-child(8), .table td:nth-child(8) { /* Responsable */
+    width: 10%;
+}
+
+.table th:nth-child(9), .table td:nth-child(9) { /* Fecha */
+    width: 10%;
+}
+
+.table th:nth-child(10), .table td:nth-child(10) { /* Acciones */
+    width: 7%;
+    text-align: center;
 }
 
 .actionButton {
@@ -215,7 +260,7 @@
 }
 
 .viewClaimButton:hover {
-    background-color: #1a6e1a;;
+    background-color: #1a6e1a;
 }
 
 .viewClaimButton:focus {

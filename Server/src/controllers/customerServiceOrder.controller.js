@@ -24,20 +24,23 @@ const handleFileUpload = async (files, dir) => {
   };
   
 
-  const createCustomerServiceOrder = async (data, mainFile) => {
-    const dir = path.join(__dirname, '../../uploads/OAC', `OAC-${data.id}`);
-  
-    const mainFilePath = (await handleFileUpload([mainFile], dir))[0];
-  
-    const newOrder = await CustomerServiceOrder.create({
-      sacId: data.sacId,
-      id: data.id,
-      mainFile: mainFilePath,
-      status: 'Open',
-    });
-  
-    return newOrder;
-  };
+    const createCustomerServiceOrder = async (data, mainFile) => {
+      const dir = path.join(__dirname, '../../uploads/OAC', `OAC-${data.id}`);
+      console.log(data);
+    
+      const mainFilePath = (await handleFileUpload([mainFile], dir))[0];
+    
+      const newOrder = await CustomerServiceOrder.create({
+        sacId: data.sacId,
+        id: data.id,
+        assignedPerson: data.assignedPerson|| 'No asignado',
+        assignedBy: data.assignedBy|| 'No asignado',
+        mainFile: mainFilePath,
+        status: 'Open',
+      });
+    
+      return newOrder;
+    };
   
 
 
@@ -78,6 +81,8 @@ const updateCustomerServiceOrder = async (id, data, mainFile, otherFiles) => {
         order.files = [...(order.files || []), ...otherFilePaths];
       }
       console.log(order);
+      if (data.assignedPerson) order.assignedPerson = data.assignedPerson;
+      if (data.assignedBy) order.assignedBy = data.assignedBy;
       if (data.status) order.status = data.status;
       await order.save();
       return order;

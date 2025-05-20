@@ -152,26 +152,72 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 15px; 
-    
-     
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
-.table th, .table td {
-    padding: 5px; 
-    border-bottom: 1px solid #ccc;
+/* Estilo general de celdas */
+.table th,
+.table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ddd;
     text-align: left;
 }
 
-.table th:nth-child(1), .table td:nth-child(1),
-.table th:nth-child(2), .table td:nth-child(2),
-.table th:nth-child(3), .table td:nth-child(3),
-.table th:nth-child(4), .table td:nth-child(4) {
-    width: 15%; 
+/* Encabezados */
+.table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #333;
 }
 
-.table th:nth-child(5), .table td:nth-child(5) {
-    width: 10%;
+/* Alternar colores en las filas */
+.table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Hover */
+.table tr:hover {
+    background-color: #f0f0f0;
+}
+
+/* Distribución personalizada por columna */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 10%; /* Número de SAC */
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 10%; /* Estado */
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 10%; /* Prioridad */
+}
+
+.table th:nth-child(4),
+.table td:nth-child(4) {
+    width: 12%; /* Número de Cuenta */
+}
+
+.table th:nth-child(5),
+.table td:nth-child(5) {
+    width: 28%; /* Motivo – más espacio */
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6) {
+    width: 15%; /* Fecha */
+}
+
+.table th:nth-child(7),
+.table td:nth-child(7) {
+    width: 5%; /* Acciones – muy pequeña */
+    text-align: center;
 }
 
 .actionButton {

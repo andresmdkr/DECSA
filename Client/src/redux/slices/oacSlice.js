@@ -28,14 +28,14 @@ export const createOac = createAsyncThunk(
       const token = localStorage.getItem('token');
       const formData = new FormData();
 
-      // Parámetros principales
+
       formData.append('sacId', sacId);
       Object.keys(oacData).forEach(key => {
         if (key === 'files' || key === 'mainFile') return;
         formData.append(key, oacData[key]);
       });
+      
 
-      // Archivo principal (mainFile)
       if (oacData.mainFile) {
         formData.append('mainFile', oacData.mainFile, `OAC_${oacData.id}.xlsx`);
 
@@ -43,7 +43,6 @@ export const createOac = createAsyncThunk(
         throw new Error('mainFile is required');
       }
 
-      // Otros archivos
       oacData.files.forEach(file => {
         formData.append('files', file);
       });

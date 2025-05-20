@@ -175,10 +175,13 @@ const RepairOrderForm = ({sacId, burnedArtifact, repairOrder, mode, onClose }) =
                     <div className={styles.inlineGroup}>
                         <label className={styles.repairOrderLabel}>Servicio Técnico:</label>
                         <Select
-                            options={technicalServices.map(service => ({
+                            options={technicalServices
+                            .filter(service => service.area?.toLowerCase() === 'artefactos')
+                            .map(service => ({
                                 value: service.name,
                                 label: service.name,
-                            }))}
+                            }))
+                            }
                             value={technicalService ? { value: technicalService, label: technicalService } : null}
                             onChange={(selectedOption) => setTechnicalService(selectedOption.value)}
                             styles={customSelectStyles}

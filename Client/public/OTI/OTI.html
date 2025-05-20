@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orden de Trabajo Interna</title>
+    <link rel="stylesheet" href="OTI.css">
+</head>
+<body>
+    <div class="container">
+        
+        <div class="header">
+            <div class="header-top">
+                <img id="logo" alt="Logo" class="logo">
+            </div>
+            <div class="header-bottom">
+                <h2 class="title">ORDEN DE TRABAJO INTERNA</h2>
+                <span class="order-number"></span>
+                
+            </div>
+        </div>
+
+        <div class="info">
+            <div class="row">
+                <!-- Contenedor de la tarea (80%) -->
+                <div class="task-wrapper">
+                    
+                    <div class="task-container">
+                        <div class="task-label">Tarea:</div>
+                        <span class="task-line" id="task"></span>
+                    </div>
+                </div>
+                <!-- Contenedor de la fecha (20%) -->
+                <div class="date-wrapper">
+                    <span>Fecha:</span>
+                    <span class="date-line" id="date"></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="task-wrapper">
+                    <div class="task-container">
+                        <div class="task-label">Lugar:</div>
+                        <span class="task-line" id="location"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="task-wrapper">
+                    <div class="task-container">
+                        <div class="obs-label">Observaciones:</div>
+                        <span class="obs-line" id="observations"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row realizado-row">
+                <span class="realizado-label">Realizado:</span>
+                <span  id="realizado">........./........./.........</span>
+            </div>
+            
+        </div>
+        
+        
+        
+
+        <footer>
+            <div class="signature">
+                <span>Firma Responsable/s Tarea</span>
+            </div>
+            <div class="signature">
+                <span>Firma Autorizada DECSA</span>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

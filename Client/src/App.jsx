@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch} from 'react-redux';
+
 import Home from './pages/Home/Home';
 import CustomerService from './pages/CustomerService/CustomerService.jsx';
 import BurnedAppliances from './pages/BurnedAppliances/BurnedAppliances.jsx';
@@ -11,10 +12,21 @@ import AdminRoute from './components/AdminRoute';
 import LoginPage from './pages/LoginPage/LoginPage';
 import Layout from './components/Layout/Layout';
 import axios from 'axios';
+import Loader from './components/Loader/Loader.jsx';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function App() {
+/*     const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        setTimeout(() => setLoading(false), 1000); // Simula carga
+    }, []);
+
+    if (loading) {
+        return <Loader />;
+    } */
+
+        
     //HACER QUE EL SERVIDOR NO SE REINCIE
 /*     const dispatch = useDispatch();
 

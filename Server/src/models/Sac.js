@@ -31,7 +31,8 @@ module.exports = (sequelize) => {
       defaultValue: 'Pending',  
     },
     priority: {
-      type: DataTypes.STRING,  
+      type: DataTypes.STRING, 
+      defaultValue: 'baja', 
     },
     area: {
       type: DataTypes.STRING, 
@@ -48,6 +49,21 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    
+    closeDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    closeTime: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
+    closedBy: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    assignedTo: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
   }, { timestamps: true });
 }

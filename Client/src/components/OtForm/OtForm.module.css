@@ -225,3 +225,53 @@
     padding: 8px;
     border-radius: 6px;
 }
+.sectionContainer {
+  margin-bottom: 20px;
+}
+
+.installationWrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;  
+  padding: 10px;
+}
+
+.installationBlock {
+  flex: 1;
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+  .subTitle {
+    font-weight:bold;
+    color: #333;
+    font-size: 14px;
+  }
+
+  .radioGroupVertical {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .radioLabel, .checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .protectionContainer {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .customProtectionInput {
+    margin-top: 5px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+  }

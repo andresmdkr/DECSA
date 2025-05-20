@@ -67,6 +67,45 @@ export const searchClientsByName = createAsyncThunk(
   }
 );
 
+export const searchClientsBySubstation = createAsyncThunk(
+  'client/searchClientsBySubstation',
+  async (substation, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/client/search?substation=${substation}`, config);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to search clients by substation');
+    }
+  }
+);
+
+export const searchClientsByDevice = createAsyncThunk(
+  'client/searchClientsByDevice',
+  async (device, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const response = await axios.get(`${API_BASE_URL}/client/search?device=${device}`, config);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to search clients by device');
+    }
+  }
+);
+
+
 const clientsSlice = createSlice({
   name: 'clients',
   initialState: {
@@ -115,6 +154,30 @@ const clientsSlice = createSlice({
       .addCase(searchClientsByName.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload || 'Failed to search clients';
+      })
+      .addCase(searchClientsBySubstation.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(searchClientsBySubstation.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.clients = action.payload;
+      })
+      .addCase(searchClientsBySubstation.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to search clients by substation';
+      })
+      .addCase(searchClientsByDevice.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(searchClientsByDevice.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.client = action.payload[0] || null;
+      })
+      .addCase(searchClientsByDevice.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || 'Failed to search clients by device';
       });
       
   },

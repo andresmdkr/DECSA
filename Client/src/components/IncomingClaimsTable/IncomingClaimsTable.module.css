@@ -53,28 +53,59 @@
     font-size: 18px;
 }
 
+/* General */
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 15px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  table-layout: fixed;
 }
 
-.table th, .table td {
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    text-align: left;
+/* Encabezado */
+.table th {
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: left;
 }
 
-.table th:nth-child(1), .table td:nth-child(1),
-.table th:nth-child(2), .table td:nth-child(2),
-.table th:nth-child(3), .table td:nth-child(3),
-.table th:nth-child(4), .table td:nth-child(4) {
-    width: 15%;
+/* Celdas */
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.table th:nth-child(5), .table td:nth-child(5) {
-    width: 10%;
+/* Filas alternas */
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
+
+/* Hover */
+.table tr:hover {
+  background-color: #e6e6e6;
+}
+
+/* Columnas específicas */
+.table th:nth-child(1), .table td:nth-child(1) { width: 8%; }   /* SAC */
+.table th:nth-child(2), .table td:nth-child(2) { width: 10%; }  /* Estado */
+.table th:nth-child(3), .table td:nth-child(3) { width: 10%; }  /* Prioridad */
+.table th:nth-child(4), .table td:nth-child(4) { width: 12%; }  /* Motivo */
+.table th:nth-child(5), .table td:nth-child(5) { width: 15%; }  /* Responsable */
+.table th:nth-child(6), .table td:nth-child(6) { width: 15%; }  /* Titular */
+.table th:nth-child(7), .table td:nth-child(7) { width: 20%; }  /* Dirección */
+.table th:nth-child(8), .table td:nth-child(8) { width: 9%; text-align: center; } /* Acciones */
+
+/* Para cortar texto largo con puntos suspensivos */
+.ellipsisCell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+
 
 
 .actionButton {

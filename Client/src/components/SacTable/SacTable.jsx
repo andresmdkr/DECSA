@@ -15,7 +15,7 @@ const SacTable = () => {
     const [clientIdSearch, setClientIdSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
-    const sacsPerPage = 10;
+    const sacsPerPage = 20;
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const [searchParams, setSearchParams] = useState({
@@ -48,7 +48,7 @@ const SacTable = () => {
 };
 
 
-
+    
     const capitalizePriority = (priority) => priority.charAt(0).toUpperCase() + priority.slice(1);
 
     useEffect(() => {
@@ -155,6 +155,17 @@ const SacTable = () => {
         
     };
 
+
+    const formatDateToArg = (dateString) => {
+        const date = new Date(dateString);
+        const argTime = new Date(date.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+        const day = String(argTime.getDate()).padStart(2, '0');
+        const month = String(argTime.getMonth() + 1).padStart(2, '0');
+        const year = argTime.getFullYear();
+        return `${day}/${month}/${year}`;
+      };
+      
+
     return (
         <div className={styles.container}>
             <div className={styles.filterContainer}>
@@ -257,6 +268,8 @@ const SacTable = () => {
                                 <th>Estado</th>
                                 <th>Prioridad</th>
                                 <th>Numero de Cuenta</th>
+                                <th>Motivo</th>        
+                                <th>Fecha</th>        
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -276,6 +289,8 @@ const SacTable = () => {
                                     </td>
                                     <td>{capitalizePriority(sac.priority)}</td>
                                     <td>{sac.clientId || "S/N"}</td>
+                                    <td>{sac.claimReason}</td> 
+                                    <td>{formatDateToArg(sac.createdAt)}</td> 
                                     <td>
                                     <AiOutlineFilePdf
                                         className={styles.pdfIcon} 

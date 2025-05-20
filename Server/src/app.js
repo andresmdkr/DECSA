@@ -46,6 +46,9 @@ server.use(cors({
 // Servir archivos estáticos de la carpeta "uploads"
 server.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Servir archivos estáticos de la carpeta "updates"
+server.use('/updates', express.static(path.join(__dirname, '../updates')));
+
 // Rutas
 server.use("/", routes);
 

@@ -17,7 +17,7 @@
           },
           params: { page, limit, sacId, claimReason, clientId, status, priority, area, startDate, endDate }, 
         };
-  
+        
         const response = await axios.get(`${API_BASE_URL}/sacs`, config);
         return response.data;
       } catch (error) {
@@ -59,6 +59,7 @@
             Authorization: `Bearer ${token}`,
           },
         };
+        
   
         const response = await axios.put(`${API_BASE_URL}/sacs/${id}`, sacData, config);
         return response.data;

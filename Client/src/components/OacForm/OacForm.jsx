@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './OacForm.module.css';
 import { AiOutlineClose, AiOutlineDownload } from 'react-icons/ai';
 import { useDispatch } from 'react-redux';
 import { createOac, updateOac, fetchOACs } from '../../redux/slices/oacSlice';
 import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
+import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
 import { updateSAC } from '../../redux/slices/sacsSlice';
 import OacXLSX from '../OacXLSX/OacXLSX';
 import Swal from 'sweetalert2';
@@ -15,6 +17,8 @@ const OacForm = ({ sac, oac, onClose, onOacCreated, mode }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
   const [oacNumber, setOacNumber] = useState('');
+  const [assignedBy, setAssignedBy] = useState('');
+  const [assignedPerson, setAssignedPerson] = useState(sac.assignedTo || ''); 
   const [isLoading, setIsLoading] = useState(false);
   const [client, setClient] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -22,6 +26,8 @@ const OacForm = ({ sac, oac, onClose, onOacCreated, mode }) => {
   const [mainFile, setMainFile] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState('');
   const [formMode, setFormMode] = useState(mode);
+
+ const technicalServices = useSelector((state) => state.technicalService.technicalServices);
 
 useEffect(() => {
   setFormMode(mode);
@@ -38,6 +44,7 @@ useEffect(() => {
 
     if (mode !== 'create' && oac) {
       setOacNumber(String(oac.id));
+      setAssignedPerson(oac.assignedPerson || '');
       const mainFileExist = oac.mainFile
         ? [{ name: oac.mainFile.split('\\').pop(), isNew: false, url: `/uploads/OAC/OAC-${oac.id}/${oac.mainFile.split('\\').pop()}` }]
         : [];
@@ -55,12 +62,47 @@ useEffect(() => {
     }
   }, [dispatch, sac.clientId, mode, oac]);
 
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) {
+      setAssignedBy(`${user.name} ${user.lastName}`);
+    }
+  }, []);
+
   const handleOacNumberChange = (e) => {
     const value = e.target.value;
     if (/^\d*$/.test(value) && value.length <= 20) {
       setOacNumber(value);
     }
   };
+
+
+  //NUEVA LOGICA DE PERSONA ASIGNADA
+
+  useEffect(() => {
+  dispatch(fetchAllTechnicalServices());
+}, [dispatch]);
+
+const filteredOperationalAgents = technicalServices.filter(
+  (service) => service.area === 'operaciones'
+);
+
+const sortedOperationalAgents = [...filteredOperationalAgents].sort((a, b) =>
+  a.name.localeCompare(b.name)
+);
+
+const groupedByType = {
+  'personal propio': [],
+  contratista: [],
+  redes: [],
+};
+
+sortedOperationalAgents.forEach((agent) => {
+  if (groupedByType[agent.type]) {
+    groupedByType[agent.type].push(agent);
+  }
+});
 
   const renameFileIfDuplicate = (file, existingFiles) => {
     let newFileName = file.name;
@@ -122,6 +164,8 @@ useEffect(() => {
         const oacData = {
           id: oacNumber,
           description: `OAC #${oacNumber} creada correctamente`,
+          assignedBy,          
+          assignedPerson,
           mainFile: blob,
           files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
         };
@@ -145,6 +189,7 @@ useEffect(() => {
       } else if (mode === 'edit') {
         const oacData = {
           id: oacNumber,
+          assignedPerson,
           mainFile: mainFile?.[0]?.file || undefined,
           files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
         };
@@ -219,6 +264,10 @@ useEffect(() => {
     }
 };
 
+const handleAssignedPersonChange = (e) => {
+  setAssignedPerson(e.target.value);
+};
+
 const handleFinalize = async () => {
   try {
     setIsLoading(true);
@@ -249,12 +298,12 @@ const handleFinalize = async () => {
 
     if (!confirm.isConfirmed) return;
 
-    // Guarda los cambios realizados antes de finalizar
     const oacData = {
       id: oacNumber,
+      assignedPerson,
       mainFile: mainFile?.[0]?.file || undefined,
       files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
-      status: 'Completed', // Cambia el estado a "Completed"
+      status: 'Completed', 
     };
 
     await dispatch(updateOac({ oacId: oac.id, sacId: sac.id, oacData }));
@@ -292,6 +341,42 @@ const handleFinalize = async () => {
               readOnly={formMode === 'edit'}
             />
           </div>
+          <div className={styles.inlineGroup}>
+            <label className={styles.oacLabel}>Persona a cargo:</label>
+            <select
+              className={`${styles.oacSelect} ${formMode === 'view' ? styles.disabledSelect : ''}`}
+              value={assignedPerson}
+              onChange={(e) => setAssignedPerson(e.target.value)}
+              disabled={formMode === 'view'}
+            >
+              <option value="">Seleccionar...</option>
+
+              <optgroup label="Personal Propio">
+                {groupedByType['personal propio'].map((agent) => (
+                  <option key={agent.id} value={agent.name}>
+                    {agent.name}
+                  </option>
+                ))}
+              </optgroup>
+
+              <optgroup label="Contratista">
+                {groupedByType['contratista'].map((agent) => (
+                  <option key={agent.id} value={agent.name}>
+                    {agent.name}
+                  </option>
+                ))}
+              </optgroup>
+
+              <optgroup label="Redes">
+                {groupedByType['redes'].map((agent) => (
+                  <option key={agent.id} value={agent.name}>
+                    {agent.name}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+          </div>
+
           {mainFile && (
               <>
                 <hr className={styles.separator} />
@@ -322,10 +407,10 @@ const handleFinalize = async () => {
                       disabled={formMode === 'create'}
                       accept=".xlsx,.xls"
                     />
-                    
-                    <label htmlFor="uploadFile" className={styles.actionButton}>
+                    {formMode !== 'view' && ( <label htmlFor="uploadFile" className={styles.actionButton}>
                       Subir archivo modificado
-                    </label>
+                    </label>)}
+                   
 
                   </div>
                   {uploadedFileName && (

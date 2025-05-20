@@ -238,7 +238,7 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
             const newWorkOrder = {
                 reason: 'Artefacto Quemado',
                 description:'',
-                status: 'In Progress'
+                status: 'In Progress',  
             };
             const createdWorkOrder = await dispatch(createWorkOrder({ 
                 sacId:sac.id, 

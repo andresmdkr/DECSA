@@ -41,21 +41,54 @@
             <p>TELÉFONO: <span id="claimantPhone"></span></p> 
         </div>
 
+        <div class="tables" id="tables">
+          <div class="artifact-table" id="artifact-table" style="display: none;">
+              <table>
+                  <tr>
+                      <th colspan="2">ARTEFACTO Y/O EQUIPO A INSPECCIONAR</th>
+                  </tr>
+                  <tr>
+                      <th>Artefacto</th>
+                      <th>Marca/Modelo/Número de Serie</th>
+                  </tr>
+                  <tr>
+                      <td id="artifact-name"></td>
+                      <td id="artifact-details"></td>
+                  </tr>
+              </table>
+          </div>
+          
+          <div class="installation-table" id="installation-table" style="display: none;">
+              <table>
+                  <tr>
+                      <th colspan="3">ESTADO DE INSTALACION</th>
+                  </tr>
+                  <tr>
+                      <th>Instalacion Exterior</th>
+                      <th>Instalacion Interior</th>
+                      <th>Protecciones</th>
+                  </tr>
+                  <tr>
+                    <td><span class="td-table" id="installation-exterior-good"> Buena <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="installation-interior-good"> Buena <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="protection-thermal"> Termica <span class="checkbox"></span></span></td>
+                </tr>
+                <tr>
+                    <td><span class="td-table" id="installation-exterior-regular"> Regular <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="installation-interior-regular"> Regular <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="protection-breaker"> Disyuntor <span class="checkbox"></span></span></td>
+                </tr>
+                <tr>
+                    <td><span class="td-table" id="installation-exterior-bad"> Mala <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="installation-interior-bad"> Mala <span class="checkbox"></span></span></td>
+                    <td><span class="td-table" id="protection-other"> Otros <span class="checkbox"></span> <span id="protection-other-text"></span></span></td>
+                </tr>
+              </table>
+          </div>
+      </div>
+        
 
-        <div class="artifact-table" id="artifact-table" style="display: none;">
-            <p><strong>ARTEFACTO Y/O EQUIPO A INSPECCIONAR</strong></p>
-            <table>
-              <tr>
-                <th>Artefacto</th>
-                <th>Marca/Modelo/Número de Serie</th>
-              </tr>
-              <tr>
-                <td id="artifact-name"></td>
-                <td id="artifact-details"></td>
-              </tr>
-            </table>
-        </div>
-
+        
 
         <div class="conditional-section">
             <p class="subtitle" id="conditional-subtitle"></p>

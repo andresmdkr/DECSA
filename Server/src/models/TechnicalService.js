@@ -3,17 +3,16 @@ const { DataTypes } = require("sequelize");
 module.exports = (sequelize) => {
   sequelize.define('TechnicalService', {
     id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
-      allowNull: false,
     },
     name: {
       type: DataTypes.STRING(50), 
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM('contratista', 'personal propio'),
+      type: DataTypes.ENUM('contratista', 'personal propio', 'redes'),
       allowNull: false,
     },
     address: {
@@ -22,6 +21,10 @@ module.exports = (sequelize) => {
     },
     phone: {
       type: DataTypes.STRING(20), 
+      allowNull: true,
+    },
+    area: {
+      type: DataTypes.ENUM('artefactos', 'operaciones'),
       allowNull: true,
     }
   }, { timestamps: false });

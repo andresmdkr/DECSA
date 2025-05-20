@@ -4,7 +4,6 @@ module.exports = (sequelize) => {
     sequelize.define('Client', {
         id: {
             type: DataTypes.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
             allowNull: true,
         },

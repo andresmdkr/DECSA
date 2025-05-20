@@ -217,20 +217,25 @@
   .description-box {
     border: 1px solid #333;
     border-radius: 5px;
-    padding: 5px;
-    margin-left: 10px;
-    margin-right: 10px;
-    min-height: 50px;
-    max-height: 100px;
+    padding: 4px 8px; /* menos padding vertical */
+    margin: 0 10px;
     font-size: 12px;
     line-height: 1.2;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 5; 
-    -webkit-box-orient: vertical;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start; /* alinea arriba */
+    min-height: 50px;
   }
+  
+  #description {
+    margin: 0;
+    padding: 0;
+    white-space: pre-wrap;
+  }
+  
+  
 
   .description-label{
     font-size:14px;
@@ -352,12 +357,13 @@
 }
 
 .talonario-artifacts-table {
-  max-width: 50%;
   border-collapse: collapse;
   font-size: 12px;
-  
-  
+  width: 100%;
+  max-width: 500px;
+  table-layout: fixed;
 }
+
 .talonario-artifacts-table th,
 .talonario-artifacts-table td {
   border: 1px solid #333;
@@ -365,14 +371,25 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  padding: 0 10px;
+}
 
+
+.talonario-artifacts-table th:first-child,
+.talonario-artifacts-table td:first-child {
+  width: 200px; 
+}
+
+.talonario-artifacts-table th:last-child,
+.talonario-artifacts-table td:last-child {
+  width: 400px; 
 }
 .talonario-artifacts-table th {
   background-color: #f2f2f2;
   font-weight: bold;
 
 }
+
 
 
 .firma-empresa {

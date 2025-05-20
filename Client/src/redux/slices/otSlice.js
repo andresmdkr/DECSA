@@ -23,53 +23,70 @@ export const fetchWorkOrders = createAsyncThunk(
   
 
 
-export const createWorkOrder = createAsyncThunk(
-  'workOrders/createWorkOrder',
-  async ({ sacId, burnedArtifactId, workOrderData }, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem('token');
-      const formData = new FormData();
-      
-      formData.append('sacId', sacId || '');
-      formData.append('burnedArtifactId', burnedArtifactId || '');
-      formData.append('status', workOrderData.status);
-      formData.append('reason', workOrderData.reason);
-      formData.append('description', workOrderData.description);
-      formData.append('technicalService', workOrderData.technicalService|| '')
-
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.post(`${API_BASE_URL}/ot`, formData, config);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Error creating Work Order');
+  export const createWorkOrder = createAsyncThunk(
+    'workOrders/createWorkOrder',
+    async ({ sacId, burnedArtifactId, workOrderData }, { rejectWithValue }) => {
+      try {
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+  
+        formData.append('sacId', sacId || '');
+        formData.append('burnedArtifactId', burnedArtifactId || '');
+        formData.append('status', workOrderData.status);
+        formData.append('reason', workOrderData.reason);
+        formData.append('description', workOrderData.description);
+        formData.append('technicalService', workOrderData.technicalService || '');
+        
+        // Nuevos campos
+        formData.append('installationInterior', workOrderData.installationInterior || null);
+        formData.append('installationExterior', workOrderData.installationExterior|| null);
+        formData.append('protectionThermal', workOrderData.protectionThermal || false);
+        formData.append('protectionBreaker', workOrderData.protectionBreaker || false);
+        formData.append('protectionOther', workOrderData.protectionOther || '');
+  
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.post(`${API_BASE_URL}/ot`, formData, config);
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || 'Error creating Work Order');
+      }
     }
-  }
-);
+  );
 
 
-export const updateWorkOrder = createAsyncThunk(
-  'workOrders/updateWorkOrder',
-  async ({ workOrderId, workOrderData }, { rejectWithValue }) => {
-    try {
-      const token = localStorage.getItem('token');
-      const formData = new FormData();
-
-      formData.append('status', workOrderData.status);
-      formData.append('reason', workOrderData.reason);
-      formData.append('description', workOrderData.description);
-      formData.append('technicalService', workOrderData.technicalService)
-
-      workOrderData.files.forEach((file) => {
-        formData.append('files', file);
-      });
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.put(`${API_BASE_URL}/ot/${workOrderId}`, formData, config);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || 'Error updating Work Order');
+  export const updateWorkOrder = createAsyncThunk(
+    'workOrders/updateWorkOrder',
+    async ({ workOrderId, workOrderData }, { rejectWithValue }) => {
+      try {
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+  
+        formData.append('status', workOrderData.status);
+        formData.append('reason', workOrderData.reason);
+        formData.append('description', workOrderData.description);
+        formData.append('technicalService', workOrderData.technicalService);
+        
+        // Nuevos campos
+        formData.append('installationInterior', workOrderData.installationInterior);
+        formData.append('installationExterior', workOrderData.installationExterior);
+        formData.append('protectionThermal', workOrderData.protectionThermal);
+        formData.append('protectionBreaker', workOrderData.protectionBreaker);
+        formData.append('protectionOther', workOrderData.protectionOther || '');
+  
+        if (workOrderData.files) {
+          workOrderData.files.forEach((file) => {
+            formData.append('files', file);
+          });
+        }
+  
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+        const response = await axios.put(`${API_BASE_URL}/ot/${workOrderId}`, formData, config);
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response?.data || 'Error updating Work Order');
+      }
     }
-  }
-);
+  );
 
 
 const otSlice = createSlice({

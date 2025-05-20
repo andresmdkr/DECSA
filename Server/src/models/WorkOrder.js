@@ -10,18 +10,18 @@ module.exports = (sequelize) => {
     status: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: 'In Progress',  
+      defaultValue: 'In Progress',
     },
     reason: {
       type: DataTypes.STRING,
-      allowNull: true,  
+      allowNull: true,
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true,  
+      allowNull: true,
     },
     files: {
-      type: DataTypes.ARRAY(DataTypes.STRING),  
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
     },
     technicalService: {
@@ -30,22 +30,45 @@ module.exports = (sequelize) => {
     },
     sacId: {
       type: DataTypes.INTEGER,
-      allowNull: true,  
+      allowNull: true,
       references: {
-        model: 'SACs',  
+        model: 'SACs',
         key: 'id',
       },
     },
     burnedArtifactId: {
       type: DataTypes.INTEGER,
-      allowNull: true,  
+      allowNull: true,
       references: {
-        model: 'BurnedArtifacts',  
+        model: 'BurnedArtifacts',
         key: 'id',
       },
     },
+    installationInterior: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    installationExterior: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    
+    protectionThermal: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
+    },
+    protectionBreaker: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false,
+    },
+    protectionOther: {
+      type: DataTypes.STRING,
+      allowNull: true, 
+    },
   },
   {
-    timestamps: true,  
+    timestamps: true,
   });
 };

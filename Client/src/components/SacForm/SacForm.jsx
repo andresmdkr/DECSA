@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AiOutlineClose, AiOutlineEdit, AiOutlineCheck,AiOutlineDelete } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateClientByAccountNumber } from '../../redux/slices/clientsSlice';
+import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSlice';
 import {createSAC} from '../../redux/slices/sacsSlice';
 import styles from './SacForm.module.css';
 import ArtifactModal from '../ArtifactModal/ArtifactModal';
@@ -80,6 +81,7 @@ const EditableField = ({ label, value, isEditable, onEdit, onSave, type = 'text'
 };
 
 const SacForm = ({ client, onClose }) => {
+    console.log(client)
     const [isEditable, setIsEditable] = useState({});
     const [claimReason, setClaimReason] = useState('');
     const [area, setArea] = useState('operaciones');	
@@ -96,6 +98,9 @@ const SacForm = ({ client, onClose }) => {
     const [claimantRelationship, setClaimantRelationship] = useState('');
     const [claimantPhone, setClaimantPhone] = useState('');
     const [claimantType, setClaimantType] = useState('Titular');
+    const [assignedTo, setAssignedTo] = useState('Sin Asignar');
+
+    const technicalServices = useSelector((state) => state.technicalService.technicalServices);
 
     useEffect(() => {
         const now = new Date();
@@ -106,6 +111,26 @@ const SacForm = ({ client, onClose }) => {
     
 
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(fetchAllTechnicalServices());
+    }, [dispatch]);
+
+    const filteredOperationalAgents = technicalServices.filter(service => service.area === 'operaciones');
+    const sortedOperationalAgents = [...filteredOperationalAgents].sort((a, b) => a.name.localeCompare(b.name));
+    const groupedByType = {
+    'personal propio': [],
+    'contratista': [],
+    'redes': []
+    };
+
+    sortedOperationalAgents.forEach(agent => {
+    if (groupedByType[agent.type]) {
+        groupedByType[agent.type].push(agent);
+    }
+    });
+
+
 
     const showSuccessAlert = (sacId) => {
         MySwal.fire({
@@ -179,6 +204,7 @@ const SacForm = ({ client, onClose }) => {
               claimantPhone,
               claimantRelationship: relationship, 
             }),
+            assignedTo: area === 'operaciones' ? assignedTo : null ,
           };
       
           const response = await dispatch(createSAC(sacData)).unwrap();  
@@ -278,6 +304,7 @@ const SacForm = ({ client, onClose }) => {
     }, [claimReason, areaModifiedManually]);
 
     const handleAreaChange = (e) => {
+        setAssignedTo('Sin Asignar');
         setArea(e.target.value);
         setAreaModifiedManually(true); 
     };
@@ -538,8 +565,42 @@ const SacForm = ({ client, onClose }) => {
                             <option value="artefactos">Artefactos Quemados</option>
                             <option value="comercial">Comercial</option>
                         </select>
+                        
                         </div>
                 </fieldset>
+              {area === 'operaciones' && (
+                <fieldset className={styles.fieldset}>
+                    <legend className={styles.legend}>Asignar Responsable</legend>
+                    <div className={styles.formGroup3}>
+                        <select
+                        className={styles.select}
+                        value={assignedTo}
+                        onChange={(e) => setAssignedTo(e.target.value)}
+                        >
+                        <option value="">Seleccionar...</option>
+
+                        <optgroup label="Personal Propio">
+                            {groupedByType['personal propio'].map(agent => (
+                            <option key={agent.id} value={agent.name}>{agent.name}</option>
+                            ))}
+                        </optgroup>
+
+                        <optgroup label="Contratista">
+                            {groupedByType['contratista'].map(agent => (
+                            <option key={agent.id} value={agent.name}>{agent.name}</option>
+                            ))}
+                        </optgroup>
+
+                        <optgroup label="Redes">
+                            {groupedByType['redes'].map(agent => (
+                            <option key={agent.id} value={agent.name}>{agent.name}</option>
+                            ))}
+                        </optgroup>
+                        </select>
+
+                    </div>
+                </fieldset>
+                )}
 
                 {/* Artefactos Quemados */}
                 {claimReason === 'Rotura de Artefactos' && (

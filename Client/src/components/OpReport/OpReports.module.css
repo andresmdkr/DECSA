@@ -4,7 +4,7 @@
     background-color: #f4f4f4;
     border-radius: 0px 10px 10px 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 500px;
+    width: 700px;
     height: auto;
     margin-top: 30px;
     position: relative;
@@ -17,7 +17,7 @@
 
 .tabs {
     position: absolute;
-    top: -42px;
+    top: -43px;
     left: 0;
     display: flex;
     justify-content: flex-start;

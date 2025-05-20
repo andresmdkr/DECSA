@@ -390,7 +390,7 @@ const CustomerDetails = ({ client, onClose }) => {
         <h2 className={styles.modalTitle}>Detalles del Cliente</h2>
         <div className={styles.scrollableContent}>
           {/* Sección de Datos Personales */}
-          <fieldset className={styles.fieldset}>
+          <fieldset className={`${styles.fieldset} ${styles.fieldset1}`}>
             <legend className={styles.legend}>Datos Personales</legend>
             <div className={styles.section}>
               {renderEditableField('accountNumber', 'Número de Cuenta')}
@@ -418,7 +418,7 @@ const CustomerDetails = ({ client, onClose }) => {
           </fieldset>
 
           {/* Sección de Datos Eléctricos */}
-          <fieldset className={styles.fieldset}>
+          <fieldset className={`${styles.fieldset} ${styles.fieldset2}`}>
             <legend className={styles.legend}>Datos Eléctricos</legend>
            
             <div className={styles.section}>

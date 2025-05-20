@@ -29,54 +29,69 @@ const LoginForm = () => {
     }, [password]);
 
     const handleLogin = async (e) => {
-        e.preventDefault();
-        setServerError('');
+    e.preventDefault();
+    setServerError('');
 
-        if (!username) {
-            setUsernameError('Debe ingresar el usuario');
-        }
-        if (!password) {
-            setPasswordError('Debe ingresar la contraseña');
-        }
+    // Limpiar espacios innecesarios
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
 
-        if (username && password) {
-            try {
-                dispatch(loginStart());
-                const data = await login(username, password);
-                dispatch(loginSuccess({ user: { role: data.role, username: data.username, name:data.name, lastName:data.lastName}, token: data.token }));
-                let defaultRoute;
-                switch (data.role) {
-                    case 'Atencion al cliente':
-                        defaultRoute = '/customer-service';
-                        break;
-                    case 'Artefactos Quemados':
-                        defaultRoute = '/burned-appliances';
-                        break;
-                    case 'Operaciones':
-                        defaultRoute = '/operations';
-                        break;
-                    case 'Admin':
-                        defaultRoute = '/customer-service'; 
-                        break;
-                    case 'Comercial':
-                        defaultRoute = '/home';
-                        break;
-                    default:
-                        defaultRoute = '/login'; 
-                }
-                navigate(defaultRoute);
-            } catch (error) {
-                if (!error.response) {
-                    setServerError('Error en el servidor, intente nuevamente');
-                } else if (error.response.status === 401) {
-                    setServerError(error.response.data.message);
-                } else {
-                    setServerError('Error en el servidor, intente nuevamente');
-                }
-                dispatch(loginFailure(error.message));
+    // Validaciones
+    if (!trimmedUsername) {
+        setUsernameError('Debe ingresar el usuario');
+    }
+    if (!trimmedPassword) {
+        setPasswordError('Debe ingresar la contraseña');
+    }
+
+    if (trimmedUsername && trimmedPassword) {
+        try {
+            dispatch(loginStart());
+            const data = await login(trimmedUsername, trimmedPassword);
+            dispatch(loginSuccess({
+                user: {
+                    role: data.role,
+                    username: data.username,
+                    name: data.name,
+                    lastName: data.lastName
+                },
+                token: data.token
+            }));
+
+            let defaultRoute;
+            switch (data.role) {
+                case 'Atencion al cliente':
+                    defaultRoute = '/customer-service';
+                    break;
+                case 'Artefactos Quemados':
+                    defaultRoute = '/burned-appliances';
+                    break;
+                case 'Operaciones':
+                    defaultRoute = '/operations';
+                    break;
+                case 'Admin':
+                    defaultRoute = '/customer-service';
+                    break;
+                case 'Comercial':
+                    defaultRoute = '/customer-service';
+                    break;
+                default:
+                    defaultRoute = '/login';
             }
+            navigate(defaultRoute);
+        } catch (error) {
+            if (!error.response) {
+                setServerError('Error en el servidor, intente nuevamente');
+            } else if (error.response.status === 401) {
+                setServerError(error.response.data.message);
+            } else {
+                setServerError('Error en el servidor, intente nuevamente');
+            }
+            dispatch(loginFailure(error.message));
         }
-    };
+    }
+};
+
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);

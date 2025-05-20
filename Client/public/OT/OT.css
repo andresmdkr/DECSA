@@ -54,27 +54,27 @@
 }
 
 
-.artifact-table {
+/* .artifact-table {
     margin-top: 20px;
     width:100%;
     font-size: 12px;
     border: 1px solid black;
     padding: 5px;
-  }
+  } */
   
-  .artifact-table table {
+  /* .artifact-table table {
     font-size: 12px;
     width: 100%;
     border-collapse: collapse;
-  }
+  } */
   
-  .artifact-table th, .artifact-table td {
+/*   .artifact-table th, .artifact-table td {
     font-size: 12px;
     border: 1px solid black;
     padding: 8px;
     text-align: left;
   }
-  
+   */
 
   .conditional-section {
     font-size: 12px;
@@ -131,4 +131,52 @@
     margin: 0;
     padding-top: 5px;
   }
+
+
   
+  
+
+    .tables {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+  }
+
+  .artifact-table {
+      width: 55%;
+      max-width: 55%;
+      margin-right: 10px;
+      font-size: 11px;
+      text-align: center;
+  }
+
+  .installation-table {
+      width: 45%;
+      font-size: 11px;
+      text-align: center;
+  }
+
+  .artifact-table table, .installation-table table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+
+  .artifact-table th, .artifact-table td,
+  .installation-table th, .installation-table td {
+      border: 1px solid black;
+      padding: 5px;
+  }
+.td-table {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+
+  .checkbox {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border: 1px solid black;
+      margin-left: 5px;
+  }
+

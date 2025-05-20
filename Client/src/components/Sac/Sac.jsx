@@ -243,11 +243,18 @@ const Sac = ({ sac, onClose}) => {
     const [wsg84Long, setWsg84Long] = useState(null);
     
     useEffect(() => {
-      if (sac.clientId) {
-        dispatch(fetchClientByAccountNumber(sac.clientId));
-        setClient2(client)
-      }
-    }, [dispatch, sac.clientId]);
+        if (sac.clientId) {
+          dispatch(fetchClientByAccountNumber(sac.clientId))
+            .unwrap()  
+            .then((data) => {
+              setClient2(data); 
+            })
+            .catch((error) => {
+              console.error("Error al obtener cliente:", error);
+            });
+        }
+      }, [dispatch, sac.clientId]);
+      
     
     // Asignar valores después de recibir el cliente
     useEffect(() => {
@@ -284,9 +291,13 @@ const Sac = ({ sac, onClose}) => {
 
     const formatDate = (dateString) => {
         if (!dateString) return 'S/N';
+        
         const date = new Date(dateString);
-        return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        date.setMinutes(date.getMinutes() + date.getTimezoneOffset()); // Ajustar UTC
+        
+        return date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     };
+    
 
     const handleMissingValue = (value) => {
         return value ? value : 'S/N';
@@ -305,7 +316,23 @@ const Sac = ({ sac, onClose}) => {
     
         if (result.isConfirmed) {
             try {
-                await dispatch(updateSAC({ id: sac.id, sacData: { ...sac, status: 'Closed' } }));
+
+                const user = JSON.parse(localStorage.getItem('user'));
+                const now = new Date();
+                const argNow = new Date(now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+    
+                const formattedDate = argNow.toISOString().split('T')[0]; 
+                const formattedTime = argNow.toTimeString().split(' ')[0]; 
+    
+                const updatedData = {
+                    ...sac,
+                    status: 'Closed',
+                    closeDate: formattedDate,
+                    closeTime: formattedTime,
+                    closedBy: `${user.name} ${user.lastName}`,
+                };
+    
+                await dispatch(updateSAC({ id: sac.id, sacData: updatedData }));
                 setStatus('Closed');
                 Swal.fire({
                     title: '¡S.A.C Cerrada!',
@@ -385,7 +412,7 @@ const Sac = ({ sac, onClose}) => {
             });
 
             if (area) {
-                const sacData = { ...sac, area }; 
+                const sacData = { ...sac, area, status: 'Pending' }; 
 
                 try {
                     await dispatch(updateSAC({ id: sac.id, sacData })); 
@@ -483,11 +510,20 @@ const Sac = ({ sac, onClose}) => {
 
 console.log(sac)
 
-const handleClose=()=>{
-    if(status==='Open' && sac.status==='Closed'){
-        dispatch(updateSAC({ id: sac.id, sacData: { ...sac, status: 'Open' } }));
+const handleClose = () => {
+    if (status === 'Open' && sac.status === 'Closed') {
+        dispatch(updateSAC({ 
+            id: sac.id, 
+            sacData: { 
+                ...sac, 
+                status: 'Open',
+                closeDate: null,
+                closeTime: null,
+                closedBy: null
+            } 
+        }));
     }
-    onClose()
+    onClose();
 }
 
 
@@ -504,7 +540,7 @@ const handleClose=()=>{
             
 
             {/* Detalles del Reclamo */}
-            <fieldset className={styles.fieldset}>
+            <fieldset className={`${styles.fieldset} ${styles.fieldset1}`}>
                 <legend className={styles.legend}>Detalles del Reclamo</legend>
                 <div className={styles.field}>
                     <label className={styles.boldLabel}>Motivo del Reclamo:</label>
@@ -528,6 +564,26 @@ const handleClose=()=>{
                         <label>{handleMissingValue(sac.endTime)}</label>
                     </div>
                 </div>
+                {status === 'Closed' && (
+                    <>
+                        <hr className={styles.divider} />
+                        <h4 className={styles.closedTitle}>SAC CERRADA</h4>
+                        <div className={styles.fieldDate}>
+                        <div className={styles.field}>
+                            <label className={styles.boldLabel}>Fecha de Cierre:</label>
+                            <label>{formatDate(sac.closeDate)}</label>
+                        </div>
+                        <div className={styles.field}>
+                            <label className={styles.boldLabel}>Hora de Cierre:</label>
+                            <label>{handleMissingValue(sac.closeTime)}</label>
+                        </div>
+                        <div className={styles.field}>
+                            <label className={styles.boldLabel}>Cerrado por:</label>
+                            <label>{handleMissingValue(sac.closedBy)}</label>
+                        </div>
+                        </div>
+                    </>
+                    )}
             </fieldset>
 
            
@@ -613,21 +669,21 @@ const handleClose=()=>{
                 </fieldset>
                 )}
             {/* Detalles del Cliente */}
-            {client && (
+            {client2 && (
                 <>
-                <fieldset className={styles.fieldset}>
+                <fieldset className={`${styles.fieldset} ${styles.fieldset2}`}>
                     <legend className={styles.legend}>Detalles del Titular de la cuenta</legend>
                     <div className={styles.section}>
                         <EditableField
                             label="Número de Cuenta:"
-                            value={client.accountNumber}
+                            value={client2.accountNumber}
                             isEditable={isEditable.accountNumber}
                             onEdit={() => toggleEdit('accountNumber')}
                             onSave={(newValue) => handleSave('accountNumber', newValue)}
                         />
                         <EditableField
                             label="Nombre del Titular:"
-                            value={client.holderName}
+                            value={client2.holderName}
                             isEditable={isEditable.holderName}
                             onEdit={() => toggleEdit('holderName')}
                             onSave={(newValue) => handleSave('holderName', newValue)}
@@ -636,14 +692,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Dirección:"
-                            value={client.address}
+                            value={client2.address}
                             isEditable={isEditable.address}
                             onEdit={() => toggleEdit('address')}
                             onSave={(newValue) => handleSave('address', newValue)}
                         />
                         <EditableField
                             label="Info. Adicional Dirección:"
-                            value={client.extraAddressInfo}
+                            value={client2.extraAddressInfo}
                             isEditable={isEditable.extraAddressInfo}
                             onEdit={() => toggleEdit('extraAddressInfo')}
                             onSave={(newValue) => handleSave('extraAddressInfo', newValue)}
@@ -652,14 +708,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Dirección Postal:"
-                            value={client.postalAddress}
+                            value={client2.postalAddress}
                             isEditable={isEditable.postalAddress}
                             onEdit={() => toggleEdit('postalAddress')}
                             onSave={(newValue) => handleSave('postalAddress', newValue)}
                         />
                         <EditableField
                             label="Info. Adicional Postal:"
-                            value={client.extraPostalAddressInfo}
+                            value={client2.extraPostalAddressInfo}
                             isEditable={isEditable.extraPostalAddressInfo}
                             onEdit={() => toggleEdit('extraPostalAddressInfo')}
                             onSave={(newValue) => handleSave('extraPostalAddressInfo', newValue)}
@@ -668,14 +724,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Teléfono:"
-                            value={client.phone || ''}
+                            value={client2.phone || ''}
                             isEditable={isEditable.phone}
                             onEdit={() => toggleEdit('phone')}
                             onSave={(newValue) => handleSave('phone', newValue)}
                         />
                         <EditableField
                             label="Teléfono Auxiliar:"
-                            value={client.auxPhone || ''}
+                            value={client2.auxPhone || ''}
                             isEditable={isEditable.auxPhone}
                             onEdit={() => toggleEdit('auxPhone')}
                             onSave={(newValue) => handleSave('auxPhone', newValue)}
@@ -683,19 +739,19 @@ const handleClose=()=>{
                     </div>
                 </fieldset>
 
-                <fieldset className={styles.fieldset}>
+                <fieldset className={`${styles.fieldset} ${styles.fieldset3}`}>
                     <legend className={styles.legend}>Datos Eléctricos (Titular)</legend>
                     <div className={styles.section}>
                         <EditableField
                             label="Estado"
-                            value={client.status}
+                            value={client2.status}
                             isEditable={isEditable.status}
                             onEdit={() => toggleEdit('status')}
                             onSave={(newValue) => handleSave('status', newValue)}
                         />
                         <EditableField
                             label="Servicio"
-                            value={client.service}
+                            value={client2.service}
                             isEditable={isEditable.service}
                             onEdit={() => toggleEdit('service')}
                             onSave={(newValue) => handleSave('service', newValue)}
@@ -704,14 +760,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Categoría"
-                            value={client.category}
+                            value={client2.category}
                             isEditable={isEditable.category}
                             onEdit={() => toggleEdit('category')}
                             onSave={(newValue) => handleSave('category', newValue)}
                         />
                         <EditableField
                             label="Voltaje"
-                            value={client.voltage}
+                            value={client2.voltage}
                             isEditable={isEditable.voltage}
                             onEdit={() => toggleEdit('voltage')}
                             onSave={(newValue) => handleSave('voltage', newValue)}
@@ -721,14 +777,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                          <EditableField
                             label="N° Suministro"
-                            value={client.supply}
+                            value={client2.supply}
                             isEditable={isEditable.supply}
                             onEdit={() => toggleEdit('supply')}
                             onSave={(newValue) => handleSave('supply', newValue)}
                         />
                         <EditableField
                             label="Disribuidor"
-                            value={client.distributor}
+                            value={client2.distributor}
                             isEditable={isEditable.distributor}
                             onEdit={() => toggleEdit('distributor')}
                             onSave={(newValue) => handleSave('distributor', newValue)}
@@ -739,14 +795,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                          <EditableField
                             label="SETA"
-                            value={client.substation}
+                            value={client2.substation}
                             isEditable={isEditable.substation}
                             onEdit={() => toggleEdit('substation')}
                             onSave={(newValue) => handleSave('substation', newValue)}
                         />
                         <EditableField
                             label="Salida BT"
-                            value={client.outputBT}
+                            value={client2.outputBT}
                             isEditable={isEditable.outputBT}
                             onEdit={() => toggleEdit('outputBT')}
                             onSave={(newValue) => handleSave('outputBT', newValue)}
@@ -757,14 +813,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                     <EditableField
                             label="N° Medidor"
-                            value={client.device}
+                            value={client2.device}
                             isEditable={isEditable.device}
                             onEdit={() => toggleEdit('device')}
                             onSave={(newValue) => handleSave('device', newValue)}
                         />
                         <EditableField
                             label="Acometida"
-                            value={client.connection}
+                            value={client2.connection}
                             isEditable={isEditable.connection}
                             onEdit={() => toggleEdit('connection')}
                             onSave={(newValue) => handleSave('connection', newValue)}
@@ -774,14 +830,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Longitud"
-                            value={client.wsg84Long}
+                            value={client2.wsg84Long}
                             isEditable={isEditable.wsg84Long}
                             onEdit={() => toggleEdit('wsg84Long')}
                             onSave={(newValue) => handleSave('wsg84Long', newValue)}
                         />
                         <EditableField
                             label="Latitud"
-                            value={client.wsg84Lati}
+                            value={client2.wsg84Lati}
                             isEditable={isEditable.wsg84Lati}
                             onEdit={() => toggleEdit('wsg84Lati')}
                             onSave={(newValue) => handleSave('wsg84Lati', newValue)}
@@ -792,7 +848,7 @@ const handleClose=()=>{
                         <>
                             <hr className={styles.sectionSeparator} />
                             <div className={styles.mapContainer}>
-                                <MapComponent latitude={parseFloat(wsg84Lati)} longitude={parseFloat(wsg84Long) } client={client} sac={sac} />
+                                <MapComponent latitude={parseFloat(wsg84Lati)} longitude={parseFloat(wsg84Long) } client={client2} sac={sac} />
                             </div>
                         </>
                     )}
@@ -800,14 +856,14 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Zona"
-                            value={client.zone}
+                            value={client2.zone}
                             isEditable={isEditable.zone}
                             onEdit={() => toggleEdit('zone')}
                             onSave={(newValue) => handleSave('zone', newValue)}
                         />
                         <EditableField
                             label="Sector"
-                            value={client.sector}
+                            value={client2.sector}
                             isEditable={isEditable.sector}
                             onEdit={() => toggleEdit('sector')}
                             onSave={(newValue) => handleSave('sector', newValue)}
@@ -816,7 +872,7 @@ const handleClose=()=>{
                     <div className={styles.section}>
                         <EditableField
                             label="Ruta"
-                            value={client.route}
+                            value={client2.route}
                             isEditable={isEditable.route}
                             onEdit={() => toggleEdit('route')}
                             onSave={(newValue) => handleSave('route', newValue)}
@@ -872,7 +928,7 @@ const handleClose=()=>{
            {isOacFormOpen && (
                 <OacForm
                 sac={sac}
-                client={client}
+                client={client2}
                 onClose={handleCloseOacForm}
                 onOacCreated={() => handleOacCreated(sac.id)}
                 mode="create"

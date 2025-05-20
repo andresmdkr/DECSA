@@ -19,14 +19,14 @@ const TechnicalServiceModal = ({ isOpen, onClose, mode, technicalService }) => {
       setPhone(technicalService.phone || '');
     } else {
       setName('');
-      setType('contratista');
+      setType('personal propio');
       setAddress('');
       setPhone('');
     }
   }, [mode, technicalService]);
 
   const handleSave = () => {
-    const serviceData = { name, type, address, phone };
+    const serviceData = { name, type, address, phone, area: 'artefactos' };
 
     if (mode === 'edit' && technicalService) {
       dispatch(updateTechnicalService({ ...serviceData, id: technicalService.id }))
@@ -79,8 +79,8 @@ const TechnicalServiceModal = ({ isOpen, onClose, mode, technicalService }) => {
             onChange={(e) => setType(e.target.value)}
             className={styles.select}
           >
-            <option value="contratista">Contratista</option>
             <option value="personal propio">Personal Propio</option>
+            <option value="contratista">Contratista</option>
           </select>
         </div>
         <div className={styles.formGroup}>

@@ -10,8 +10,8 @@ const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}
   logging: false, 
   native: false, 
   pool: {
-    max: 30,     
-    min: 5,       
+    max: 15,     
+    min: 1,       
     acquire: 60000,  
     idle: 10000   
   }
@@ -33,14 +33,15 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder, WorkOrder, Resolution, TechnicalService,RepairOrder} = sequelize.models;
+const {User, Client,SAC,BurnedArtifact,CustomerServiceOrder, WorkOrder, InternalWorkOrder, Resolution, TechnicalService,RepairOrder} = sequelize.models;
 
 // RELACIONES
-Client.hasMany(SAC, { foreignKey: 'clientId' });
-SAC.belongsTo(Client, { 
+Client.hasMany(SAC, { foreignKey: 'clientId', constraints: false });
+
+/* SAC.belongsTo(Client, { 
   foreignKey: 'clientId',
   allowNull: true 
-});
+}); */
 
 SAC.hasMany(BurnedArtifact, { foreignKey: 'sacId', as: 'artifacts' });
 BurnedArtifact.belongsTo(SAC, { foreignKey: 'sacId' });
@@ -69,6 +70,9 @@ RepairOrder.belongsTo(SAC, { foreignKey: 'sacId', allowNull: true });
 
 BurnedArtifact.hasOne(RepairOrder, { foreignKey: 'burnedArtifactId', as: 'repairOrder' });
 RepairOrder.belongsTo(BurnedArtifact, { foreignKey: 'burnedArtifactId' });
+
+SAC.hasMany(InternalWorkOrder, { foreignKey: 'sacId', as: 'internalWorkOrders' });
+InternalWorkOrder.belongsTo(SAC, { foreignKey: 'sacId', allowNull: true, as: 'sac' });
 
 
 module.exports = {

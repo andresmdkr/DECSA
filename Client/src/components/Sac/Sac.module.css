@@ -55,6 +55,18 @@
     margin-bottom: 20px;
 }
 
+.fieldset1{
+    background-color: #6c6c6c39;
+}
+
+.fieldset2{
+    background-color: #0084ff1f;
+}
+
+.fieldset3{
+    background-color: #5eff0027;
+}
+
 .field{
     display: flex;
     flex-direction: column;
@@ -104,6 +116,18 @@
     color: #333;
     margin-bottom: 5px;
 }
+
+.divider {
+    border: none;
+    border-top: 1px solid #dc3545;
+  }
+  
+  .closedTitle {
+    font-size: 14px;
+    font-weight: bold;
+    color: #dc3545;
+  }
+  
 
 .inputGroup {
     display: flex;

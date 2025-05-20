@@ -51,17 +51,32 @@ const handleFileUpload = async (files, otId) => {
 
 
 const createWorkOrder = async (data) => {
-  let { sacId, burnedArtifactId, status, reason, description,technicalService } = data;
+  let {
+    sacId,
+    burnedArtifactId,
+    status,
+    reason,
+    description,
+    technicalService,
+    installationInterior,
+    installationExterior,
+    protectionThermal,
+    protectionBreaker,
+    protectionOther
+  } = data;
 
-  if (!sacId) {
-    sacId = null;
-  }
+  // Validar campos opcionales
+  sacId = sacId ?? null;
+  burnedArtifactId = burnedArtifactId ?? null;
+  installationInterior = installationInterior ?? null;
+  installationExterior = installationExterior ?? null;
+  protectionOther = protectionOther ?? null;
 
-  if (!burnedArtifactId) {
-    burnedArtifactId = null;
-  }
 
-  console.log({ sacId, burnedArtifactId, status, reason, description,technicalService });
+  console.log({
+    sacId, burnedArtifactId, status, reason, description, technicalService,
+    installationInterior, installationExterior, protectionThermal, protectionBreaker, protectionOther
+  });
 
   try {
     const newOrder = await WorkOrder.create({
@@ -71,12 +86,17 @@ const createWorkOrder = async (data) => {
       reason,
       description,
       technicalService,
-
+      installationInterior,
+      installationExterior,
+      protectionThermal,
+      protectionBreaker,
+      protectionOther: protectionOther || null, // Solo guarda si se especifica otra protección
     });
+
     return newOrder;
   } catch (error) {
     console.error('Error al crear la orden de trabajo:', error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -104,14 +124,24 @@ const updateWorkOrder = async (id, data, files) => {
   const order = await WorkOrder.findByPk(id);
   if (!order) throw new Error('Order not found');
 
-  const { status, description, reason, technicalService } = data;
+  const {
+    status, description, reason, technicalService,
+    installationInterior, installationExterior,
+    protectionThermal, protectionBreaker, protectionOther
+  } = data;
 
   console.log( technicalService)
+  console.log(protectionOther)
 
   order.status = status || order.status;
   order.description = description || order.description;
   order.reason = reason || order.reason;
   order.technicalService = technicalService || order.technicalService;
+  order.installationInterior = installationInterior || order.installationInterior;
+  order.installationExterior = installationExterior || order.installationExterior;
+  order.protectionThermal = protectionThermal !== undefined ? protectionThermal : order.protectionThermal;
+  order.protectionBreaker = protectionBreaker !== undefined ? protectionBreaker : order.protectionBreaker;
+  order.protectionOther = protectionOther  !== undefined ? protectionOther : order.protectionOther;
 
   if (files && files.length > 0) {
     const dir = path.join(__dirname, '../../uploads/OT', `OT-${id}`);

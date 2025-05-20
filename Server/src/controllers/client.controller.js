@@ -39,26 +39,50 @@ const deleteClientByAccountNumber = async (accountNumber) => {
 
 const searchClients = async (query) => {
     const whereClause = {};
+    const { device, ...restQuery } = query;
 
-    Object.keys(query).forEach((key) => {
-        if (query[key]) {
+    // Manejar los filtros normales como holderName, substation, etc.
+    Object.keys(restQuery).forEach((key) => {
+        if (restQuery[key]) {
             if (key === 'holderName') {
-                const nameParts = query[key].split(' ').map(part => part.trim()).filter(part => part.length > 0);
-                
+                const nameParts = restQuery[key].split(' ')
+                    .map(part => part.trim())
+                    .filter(part => part.length > 0);
+
                 whereClause[Op.and] = nameParts.map(part => ({
                     holderName: { [Op.iLike]: `%${part}%` }
                 }));
             } else {
-                whereClause[key] = { [Op.iLike]: `%${query[key]}%` };
+                whereClause[key] = { [Op.iLike]: `%${restQuery[key]}%` };
             }
         }
     });
 
-    return await Client.findAll({ 
+    // Si se está buscando por número de medidor
+    if (device) {
+        // Limpiar ceros y espacios del dispositivo
+        const trimmedDevice = device.trim();
+        const normalizedDevice = trimmedDevice.replace(/^0+|0+$/g, '');
+
+        return await Client.findAll({
+            where: {
+                ...whereClause,
+                [Op.or]: [
+                    { device: { [Op.iLike]: `%${trimmedDevice}%` } },
+                    { device: { [Op.iLike]: `%${normalizedDevice}%` } }
+                ]
+            },
+            limit: 5
+        });
+    }
+
+    // Si no hay device, búsqueda normal
+    return await Client.findAll({
         where: whereClause,
-        limit: 5  
+        limit: 5
     });
 };
+
 
 
 

@@ -1,0 +1,258 @@
+/* Estilos para el modal de OTI */
+.overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+   
+}
+
+.formOverlay {
+    flex-grow: 1; /* Para que tome el espacio restante */
+    overflow-y: auto; /* Activa la barra de desplazamiento vertical */
+    max-height: 65vh; /* Ajusta la altura para permitir desplazamiento */
+    padding-right: 10px; /* Evita que la barra de desplazamiento toque los elementos */
+}
+
+.label {
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #333;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+
+.input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.printButton {
+    background-color: #002442;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.printButton:hover {
+    background-color: #003057;
+}
+
+.statusButton {
+    background-color: #930000;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.statusButton:hover {
+    background-color: #6e0000;
+}
+
+.close2Button {
+    background-color: #930000;;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.close2Button:hover {
+    background-color: #6e0000;
+}
+
+.status2Button {
+    background-color: #1a72c0;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.status2Button:hover {
+    background-color: #0056b3;
+}
+
+.submitButton {
+    background-color: #000f97;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+    background-color: #003267;
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    border: none;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #ff6b6b;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.otFileList {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    background-color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+  }
+  
+  .otFileList ul {
+    padding-left: 20px;
+    list-style-type: none;
+  }
+  
+  .otFileList li {
+    margin-bottom: 10px;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .otFileRemoveButton {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .otFileRemoveButton:hover {
+    background-color: #ff7875;
+  }
+  
+  .otFileLinkButton {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .otFileLinkButton:hover {
+    color: #0056b3;
+  }
+
+  .otErrorMessage {
+    color: #ff4d4f;
+    margin-top: 10px;
+    font-size: 14px;
+    background-color: #ffe6e6;
+    padding: 8px;
+    border-radius: 6px;
+}
+
+.otLabel {
+    font-weight: 500;
+    color: #333;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+
+
+.select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    appearance: none; /* elimina el estilo nativo */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+}
+
+.disabledSelect {
+    background-color: #f0f0f0;
+    color: #777;
+    cursor: not-allowed;
+}

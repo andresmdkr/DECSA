@@ -69,17 +69,33 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
       });
   
       if (result.isConfirmed) {
-    
-        await dispatch(updateSAC({ id: sac.id, sacData: { status: 'Closed' } })).unwrap();
+        const user = JSON.parse(localStorage.getItem('user'));
+  
+
+        const now = new Date();
+        const argNow = new Date(now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+  
+        const formattedDate = argNow.toISOString().split('T')[0]; 
+        const formattedTime = argNow.toTimeString().split(' ')[0]; 
+  
+        const updatedData = {
+          ...sac,
+          status: 'Closed',
+          closeDate: formattedDate,
+          closeTime: formattedTime,
+          closedBy: `${user.name} ${user.lastName}`,
+        };
+  
+        await dispatch(updateSAC({ id: sac.id, sacData: updatedData })).unwrap();
   
         Swal.fire({
           icon: 'success',
-          title: 'S.A.C Cerrado',
+          title: 'S.A.C Cerrada',
           text: 'El estado del S.A.C se ha actualizado correctamente.',
           confirmButtonText: 'OK',
         });
   
-        onClose(); 
+        onClose();
       }
     } catch (error) {
       Swal.fire({
@@ -90,6 +106,7 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
       });
     }
   };
+  
   
 
   return (
@@ -119,9 +136,9 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                     <tr>
                       <th>N° OAC</th>
                       <th>Estado</th>
-{/*                    <th>Ordenó</th>
+                      <th>Ordenó</th>
                       <th>Realizó</th>
-                      <th>Fecha</th>
+{/*                       <th>Fecha</th>
                       <th>Hora</th> */}
                       <th>Acciones</th>
                     </tr>
@@ -134,9 +151,9 @@ const OacModal = ({ sac, onClose,showStatusButton }) => {
                       <tr key={oac.id}>
                         <td>{oac.id}</td>
                         <td>{renderStatus(oac.status)}</td>
-{/*                         <td>{oac.assignedBy}</td>
-                        <td>{oac.assignedPerson || 'No asignado'}</td>
-                        <td>{new Date(oac.issueDate).toLocaleDateString()}</td>
+                        <td>{oac.assignedBy ? `${oac.assignedBy}` : 'N/A'}</td> 
+                        <td>{oac.assignedPerson ? `${oac.assignedPerson}` : 'No asignado'}</td>
+{/*                         <td>{new Date(oac.issueDate).toLocaleDateString()}</td>
                         <td>{oac.assignmentTime}</td>   */} 
                         <td className={styles.tdButton}>
                           {oac.status === 'Completed' ? (

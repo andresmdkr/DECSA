@@ -9,7 +9,6 @@ import { useDispatch, useSelector} from 'react-redux';
 import Select from 'react-select';
 
 import Swal from 'sweetalert2';
-import { use } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
@@ -25,20 +24,35 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
 
+    // Estados para "Estado de Instalación"
+    const [installationInterior, setInstallationInterior] = useState('');
+    const [installationExterior, setInstallationExterior] = useState('');
+    const [protectionThermal, setProtectionThermal] = useState(false);
+    const [protectionBreaker, setProtectionBreaker] = useState(false);
+    const [protectionOther, setProtectionOther] = useState('');
+    const [customProtection, setCustomProtection] = useState('');
+
   const previousStatus = useRef(status);
   const fileInputRef = useRef(null);
   const technicalServices = useSelector(state => state.technicalService.technicalServices);
 
 
   useEffect(() => {
-    console.log(ot,artifact);
     if (mode === 'edit' || mode === 'view') {
       if (ot) {
         setStatus(ot.status);
         setReason(ot.reason);
         setDescription(ot.description);
         setTechnicalService(ot.technicalService);
-
+        
+        // Cargar datos de instalación si existen
+        setInstallationInterior(ot.installationInterior || null);
+        setInstallationExterior(ot.installationExterior || null);
+        setProtectionThermal(ot.protectionThermal || false);
+        setProtectionBreaker(ot.protectionBreaker || false);
+        setProtectionOther(ot.protectionOther ? true : false); // Si "Otros" está seleccionado
+        setCustomProtection(ot.protectionOther || '');
+        
         const existingFiles = ot.files
           ? ot.files.map((file) => ({
               name: file.split('\\').pop(),
@@ -147,11 +161,17 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
   };
 
   const processWorkOrder = async () => {
+    console.log(customProtection)
     const workOrderData = {
       status,
       reason,
       description,
       technicalService,
+      installationInterior: installationInterior ? installationInterior : null,
+      installationExterior: installationExterior ? installationExterior : null,
+      protectionThermal,
+      protectionBreaker,
+      protectionOther: protectionOther ? customProtection : '',
       files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
     };
   
@@ -166,7 +186,8 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
           cancelButtonText: 'Cerrar',
         }).then((result) => {
           if (result.isConfirmed) {
-            OtPDF({sac, ot, artifact,client });
+            handlePrint();
+           /*  OtPDF({sac, ot, artifact,client }); */
           }
           onClose(); 
         });
@@ -208,6 +229,11 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
         reason,
         description,
         technicalService,
+        installationInterior: installationInterior ? installationInterior : null,
+        installationExterior: installationExterior ? installationExterior : null,
+        protectionThermal,
+        protectionBreaker,
+        protectionOther: protectionOther ? customProtection : '',
         files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
       };
       
@@ -300,10 +326,13 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
                 <Select
                   id="technicalService"
                   name="technicalService"
-                  options={technicalServices?.map((service) => ({
-                    value: service.name,
-                    label: service.name,
-                  }))}
+                  options={technicalServices
+                    ?.filter((service) => service.area?.toLowerCase() === 'artefactos')
+                    .map((service) => ({
+                      value: service.name,
+                      label: service.name,
+                    }))
+                  }
                   value={
                     technicalServices?.find(
                       (service) => service.name === technicalService
@@ -336,8 +365,89 @@ const OtForm = ({ sac, onClose, ot, mode, origen,artifact}) => {
               />
             </div>
 
-            <hr className={styles.separator} />
 
+            <hr className={styles.separator} />
+            {reason === 'Artefacto Quemado' && ( 
+              <>
+            <div className={styles.sectionContainer}>
+              <label className={styles.otLabel}>Estado de la Instalación:</label>
+              <div className={styles.installationWrapper}>
+                {/* Instalación Interior */}
+                <div className={styles.installationBlock}>
+                  <label className={styles.subTitle}>Instalación Interior:</label>
+                  <div className={styles.radioGroupVertical}>
+                    {['Buena', 'Regular', 'Mala'].map((estado) => (
+                      <label key={estado} className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="installationInterior"
+                          value={estado}
+                          checked={installationInterior === estado}
+                          onChange={(e) => setInstallationInterior(e.target.value)}
+                          disabled={isReadOnly}
+                        />
+                        {estado}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Instalación Exterior */}
+                <div className={styles.installationBlock}>
+                  <label className={styles.subTitle}>Instalación Exterior:</label>
+                  <div className={styles.radioGroupVertical}>
+                    {['Buena', 'Regular', 'Mala'].map((estado) => (
+                      <label key={estado} className={styles.radioLabel}>
+                        <input
+                          type="radio"
+                          name="installationExterior"
+                          value={estado}
+                          checked={installationExterior === estado}
+                          onChange={(e) => setInstallationExterior(e.target.value)}
+                          disabled={isReadOnly}
+                        />
+                        {estado}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Protecciones */}
+                <div className={styles.installationBlock}>
+                  <label className={styles.subTitle}>Protecciones:</label>
+                  <div className={styles.protectionContainer}>
+                    {[{ label: 'Térmica', state: protectionThermal, setState: setProtectionThermal },
+                      { label: 'Disyuntor', state: protectionBreaker, setState: setProtectionBreaker },
+                      { label: 'Otros', state: protectionOther, setState: setProtectionOther }].map((item) => (
+                      <label key={item.label} className={styles.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={item.state}
+                          onChange={(e) => item.setState(e.target.checked)}
+                          disabled={isReadOnly}
+                        />
+                        {item.label}
+                      </label>
+                    ))}
+                  </div>
+                  {protectionOther && (
+                    <input
+                      type="text"
+                      className={styles.customProtectionInput}
+                      value={customProtection}
+                      onChange={(e) => setCustomProtection(e.target.value)}
+                      placeholder="Especifique tipo de protección"
+                      maxLength={50}
+                      readOnly={isReadOnly}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <hr className={styles.separator} />
+            </>
+            )}
             {mode !== 'create' && selectedFiles.length > 0 && (
               <div className={styles.otFileList}>
                 <h3>Archivos:</h3>

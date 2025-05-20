@@ -23,6 +23,15 @@
       flex-direction: column;
       position: relative;
     }
+
+    .select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
     
     .oacFormContainer {
       overflow-y: auto;
@@ -96,6 +105,47 @@
       box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
     }
     
+    .oacSelect {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  margin-right: 15px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  appearance: none;
+  cursor: pointer;
+}
+
+.oacSelect:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+}
+
+/* Estilo cuando está deshabilitado (modo view) */
+.disabledSelect {
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* Estilo para los optgroup */
+.oacSelect optgroup {
+  font-weight: bold;
+  font-style: italic;
+  color: #333;
+  padding: 4px 0;
+}
+
+/* Estilo para las opciones */
+.oacSelect option {
+  padding: 6px 12px;
+  font-size: 15px;
+}
+
     .inlineGroup {
       display: flex;
       align-items: center;

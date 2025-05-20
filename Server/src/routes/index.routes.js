@@ -9,6 +9,7 @@ const workOrderRouter = require("./workOrder.routes.js");
 const resolutionRouter = require("./resolution.routes.js");
 const technicalServiceRouter = require("./technicalService.routes.js");
 const repairOrderRouter = require("./repairOrder.routes.js");
+const internalWorkOrderRouter = require("./internalWorkOrder.routes.js");
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/ot", workOrderRouter);
 router.use("/repair-order", repairOrderRouter);
 router.use("/resolution", resolutionRouter);
 router.use("/technical-service", technicalServiceRouter);
+router.use("/oti", internalWorkOrderRouter);
 
 module.exports = router;
