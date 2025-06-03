@@ -10,7 +10,17 @@ import styles from './InternalWorkOrdersTable.module.css';
 const InternalWorkOrdersTable = () => {
     const dispatch = useDispatch();
     const { internalWorkOrders, status, error, total } = useSelector((state) => state.oti);
-    console.log(total)
+const sortedOrders = [...internalWorkOrders]
+
+  .filter((oti) => oti.sac?.area === 'op_adm')
+  .sort((a, b) => {
+    if (a.status === 'Pending' && b.status !== 'Pending') return -1;
+    if (a.status !== 'Pending' && b.status === 'Pending') return 1;
+    return b.id - a.id; 
+  });
+
+
+
     
     
     const [currentPage, setCurrentPage] = useState(() => {
@@ -111,7 +121,7 @@ const InternalWorkOrdersTable = () => {
         console.log("entre")
         if (oti) {
             console.log("entre2")
-            const mode = oti.status === 'Open' ? 'edit' : 'view';
+            const mode = oti.status === 'Closed' ? 'view' : 'edit';
             setSelectedOti(oti);
             setFormMode(mode);
         } else {
@@ -202,7 +212,7 @@ const InternalWorkOrdersTable = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {internalWorkOrders.map((oti) => (
+                            {sortedOrders.map((oti) => (
                                 <tr key={oti.id}>
                                     <td>{oti.sacId}</td>
                                     <td>{oti.id}</td>

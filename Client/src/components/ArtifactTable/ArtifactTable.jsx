@@ -222,44 +222,48 @@ const ArtifactTable = () => {
 
             {status === 'succeeded' && artifactList?.length > 0 && (
                 <div>
-                    <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>Artefacto </th>
-                                <th>Estado</th>
-                                <th>Número de SAC</th>
-                                <th>Numero de Cuenta</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {artifactList.map((artifact) => (
-                                <tr key={artifact.id}>
-                                    <td>{`${artifact.name} / ${artifact.brand} / ${artifact.model}`}</td>
-                                    <td>
-                                        <span className={`${styles.statusCircle} ${
-                                            artifact.status === 'Pending' ? styles.red : 
-                                            artifact.status === 'In Progress' ? styles.orange : 
-                                            styles.green
-                                        }`} />
-                                        {artifact.status === 'Pending' && 'Pendiente'}
-                                        {artifact.status === 'In Progress' && 'En Curso'}
-                                        {artifact.status === 'Completed' && 'Cerrado'}
-                                    </td>
-                                    <td>{artifact.sacId}</td>
-                                    <td>{artifact.clientId}</td>
-                                    <td>
-                                        <button 
-                                            className={styles.viewArtifactButton} 
-                                            onClick={() => handleViewArtifact(artifact)}
-                                        >
-                                            Ver Artefacto
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <table className={styles.table}>
+                <thead>
+                    <tr>
+                    <th>Artefacto</th>
+                    <th>Estado</th>
+                    <th>SAC</th>
+                    <th>N° Cuenta</th>
+                    <th>N° O.T</th>
+                    <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {artifactList.map((artifact) => (
+                    <tr key={artifact.id}>
+                        <td>{`${artifact.name} / ${artifact.brand} / ${artifact.model}`}</td>
+                        <td>
+                        <span className={`${styles.statusCircle} ${
+                            artifact.status === 'Pending' ? styles.red : 
+                            artifact.status === 'In Progress' ? styles.orange : 
+                            styles.green
+                        }`} />
+                        {artifact.status === 'Pending' && 'Pendiente'}
+                        {artifact.status === 'In Progress' && 'En Curso'}
+                        {artifact.status === 'Completed' && 'Cerrado'}
+                        </td>
+                        
+                        <td>{artifact.sacId}</td>
+                        <td>{artifact.clientId}</td>
+                        <td>{artifact.workOrder?.id || 'N/A'}</td> 
+                        <td>
+                        <button 
+                            className={styles.viewArtifactButton} 
+                            onClick={() => handleViewArtifact(artifact)}
+                        >
+                            Ver Artefacto
+                        </button>
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+                </table>
+
                     
 
                     <div className={styles.paginationContainer}>

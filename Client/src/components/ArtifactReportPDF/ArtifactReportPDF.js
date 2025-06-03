@@ -60,6 +60,7 @@ const ArtifactReportPDF = async (startDate, endDate) => {
           claimantName: claimantName || 'N/A', // Reclamante
           fullAddress: fullAddress || 'N/A', // Domicilio suministro
           claimNumber: sac.id || 'N/A', // Número de reclamo
+          claimDate: sac.createdAt ? new Date(sac.createdAt).toLocaleDateString('es-AR') : 'N/A', // Fecha reclamo
           artifacts: artifactList || 'N/A', // Artefactos reclamados
           device: client?.device || 'N/A', // Número de medidor
           substation: client?.substation || 'N/A', // Número de SETA

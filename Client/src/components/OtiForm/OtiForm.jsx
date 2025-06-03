@@ -15,7 +15,6 @@ const OtiForm = ({ mode: initialMode, onClose, data }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
 
- 
 
 
   const [dataId, setDataId] = useState(data?.id || null);
@@ -148,6 +147,7 @@ sortedOperationalAgents.forEach((agent) => {
           internalWorkOrderId: data.id,
           internalWorkOrderData: updatedOtiData,
           sacId: data.sacId,
+          isDerived: data.isDerived || false,
         })).unwrap();
       }
   
@@ -167,7 +167,7 @@ sortedOperationalAgents.forEach((agent) => {
         allowOutsideClick: false,
       }).then((result) => {
         if (result.isConfirmed) {
-          OtiPDF(updatedOtiData, response?.id);
+          OtiPDF(updatedOtiData, response?.id, response?.sacId);
         }
       });
     } catch (error) {
@@ -193,10 +193,11 @@ sortedOperationalAgents.forEach((agent) => {
         internalWorkOrderId: data.id,
         internalWorkOrderData: updatedOtiData,
         sacId: data.sacId,
+        isDerived: data.isDerived || false,
       }));
   
       await new Promise((resolve) => {
-        OtiPDF(updatedOtiData, dataId);
+        OtiPDF(updatedOtiData, dataId, data.sacId);
         setTimeout(resolve, 100); 
       });
   
@@ -206,10 +207,19 @@ sortedOperationalAgents.forEach((agent) => {
     }
   };
   
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setOtiData(prevState => ({ ...prevState, [name]: value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setOtiData((prevState) => {
+    const updatedState = { ...prevState, [name]: value };
+    if (name === 'assignedTo' && value !== prevState.assignedTo) {
+      updatedState.status = 'Open';
+    }
+
+    return updatedState;
+  });
+};
+
 
 
 
@@ -232,6 +242,7 @@ sortedOperationalAgents.forEach((agent) => {
         internalWorkOrderId: data.id,
         internalWorkOrderData: otiData,
         sacId: data.sacId,
+        isDerived: data.isDerived || false,
       }));
       onClose(otiData);
     } catch (error) {

@@ -1,4 +1,5 @@
-const { SAC, BurnedArtifact,Resolution,CustomerServiceOrder } = require('../db');
+const { SAC, BurnedArtifact,Resolution,CustomerServiceOrder,InternalWorkOrder } = require('../db');
+const {motivoCategorias, submotivosPrincipales} = require('../utils/motivos');
 const { Op } = require('sequelize');
 const { Client } = require('../db');
 
@@ -69,7 +70,14 @@ const getSACs = async (filters) => {
   if (status) whereClause.status = status;
   if (priority) whereClause.priority = priority;
   if (area) whereClause.area = area;
-  if (claimReason) whereClause.claimReason = { [Op.like]: `%${claimReason}%` };
+  if (claimReason) {
+  if (claimReason === 'Otros') {
+    whereClause.claimReason = { [Op.notIn]: submotivosPrincipales };
+  } else {
+    const submotivos = motivoCategorias[claimReason] || [claimReason];
+    whereClause.claimReason = { [Op.in]: submotivos };
+  }
+}
 
   if (startDate && endDate) {
     whereClause.createdAt = {
@@ -100,6 +108,11 @@ const getSACs = async (filters) => {
         model: CustomerServiceOrder,
         as: 'customerServiceOrders', 
       },
+      {
+        model: InternalWorkOrder,
+        as: 'internalWorkOrders', 
+      }
+
 
     ],
     distinct: true,

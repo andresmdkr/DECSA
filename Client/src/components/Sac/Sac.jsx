@@ -5,12 +5,14 @@ import { fetchSACs } from '../../redux/slices/sacsSlice';
 import { updateSAC } from '../../redux/slices/sacsSlice';
 import { fetchOACs } from '../../redux/slices/oacSlice.js';
 import {updateArtifact} from '../../redux/slices/artifactsSlice.js'
+import { createInternalWorkOrder } from '../../redux/slices/otiSlice.js';
 import Swal from 'sweetalert2';
 import { AiOutlineEdit, AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import styles from './Sac.module.css';
 import OacModal from '../OacModal/OacModal';
 import OacForm from '../OacForm/OacForm.jsx';
 import OtModal from '../OtModal/OtModal';
+import OtiForm from '../OtiForm/OtiForm.jsx';
 import ResolutionModal from '../ResolutionModal/ResolutionModal.jsx';
 import Artifact from '../Artifact/Artifact';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
@@ -241,6 +243,8 @@ const Sac = ({ sac, onClose}) => {
     const [client2, setClient2] = useState(null);
     const [wsg84Lati, setWsg84Lati] = useState(null);
     const [wsg84Long, setWsg84Long] = useState(null);
+    const [showOtiModal, setShowOtiModal] = useState(false);
+    const [otiData, setOtiData] = useState(null);
     
     useEffect(() => {
         if (sac.clientId) {
@@ -255,7 +259,8 @@ const Sac = ({ sac, onClose}) => {
         }
       }, [dispatch, sac.clientId]);
       
-    
+      console.log(sac)
+
     // Asignar valores después de recibir el cliente
     useEffect(() => {
       if (client2) {
@@ -387,53 +392,117 @@ const Sac = ({ sac, onClose}) => {
     
     
 
-    const handleDerivar = async () => {
-        const result = await Swal.fire({
-            title: `¿Seguro que quieres derivar la S.A.C #${sac.id}?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, derivar',
-            cancelButtonText: 'Cancelar',
-        });
+const handleDerivar = async () => {
+  const result = await Swal.fire({
+    title: `¿Seguro que quieres derivar la S.A.C #${sac.id}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, derivar',
+    cancelButtonText: 'Cancelar',
+  });
 
-        if (result.isConfirmed) {
-            const { value: area } = await Swal.fire({
-                title: 'Elija donde derivarlo:',
-                input: 'select',
-                inputOptions: {
-                    artefactos: 'Artefactos',
-                    operaciones: 'Operaciones',
-                    comercial: 'Comercial',
-                },
-                inputPlaceholder: 'Selecciona un área',
-                showCancelButton: true,
-                confirmButtonText: 'Derivar',
-                cancelButtonText: 'Cancelar',
-            });
+  if (result.isConfirmed) {
+    const { value: area } = await Swal.fire({
+      title: 'Elija dónde derivarlo:',
+      input: 'select',
+      inputOptions: {
+        artefactos: 'Artefactos',
+        operaciones: 'Operaciones',
+        operaciones_oti: 'Operaciones (para O.T.I)',
+        comercial: 'Comercial',
+      },
+      inputPlaceholder: 'Selecciona un área',
+      showCancelButton: true,
+      confirmButtonText: 'Derivar',
+      cancelButtonText: 'Cancelar',
+    });
 
-            if (area) {
-                const sacData = { ...sac, area, status: 'Pending' }; 
+    if (!area) return;
 
-                try {
-                    await dispatch(updateSAC({ id: sac.id, sacData })); 
+    // Derivación para O.T.I
+    if (area === 'operaciones_oti') {
+      try {
+        const hasOTI = sac.internalWorkOrders && sac.internalWorkOrders.length > 0;
 
-                    Swal.fire({
-                        title: `S.A.C #${sac.id} derivada correctamente`,
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false,
-                    });
-                    onClose();
-                } catch (error) {
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'No se pudo derivar la S.A.C',
-                        icon: 'error',
-                    });
-                }
-            }
+        // Actualizamos siempre la SAC al área op_adm
+        const sacData = { ...sac, area: 'op_adm', status: 'Pending' };
+        await dispatch(updateSAC({ id: sac.id, sacData }));
+
+        // Si ya tiene OTI, no hacemos nada más
+        if (hasOTI) {
+          Swal.fire({
+            title: `S.A.C #${sac.id} derivada a Operaciones (ya tenía OTI)`,
+            icon: 'info',
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          onClose();
+          return;
         }
-    };
+
+        // Crear nueva OTI si no existe
+        const task = sac.claimReason === 'Rotura de Artefactos'
+          ? 'Inspeccionar Puesto de Medición, Acometida, cableado desde medidor hacia Seta. Informar estado.'
+          : 'Derivado';
+
+        const internalWorkOrderData = {
+          sacId: sac.id,
+          task,
+          status: 'Pending',
+          date: new Date().toISOString().split('T')[0],
+          location: `${client2.address} ${client2.extraAddressInfo}` || '',
+          observations:  '',
+          assignedTo: '',
+          completionDate: null,
+          files: [],
+          isDerived: true,
+        };
+
+        await dispatch(createInternalWorkOrder({ internalWorkOrderData }));
+
+        Swal.fire({
+          title: `OTI creada y S.A.C #${sac.id} derivada correctamente`,
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        onClose();
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo crear la OTI o derivar la S.A.C',
+          icon: 'error',
+        });
+      }
+
+      return;
+    }
+
+    // Derivación estándar (no OTI)
+    try {
+      const sacData = { ...sac, area, status: 'Pending' };
+      await dispatch(updateSAC({ id: sac.id, sacData }));
+
+      Swal.fire({
+        title: `S.A.C #${sac.id} derivada correctamente`,
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      onClose();
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo derivar la S.A.C',
+        icon: 'error',
+      });
+    }
+  }
+};
+
+
+
 
 
     const handleOpenOacModal = () => {
@@ -507,8 +576,18 @@ const Sac = ({ sac, onClose}) => {
         );
     };
     
+const handleOpenOtiModal = () => {
+    if (sac.internalWorkOrders && sac.internalWorkOrders.length > 0) {
+        setOtiData(sac.internalWorkOrders[0]);
+        setShowOtiModal(true);
+    }
+};
 
-console.log(sac)
+const handleCloseOtiForm = () => {
+    setOtiData(null);
+    setShowOtiModal(false);
+};
+
 
 const handleClose = () => {
     if (status === 'Open' && sac.status === 'Closed') {
@@ -525,6 +604,8 @@ const handleClose = () => {
     }
     onClose();
 }
+
+
 
 
     
@@ -888,6 +969,11 @@ const handleClose = () => {
                     <button className={styles.actionButton} onClick={handleDerivar}>
                         Derivar
                     </button>
+                    {sac.internalWorkOrders && sac.internalWorkOrders.length > 0 && (
+                        <button className={styles.actionButton} onClick={handleOpenOtiModal}>
+                            O.T.I
+                        </button>
+                    )}
 {/*                     <button className={styles.actionButton} onClick={handleOpenResolutionModal}>
                         Resolucion
                     </button>
@@ -919,6 +1005,14 @@ const handleClose = () => {
                     )}                    
                 </div>
             </div>
+            {showOtiModal && otiData && (
+                <OtiForm 
+                    mode="view"  
+                    onClose={handleCloseOtiForm} 
+                    data={otiData} 
+                />
+            )}
+
             {isResolutionModalOpen && (
                 <ResolutionModal
                 sac={sac}
@@ -946,3 +1040,6 @@ const handleClose = () => {
 };
 
 export default Sac;
+
+
+                    

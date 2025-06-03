@@ -1,13 +1,27 @@
 import html2pdf from 'html2pdf.js';
 import OtiLogo from '../../assets/oti.png';
+import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
+import { fetchSACs } from '../../redux/slices/sacsSlice';
 
-const OtiPDF = async (otiData, otiId) => {
+import store from '../../redux/store';
+
+const OtiPDF = async (otiData, otiId,sacId) => {
   try {
+    console.log('otiData', otiData, sacId);
+    const sacResponse = await store.dispatch(fetchSACs({ sacId }));
+    const sacData = sacResponse?.payload?.sacs?.[0];
+    if (!sacData) throw new Error('SAC no encontrada');
+
+    const clientResponse = await store.dispatch(fetchClientByAccountNumber(sacData.clientId));
+    const client = clientResponse?.payload;
+    if (!client) throw new Error('Cliente no encontrado');
+
+    console.log('Client data:', client);
 
     const htmlTemplate = await fetch('OTI/OTI.html').then(res => res.text());
-    
-  
     const cssTemplate = await fetch('OTI/OTI.css').then(res => res.text());
+
+
 
 
     const formatDate = (dateString) => {
@@ -31,6 +45,22 @@ const OtiPDF = async (otiData, otiId) => {
     mainContainer.querySelector('.order-number').textContent = `N° ${otiId}` || 'N/A';
     mainContainer.querySelector('#date').textContent = formatDate(otiData.date) || ' ';
     mainContainer.querySelector('#realizado').textContent = formatDate(otiData.completionDate) || '........./........./.........'; 
+    mainContainer.querySelector('#assignedTo').textContent =  otiData.assignedTo || '';
+
+
+    mainContainer.querySelector('#sacIdContainer').textContent = sacId 
+    ? `S.A.C Nº: ${sacId}`
+    : '';
+
+    if (client && typeof client === 'object' && client.holderName) {
+      const clientInfo = mainContainer.querySelector('#clientInfo');
+      clientInfo.style.display = 'flex';
+      mainContainer.querySelector('#usuario').textContent = client.holderName;
+      mainContainer.querySelector('#medidor').textContent = client.device || 'N/A';
+    }
+
+  
+
 
 
     const taskElement = mainContainer.querySelector('#task');

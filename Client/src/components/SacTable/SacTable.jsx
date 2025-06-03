@@ -6,6 +6,7 @@ import { fetchSACs } from '../../redux/slices/sacsSlice';
 import styles from './SacTable.module.css';
 import SacPDF from '../SacPDF/SacPDF';
 
+
 const SacTable = () => {
     const dispatch = useDispatch();
     const { sacs, status, error, total } = useSelector((state) => state.sacs);
@@ -15,6 +16,9 @@ const SacTable = () => {
     const [clientIdSearch, setClientIdSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [priorityFilter, setPriorityFilter] = useState('');
+    const [claimReasonFilter, setClaimReasonFilter] = useState('');
+    const [createdAtFilter, setCreatedAtFilter] = useState('');
+
     const sacsPerPage = 20;
     const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -22,6 +26,9 @@ const SacTable = () => {
         sacId: '',
         clientId: '',
     });
+
+
+
 
     const statusMap = {
         'Pendiente': 'Pending',
@@ -53,16 +60,22 @@ const SacTable = () => {
 
     useEffect(() => {
         if (!isRefreshing) {
+            const endDate = createdAtFilter
+            ? new Date(new Date(createdAtFilter).getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0]
+            : '';
             dispatch(fetchSACs({
                 page: currentPage,
                 limit: sacsPerPage,
                 sacId: searchParams.sacId,
+                claimReason: claimReasonFilter,
                 clientId: searchParams.clientId,
                 status:  statusFilter ? statusMap[statusFilter] : '',
-                priority: priorityFilter
+                priority: priorityFilter,
+                startDate: createdAtFilter,
+                endDate
             }));
         }
-    }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
+    }, [dispatch, currentPage, statusFilter,claimReasonFilter, priorityFilter,createdAtFilter, sacsPerPage, searchParams, isRefreshing]);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
@@ -83,6 +96,8 @@ const SacTable = () => {
             setClientIdSearch('');
             setStatusFilter('');
             setPriorityFilter('');
+            setClaimReasonFilter('');
+            setCreatedAtFilter('');
             setCurrentPage(1);
 
             setSearchParams({
@@ -123,6 +138,8 @@ const SacTable = () => {
         if (/^\d*$/.test(value) && value.length <= 9) {
             setPriorityFilter('');
             setStatusFilter('');
+            setClaimReasonFilter('');
+            setCreatedAtFilter('');
             setClientIdSearch('');
             setSacIdSearch(value);
         }
@@ -133,10 +150,33 @@ const SacTable = () => {
         if (/^\d*$/.test(value) && value.length <= 9) {
             setPriorityFilter('');
             setStatusFilter('');
+            setClaimReasonFilter('');
+            setCreatedAtFilter('');
             setSacIdSearch('');
             setClientIdSearch(value);
         }
     };
+
+            const handleClaimReasonChange = (e) => {
+            setSearchParams({
+                sacId: '',
+                clientId: clientIdSearch || ''
+            });
+            setSacIdSearch('');
+            setClaimReasonFilter(e.target.value);
+            setCurrentPage(1);
+        };
+
+        const handleCreatedAtChange = (e) => {
+            setSearchParams({
+                sacId: '',
+                clientId: clientIdSearch || ''
+            });
+            setSacIdSearch('');
+            setCreatedAtFilter(e.target.value);
+            setCurrentPage(1);
+        };
+
 
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -217,6 +257,10 @@ const SacTable = () => {
                     </Select>
                 </FormControl>
                 {/* Reset Button */}
+
+
+
+
                 <button
                     onClick={handleReset}
                     className={`${styles.refreshButton} ${isRefreshing ? styles.spinnerIcon : ''}`}
@@ -228,7 +272,8 @@ const SacTable = () => {
                 
             </div>
 
-            {/* Nuevo Search Input para Client ID */}
+
+            <div className={styles.filterContainer2}>
             <div className={styles.searchContainer2}>
                 <TextField
                     label="Buscar por Número de Cuenta"
@@ -242,6 +287,37 @@ const SacTable = () => {
                 <button onClick={handleSearch} className={styles.searchButton}>
                     <AiOutlineSearch className={styles.icon} /> Buscar
                 </button>
+                </div>
+                    <div className={styles.filters2}>
+                    <FormControl variant="outlined" className={styles.filter}>
+                        <InputLabel>Motivo</InputLabel>
+                        <Select
+                            value={claimReasonFilter}
+                            onChange={handleClaimReasonChange}
+                            label="Motivo"
+                        >
+                            <MenuItem value=""><em>Ninguno</em></MenuItem>
+                            <MenuItem value="Problema Eléctrico">Problema Eléctrico</MenuItem>
+                            <MenuItem value="Rotura de Artefactos">Rotura de Artefactos</MenuItem>
+                            <MenuItem value="Problema Comercial">Problema Comercial</MenuItem>
+                            <MenuItem value="Otros">Otros</MenuItem>
+                        </Select>
+                    </FormControl>
+
+                    <TextField
+                        label="Fecha de Creación"
+                        type="date"
+                        variant="outlined"
+                        value={createdAtFilter}
+                        onChange={handleCreatedAtChange}
+                        className={styles.filter}
+                        size="small"
+                        InputLabelProps={{
+                            shrink: true,
+                        }}  
+                    /> 
+                 </div>
+            
             </div>
 
             {/* Loading Spinner */}

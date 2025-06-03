@@ -48,10 +48,12 @@ export const createInternalWorkOrder = createAsyncThunk(
         },
       };
 
-      const sacResponse = await axios.post(`${API_BASE_URL}/sacs`, sacData, config);
-      const sacId = sacResponse.data.id;
+      let sacId = internalWorkOrderData.sacId;
 
-      
+      if (!sacId) {
+        const sacResponse = await axios.post(`${API_BASE_URL}/sacs`, sacData, config);
+        sacId = sacResponse.data.id;
+      }
 
       const formData = new FormData();
       formData.append('sacId', sacId);
@@ -62,6 +64,7 @@ export const createInternalWorkOrder = createAsyncThunk(
       formData.append('observations', internalWorkOrderData.observations || '');
       formData.append('assignedTo', internalWorkOrderData.assignedTo);
       formData.append('completionDate', internalWorkOrderData.completionDate|| null);
+      formData.append('isDerived', internalWorkOrderData.isDerived || false);
 
       if (internalWorkOrderData.files) {
         internalWorkOrderData.files.forEach((file) => {
@@ -80,7 +83,7 @@ export const createInternalWorkOrder = createAsyncThunk(
 
 export const updateInternalWorkOrder = createAsyncThunk(
   'internalWorkOrders/updateInternalWorkOrder',
-  async ({ internalWorkOrderId, internalWorkOrderData, sacId }, { rejectWithValue }) => {
+  async ({ internalWorkOrderId, internalWorkOrderData, sacId, isDerived }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
 
@@ -89,7 +92,9 @@ export const updateInternalWorkOrder = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-      if (sacId) {
+
+      
+      if (sacId && !isDerived) {
         const sacData = {
           claimReason: internalWorkOrderData.task,
           eventDate: internalWorkOrderData.date,
@@ -122,6 +127,7 @@ export const updateInternalWorkOrder = createAsyncThunk(
     }
   }
 );
+
 
 
 const otiSlice = createSlice({

@@ -21,7 +21,7 @@ const handleInternalFileUpload = async (files, iotId) => {
 };
 
 const createInternalWorkOrder = async (data) => {
-  let { sacId, status, task, date, location, observations, assignedTo, completionDate } = data;
+  let { sacId, status, task, date, location, observations, assignedTo, completionDate, isDerived } = data;
 
   sacId = sacId ?? null;
   observations = observations ?? null;
@@ -33,7 +33,8 @@ const createInternalWorkOrder = async (data) => {
     date,
     location,
     observations,
-    assignedTo
+    assignedTo,
+    isDerived: isDerived || false,  
   };
 
   if (completionDate !== null && completionDate !== undefined && completionDate !== '' && completionDate !== 'null') {

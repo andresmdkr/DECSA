@@ -41,6 +41,11 @@ module.exports = (sequelize) => {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
     },
+    isDerived: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     sacId: {
       type: DataTypes.INTEGER,
       allowNull: true,

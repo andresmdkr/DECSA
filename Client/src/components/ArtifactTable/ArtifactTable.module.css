@@ -120,29 +120,56 @@
     background-color: green;
 }
 
-/* Tabla de Artefactos */
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 15px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  table-layout: fixed;
 }
 
-.table th, .table td {
-    padding: 5px;
-    border-bottom: 1px solid #ccc;
-    text-align: left;
+/* Encabezado */
+.table th {
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: left;
 }
 
-.table th:nth-child(1), .table td:nth-child(1),
-.table th:nth-child(2), .table td:nth-child(2),
-.table th:nth-child(3), .table td:nth-child(3),
-.table th:nth-child(4), .table td:nth-child(4) {
-    width: 15%;
+/* Celdas */
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.table th:nth-child(5), .table td:nth-child(5) {
-    width: 10%;
+/* Filas alternas */
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
 }
+
+/* Hover */
+.table tr:hover {
+  background-color: #e6e6e6;
+}
+
+/* Ancho por columna */
+.table th:nth-child(1), .table td:nth-child(1) { width: 35%; } /* Artefacto */
+.table th:nth-child(2), .table td:nth-child(2) { width: 15%; } /* Estado */
+.table th:nth-child(3), .table td:nth-child(3) { width: 10%; } /* N° O.T */
+.table th:nth-child(4), .table td:nth-child(4) { width: 10%; } /* N° SAC */
+.table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* N° Cuenta */
+.table th:nth-child(6), .table td:nth-child(6) { width: 10%; text-align: center; } /* Acciones */
+
+
+/* Puntos suspensivos en celdas largas */
+.ellipsisCell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
 
 
 .viewArtifactButton {
