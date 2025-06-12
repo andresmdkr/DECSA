@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,7 +13,7 @@ export const fetchWorkOrders = createAsyncThunk(
           headers: { Authorization: `Bearer ${token}` },
           params: { sacId, burnedArtifactId }, 
         };
-        const response = await axios.get(`${API_BASE_URL}/ot`, config);
+        const response = await api.get(`${API_BASE_URL}/ot`, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to fetch Work Orders');
@@ -45,7 +45,7 @@ export const fetchWorkOrders = createAsyncThunk(
         formData.append('protectionOther', workOrderData.protectionOther || '');
   
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.post(`${API_BASE_URL}/ot`, formData, config);
+        const response = await api.post(`${API_BASE_URL}/ot`, formData, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Error creating Work Order');
@@ -80,7 +80,7 @@ export const fetchWorkOrders = createAsyncThunk(
         }
   
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.put(`${API_BASE_URL}/ot/${workOrderId}`, formData, config);
+        const response = await api.put(`${API_BASE_URL}/ot/${workOrderId}`, formData, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Error updating Work Order');

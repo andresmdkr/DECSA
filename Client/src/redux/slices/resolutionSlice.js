@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,7 +13,7 @@ export const fetchResolutions = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
         params: { sacId, burnedArtifactId }, 
       };
-      const response = await axios.get(`${API_BASE_URL}/resolution`, config);
+      const response = await api.get(`${API_BASE_URL}/resolution`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch resolutions');
@@ -29,7 +29,7 @@ export const fetchResolutionById = createAsyncThunk(
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get(`${API_BASE_URL}/resolution/${resolutionId}`, config);
+      const response = await api.get(`${API_BASE_URL}/resolution/${resolutionId}`, config);
       console.log(response)
       return response.data;
     } catch (error) {
@@ -50,7 +50,7 @@ export const createResolution = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.post(`${API_BASE_URL}/resolution/sac/${sacId}`, resolutionData, config); 
+      const response = await api.post(`${API_BASE_URL}/resolution/sac/${sacId}`, resolutionData, config); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to create resolution');
@@ -68,7 +68,7 @@ export const updateResolution = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       };
-      const response = await axios.put(`${API_BASE_URL}/resolution/${resolutionId}`, resolutionData, config); 
+      const response = await api.put(`${API_BASE_URL}/resolution/${resolutionId}`, resolutionData, config); 
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update resolution');

@@ -1,12 +1,14 @@
 import html2pdf from 'html2pdf.js';
 import store from '../../redux/store';
 import Logo from '../../assets/logo.gif';
+import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice';
 
 const OrPDF = async ({ burnedArtifact, technicalService,repairOrder }) => {
   console.log(burnedArtifact, technicalService,repairOrder);
 
+  await store.dispatch(fetchClientByAccountNumber(burnedArtifact?.SAC?.clientId));
   const client = store.getState().clients.client;
-  console.log(client);
+
 
   try {
     const htmlTemplate = await fetch('OR/OR.html').then((res) => res.text());
@@ -20,11 +22,13 @@ const OrPDF = async ({ burnedArtifact, technicalService,repairOrder }) => {
     pageContainer.querySelector('#repairOrderId').textContent = repairOrder?.id || 'N/A';
     pageContainer.querySelector('#claimant-name').textContent =
     burnedArtifact?.SAC?.claimantName || client?.holderName || 'N/A';
+    pageContainer.querySelector('#client-name').textContent = client?.holderName || 'N/A';
     pageContainer.querySelector('#company-logo2').src = Logo;
     pageContainer.querySelector('#sacId2').textContent = burnedArtifact?.SAC?.id || 'N/A';
     pageContainer.querySelector('#repairOrderId2').textContent = repairOrder?.id || 'N/A';
     pageContainer.querySelector('#claimant-name2').textContent =
     burnedArtifact?.SAC?.claimantName || client?.holderName || 'N/A';
+    pageContainer.querySelector('#client-name2').textContent = client?.holderName || 'N/A';
 
     pageContainer.querySelector('#artifact-name').textContent = burnedArtifact.name || 'N/A';
     pageContainer.querySelector('#artifact-brand').textContent = burnedArtifact.brand || '';
@@ -38,9 +42,11 @@ const OrPDF = async ({ burnedArtifact, technicalService,repairOrder }) => {
     pageContainer.querySelector('#technical-report2').textContent = repairOrder?.technicalReport || 'N/A';
 
     pageContainer.querySelector('#claimant-address').textContent =
-    (client.address ? `${client.address} ${client.extraAddressInfo || ''}` : 'N/A');
+    (client.address ? `${client.address}` : 'N/A');
+    /* (client.address ? `${client.address} ${client.extraAddressInfo || ''}` : 'N/A'); */
     pageContainer.querySelector('#claimant-address2').textContent =
-    (client.address ? `${client.address} ${client.extraAddressInfo || ''}` : 'N/A');
+    (client.address ? `${client.address}` : 'N/A');
+    /* (client.address ? `${client.address} ${client.extraAddressInfo || ''}` : 'N/A'); */
 
     pageContainer.querySelector('#claimant-phone').textContent =
     burnedArtifact?.SAC?.claimantPhone || client.phone || 'N/A';

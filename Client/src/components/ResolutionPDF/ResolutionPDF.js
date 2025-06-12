@@ -1,12 +1,15 @@
 import html2pdf from 'html2pdf.js';
 import { fetchResolutions, fetchResolutionById } from '../../redux/slices/resolutionSlice';
+import {fetchClientByAccountNumber} from '../../redux/slices/clientsSlice';
 import store from '../../redux/store';
 import Logo from '../../assets/logo.gif';
 import Menbrete from '../../assets/menbrete.jpg';
 
-const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
+const ResolutionPDF = async (sac, resolutionId, burnedArtifact) => {
   try {
-    console.log(sacId, resolutionId, burnedArtifactId);
+    
+    const sacId = sac?.id || null;
+    const burnedArtifactId = burnedArtifact?.id || null;
 
     let resolutionResponse;
     let resolutionData;
@@ -20,8 +23,9 @@ const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
 
     if (!resolutionData) throw new Error('Resolución no encontrada');
 
+
+    await store.dispatch(fetchClientByAccountNumber(sac?.clientId));
     const client = store.getState().clients.client;
-    console.log(client, resolutionData);
 
     const htmlTemplate = await fetch('Resolution/Resolution.html').then((res) => res.text());
 
@@ -43,13 +47,13 @@ const ResolutionPDF = async (sacId, resolutionId, burnedArtifactId) => {
     pageContainer.querySelector('#resolutionId').textContent = resolutionData.id || 'N/A';
     pageContainer.querySelector('#description').innerHTML =
       resolutionData.description.replace(/\n/g, '<br>').replace(/(<br>)([^<])/g, '$1<span class="indent">$2') || 'N/A';
-
     // Rellenar datos del cliente si existe
     if (client) {
-      const fullAddress = `${client.address || ''} ${client.extraAddressInfo || ''}`.trim();
+     /*  const fullAddress = `${client.address || ''} ${client.extraAddressInfo || ''}`.trim(); */
       pageContainer.querySelector('#holderName').textContent = client.holderName || 'N/A';
+      pageContainer.querySelector('#accountNumber').textContent = client.accountNumber || 'N/A';
       pageContainer.querySelector('#supply').textContent = client.supply || 'N/A';
-      pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
+      pageContainer.querySelector('#address').textContent = client.address || 'N/A';
       pageContainer.querySelector('#department').textContent = client.department || 'N/A';
       pageContainer.querySelector('#province').textContent = client.province || 'N/A';
     }

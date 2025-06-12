@@ -328,7 +328,8 @@ const CustomerSearchOp = () => {
                                     <tr>
                                         <td>{client.accountNumber}</td>
                                         <td>{client.holderName}</td>
-                                        <td>{client.address} {client.extraAddressInfo}</td>
+                                        {/* <td>{client.address} {client.extraAddressInfo}</td> */}
+                                        <td>{client.address}</td>
                                         <td>{client.category}</td>
                                         <td>{client.device}</td>
                                         <td>

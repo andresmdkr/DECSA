@@ -13,6 +13,7 @@
 
 .container2{
     height: 75vh;
+    overflow-y: auto;
 }
 
 .tabs {
@@ -308,6 +309,8 @@
     background-color: #0056b3;
 }
 
+
+
 @media screen and (max-width: 870px) {
     .searchBar input {
         width: 100%;
@@ -352,6 +355,3 @@
         justify-content: center;
     }
 }
-
-
-

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -13,7 +13,7 @@ export const fetchOACs = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
         params: { sacId },
       };
-      const response = await axios.get(`${API_BASE_URL}/oac`, config);
+      const response = await api.get(`${API_BASE_URL}/oac`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch OACs');
@@ -48,7 +48,7 @@ export const createOac = createAsyncThunk(
       });
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.post(`${API_BASE_URL}/oac`, formData, config);
+      const response = await api.post(`${API_BASE_URL}/oac`, formData, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message || 'Error creating OAC');
@@ -60,32 +60,28 @@ export const updateOac = createAsyncThunk(
   'oacs/updateOac',
   async ({ oacId, oacData }, { rejectWithValue }) => {
     try {
-      console.log(oacId, oacData);
+
       const token = localStorage.getItem('token');
       const formData = new FormData();
-      console.log("ENTRE")
-      // Parámetros principales
+
       Object.keys(oacData).forEach(key => {
         if (key === 'files' || key === 'mainFile') return;
         formData.append(key, oacData[key]);
       });
-      console.log("ENTRE")
-      // Archivo principal (mainFile)
+
       if (oacData.mainFile) {
         formData.append('mainFile', oacData.mainFile);
       }
-      console.log("ENTRE")
-      // Otros archivos
       if (oacData.files) {
       oacData.files.forEach(file => {
         formData.append('files', file);
       });
     }
-      console.log("ENTRE")
+
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      console.log("ENTRE")
-      const response = await axios.put(`${API_BASE_URL}/oac/${oacId}`, formData, config);
-      console.log(response.data);
+
+      const response = await api.put(`${API_BASE_URL}/oac/${oacId}`, formData, config);
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message || 'Error updating OAC');
@@ -117,7 +113,7 @@ export const updateOac = createAsyncThunk(
       });
       
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.post(`${API_BASE_URL}/oac`, formData, config);
+      const response = await api.post(`${API_BASE_URL}/oac`, formData, config);
       return response.data; 
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error creating OAC');
@@ -148,7 +144,7 @@ export const updateOac = createAsyncThunk(
       });
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.put(`${API_BASE_URL}/oac/${oacId}`, formData, config);
+      const response = await api.put(`${API_BASE_URL}/oac/${oacId}`, formData, config);
       return response.data; 
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error updating OAC');

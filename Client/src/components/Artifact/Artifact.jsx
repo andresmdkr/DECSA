@@ -396,8 +396,8 @@ const Artifact = ({ sac, artifactId, onUpdate, onClose, mode = 'edit' }) => {
                         )}
                         {showResolutionForm && (
                             <ResolutionForm  
-                                sacId={sac.id}
-                                burnedArtifactId={artifactId}
+                                sac={sac}
+                                burnedArtifact={artifact}
                                 resolution={resolution}
                                 mode={resolutionMode}
                                 onClose={closeResolutionForm}

@@ -121,17 +121,23 @@
 .table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9375rem;
+    font-size: 15px;
     table-layout: fixed;
+    margin: 0 auto;
+    
+    
 }
 
-.table th, .table td {
+.table th,
+.table td {
     padding: 8px;
     border-bottom: 1px solid #ccc;
     text-align: left;
     vertical-align: middle;
     word-wrap: break-word;
 }
+
+
 
 .table th {
     background-color: #f4f4f4;
@@ -145,23 +151,37 @@
     background-color: #e6e6e6;
 }
 
-/* Column widths (ajustadas para claridad visual) */
-.table th:nth-child(1), .table td:nth-child(1) { width: 7%; }
-.table th:nth-child(2), .table td:nth-child(2) { width: 10%; }
-.table th:nth-child(3), .table td:nth-child(3) { width: 10%; }
-.table th:nth-child(4), .table td:nth-child(4) { width: 8%; }
-.table th:nth-child(5), .table td:nth-child(5) { width: 8%; }
-.table th:nth-child(6), .table td:nth-child(6) { width: 13%; }
-.table th:nth-child(7), .table td:nth-child(7) { width: 13%; }
-.table th:nth-child(8), .table td:nth-child(8) { width: 10%; }
-.table th:nth-child(9), .table td:nth-child(9) { width: 10%; }
-.table th:nth-child(10), .table td:nth-child(10) {
-    width: 7%;
-    text-align: center;
+.table thead th {
+  position: sticky;
+  top: -20px;
+  z-index: 10;
+  background-color: #f4f4f4; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.table, .paginationContainer {
-    margin: 0 auto;
+
+
+/* Column widths */
+.table th:nth-child(1),  /* SAC */         .table td:nth-child(1)  { width: 5%; }   /* ID corto */
+.table th:nth-child(2),  /* Estado */      .table td:nth-child(2)  { width: 8%; }
+.table th:nth-child(3),  /* Prioridad */   .table td:nth-child(3)  { width: 6%; text-align: center; }
+.table th:nth-child(4),  /* Motivo */      .table td:nth-child(4)  { width: 11%; }
+.table th:nth-child(5),  /* Responsable */ .table td:nth-child(5)  { width: 10%; }
+.table th:nth-child(6),  /* Dirección */   .table td:nth-child(6)  { width: 20%; }  /* dirección es la más larga */
+.table th:nth-child(7),  /* Cuenta */      .table td:nth-child(7)  { width: 7%; text-align: center; }
+.table th:nth-child(8),  /* Titular */     .table td:nth-child(8)  { width: 12%; }
+.table th:nth-child(9),  /* Fecha */       .table td:nth-child(9)  { width: 8%; }
+.table th:nth-child(10), /* Acciones */    .table td:nth-child(10) {
+  width: 8%;
+  text-align: center;
+}
+
+
+.ellipsisCell {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .paginationContainer {
@@ -171,14 +191,14 @@
 }
 
 .highPriorityRow {
-    background-color: rgba(255, 0, 0, 0.15);
+    background-color: rgba(255, 0, 0, 0.267);
 }
 
 .mediumPriorityRow {
-    background-color: rgba(255, 165, 0, 0.15);
+    background-color: rgba(255, 117, 4, 0.308);
 }
 
-/* Reutilización de estilos base */
+
 .buttonBase {
     min-width: 99px;
     text-align: center;
@@ -192,21 +212,30 @@
 }
 
 .viewClaimButton {
-    @extend .buttonBase;
-    background-color: #007bff;
+    background-color: #014785; 
+    color: white;
 }
 
 .viewClaimButton:hover {
-    background-color: #002f61;
+    background-color: #00223f;
 }
 
+
 .viewReclamoButton {
-    @extend .buttonBase;
-    background-color: #1d8622;
+    background-color: #2e7d32; 
 }
 
 .viewReclamoButton:hover {
-    background-color: #1a6e1a;
+    background-color: #1b5e20;
+}
+
+.generateOacButton {
+    background-color: #007bff;
+    color: white;
+}
+
+.generateOacButton:hover {
+    background-color: #0056b3;
 }
 
 .actionsCell {
@@ -220,6 +249,22 @@
     gap: 4px;
     flex-wrap: wrap;
 }
+
+/* .generateOacButton {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.generateOacButton:hover {
+    background-color: #002f61;
+} */
+
 
 @media screen and (max-width: 1000px) {
     .filterContainer {

@@ -1,12 +1,12 @@
   import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-  import axios from 'axios';
+import api from '../auth/api.js';
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   export const fetchSACs = createAsyncThunk(
     'sacs/fetchSACs',
     async (
-      { page = 1, limit = 10, sacId = null, claimReason = null, clientId = null, status = null, priority = null, area = null, startDate = null, endDate = null },
+      { page = 1, limit = 10, sacId = null, claimReason = null, clientId = null, status = null, priority = null, area = null, startDate = null, endDate = null, sort=null },
       { rejectWithValue }
     ) => {
       try {
@@ -15,10 +15,10 @@
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          params: { page, limit, sacId, claimReason, clientId, status, priority, area, startDate, endDate }, 
+          params: { page, limit, sacId, claimReason, clientId, status, priority, area, startDate, endDate, sort }, 
         };
         
-        const response = await axios.get(`${API_BASE_URL}/sacs`, config);
+        const response = await api.get(`${API_BASE_URL}/sacs`, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to fetch SACs');
@@ -40,7 +40,7 @@
           },
         };
 
-        const response = await axios.post(`${API_BASE_URL}/sacs`, sacData, config);
+        const response = await api.post(`${API_BASE_URL}/sacs`, sacData, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to create SAC');
@@ -61,7 +61,7 @@
         };
         
   
-        const response = await axios.put(`${API_BASE_URL}/sacs/${id}`, sacData, config);
+        const response = await api.put(`${API_BASE_URL}/sacs/${id}`, sacData, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to update SAC');

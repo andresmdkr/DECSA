@@ -23,8 +23,11 @@ const SacPDF = async (sacId) => {
     const formattedDate = updatedAt.toLocaleDateString('es-AR');
     const formattedTime = updatedAt.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-    const fullAddress = `${client.address || ''} ${client.extraAddressInfo || ''}`.trim();
-    const fullPostalAddress = `${client.postalAddress || ''} ${client.extraPostalAddressInfo || ''}`.trim();
+ /*    const fullAddress = `${client.address || ''} ${client.extraAddressInfo || ''}`.trim();
+    const fullPostalAddress = `${client.postalAddress || ''} ${client.extraPostalAddressInfo || ''}`.trim(); */
+    const fullAddress = client.address || 'N/A';
+    const fullPostalAddress = client.postalAddress || 'N/A';
+
 
     const claimantName = sacData.claimantName || client.holderName;
     const claimantRelationship = sacData.claimantName ? sacData.claimantRelationship : 'Titular';
@@ -107,7 +110,7 @@ const SacPDF = async (sacId) => {
         pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
         pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
         pageContainer.querySelector('#phone').textContent = client.phone || ''; 
-        pageContainer.querySelector('#description').textContent = sacData.description || 'N/A';
+        pageContainer.querySelector('#description').textContent = sacData.description || ' ';
         pageContainer.querySelector('#date').textContent = `${formattedDate}`;
         pageContainer.querySelector('#time').textContent = `${formattedTime}`;
         pageContainer.querySelector('#talonarioDate').textContent = `${formattedDate}`;
@@ -223,7 +226,7 @@ const SacPDF = async (sacId) => {
       pageContainer.querySelector('#address').textContent = fullAddress || 'N/A';
       pageContainer.querySelector('#postalAddress').textContent = fullPostalAddress || 'N/A';
       pageContainer.querySelector('#phone').textContent = client.phone || ''; 
-      pageContainer.querySelector('#description').textContent = sacData.description || 'N/A';
+      pageContainer.querySelector('#description').textContent = sacData.description || ' ';
       pageContainer.querySelector('#date').textContent = `${formattedDate}`;
       pageContainer.querySelector('#time').textContent = `${formattedTime}`;
       pageContainer.querySelector('#talonarioDate').textContent = `${formattedDate}`;

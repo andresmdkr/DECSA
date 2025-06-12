@@ -32,6 +32,8 @@ const authSlice = createSlice({
             localStorage.removeItem('user');
             state.token = null;
             localStorage.removeItem('token');
+            state.status = 'idle';
+            state.error = null;
         },
     },
 });

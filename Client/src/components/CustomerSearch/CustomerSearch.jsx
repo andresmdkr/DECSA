@@ -167,7 +167,8 @@ const CustomerSearch = () => {
             case 'BAJA':
                 return <span className={styles.disconnectedIcon} />;
             case 'PENDIENTE':
-            case 'PENDIENTE_CONEXION':
+            case 'PENDIENTE DE CONEXION':
+            case 'PENDIENTE DESCONEXION':
                 return <span className={styles.pendingIcon} />;
             default:
                 return null;
@@ -271,7 +272,7 @@ const CustomerSearch = () => {
                
                     {status === 'succeeded' && client && (
                         <div className={styles.customerDetails}>
-                            <table>
+                            <table className={styles.table}>
                                 <thead>
                                     <tr>
                                         <th>Número de Cuenta</th>
@@ -287,7 +288,8 @@ const CustomerSearch = () => {
                                     <tr>
                                         <td>{client.accountNumber}</td>
                                         <td>{client.holderName}</td>
-                                        <td>{client.address} {client.extraAddressInfo}</td>
+                                        {/* <td>{client.address} {client.extraAddressInfo}</td> */}
+                                        <td>{client.address}</td>
                                         <td>{client.category}</td>
                                         <td>{client.device}</td>
                                         <td>

@@ -17,6 +17,8 @@ import ResolutionModal from '../ResolutionModal/ResolutionModal.jsx';
 import Artifact from '../Artifact/Artifact';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 import { FaCopy, FaWhatsapp } from 'react-icons/fa';
+import { snackbarClasses } from '@mui/material';
+
 'AIzaSyDsOGP7vyWVBiZUpyE1uiHg43oNGFgLCPo'
 const MapComponent = ({ latitude, longitude,client,sac}) => {
   const [mapCenter] = useState({ lat: latitude, lng: longitude });
@@ -336,8 +338,20 @@ const Sac = ({ sac, onClose}) => {
                     closeTime: formattedTime,
                     closedBy: `${user.name} ${user.lastName}`,
                 };
-    
+                
                 await dispatch(updateSAC({ id: sac.id, sacData: updatedData }));
+
+                if (Array.isArray(sac.artifacts) && sac.artifacts.length > 0) {
+                await Promise.all(
+                sac.artifacts.map((artifact) =>
+                    dispatch(updateArtifact({
+                    artifactId: artifact.id,
+                    artifactData: { status: 'Completed' },
+                    }))
+                )
+                );
+                }
+
                 setStatus('Closed');
                 Swal.fire({
                     title: '¡S.A.C Cerrada!',
@@ -450,7 +464,8 @@ const handleDerivar = async () => {
           task,
           status: 'Pending',
           date: new Date().toISOString().split('T')[0],
-          location: `${client2.address} ${client2.extraAddressInfo}` || '',
+          /* location: `${client2.address} ${client2.extraAddressInfo}` || '', */
+          location: `${client2?.address}` || '',
           observations:  '',
           assignedTo: '',
           completionDate: null,
@@ -514,21 +529,23 @@ const handleDerivar = async () => {
     };
 
     const handleOpenOacForm = () => setIsOacFormOpen(true);
-    const handleCloseOacForm = () => setIsOacFormOpen(false);
+
+    const handleCloseOacForm = async ({ sacStatus, oacStatus }) => {
+      const shouldOpenSac = sacStatus === 'Pending' && oacStatus !== 'Completed' && oacStatus;
+    
+      if (shouldOpenSac) {
+        await dispatch(updateSAC({ id: sac.id, sacData: { status: 'Open' } }));
+      }
+    
+      setIsOacFormOpen(false);
+
+    };
+    
 
     const handleOpenOtModal = () => {
         setIsOtModalOpen(true);
     };
-
-    const handleOacCreated = async (sacId) => {
-        const sacData = { status: 'Open' }; 
-        try {
-            await dispatch(updateSAC({ id: sacId, sacData }));
-            setIsOacFormOpen(false); 
-        } catch (error) {
-            console.error('Error al actualizar el SAC:', error);
-        }
-    };  
+ 
 
     const handleCloseOtModal = () => {
         setIsOtModalOpen(false);
@@ -1024,7 +1041,6 @@ const handleClose = () => {
                 sac={sac}
                 client={client2}
                 onClose={handleCloseOacForm}
-                onOacCreated={() => handleOacCreated(sac.id)}
                 mode="create"
                 />
             )}

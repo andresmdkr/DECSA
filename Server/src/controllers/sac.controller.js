@@ -1,6 +1,6 @@
 const { SAC, BurnedArtifact,Resolution,CustomerServiceOrder,InternalWorkOrder } = require('../db');
 const {motivoCategorias, submotivosPrincipales} = require('../utils/motivos');
-const { Op } = require('sequelize');
+const { Op,Sequelize } = require('sequelize');
 const { Client } = require('../db');
 
 const createSAC = async (sacData) => {
@@ -13,6 +13,7 @@ const createSAC = async (sacData) => {
     endTime,
     priority,
     area,
+    status,
     claimantName,
     claimantRelationship,
     claimantPhone,
@@ -34,6 +35,7 @@ console.log(clientId)
     endTime,
     priority, 
     area,
+    status,
     claimantName,      
     claimantRelationship,   
     claimantPhone,  
@@ -59,25 +61,29 @@ console.log(clientId)
   return newSAC;
 };
 
-const getSACs = async (filters) => {
-  const { sacId, clientId,claimReason, status, priority, area, page = 1, limit = 10, order = 'DESC',startDate, endDate, } = filters;
-
-  console.log(claimReason)
-
+const getSACs = async (filters) => { 
+  const { sacId, clientId, claimReason, status, priority, area, page = 1, limit = 10, order = 'DESC', startDate, endDate,sort } = filters;
+  console.log(filters)
   const whereClause = {};
   if (sacId) whereClause.id = { [Op.eq]: sacId };  
   if (clientId) whereClause.clientId = clientId;
-  if (status) whereClause.status = status;
+  if (status) {
+    if (Array.isArray(status)) {
+      whereClause.status = { [Op.in]: status };
+    } else {
+      whereClause.status = status;
+    }
+  }
   if (priority) whereClause.priority = priority;
   if (area) whereClause.area = area;
   if (claimReason) {
-  if (claimReason === 'Otros') {
-    whereClause.claimReason = { [Op.notIn]: submotivosPrincipales };
-  } else {
-    const submotivos = motivoCategorias[claimReason] || [claimReason];
-    whereClause.claimReason = { [Op.in]: submotivos };
+    if (claimReason === 'Otros') {
+      whereClause.claimReason = { [Op.notIn]: submotivosPrincipales };
+    } else {
+      const submotivos = motivoCategorias[claimReason] || [claimReason];
+      whereClause.claimReason = { [Op.in]: submotivos };
+    }
   }
-}
 
   if (startDate && endDate) {
     whereClause.createdAt = {
@@ -96,37 +102,43 @@ const getSACs = async (filters) => {
   const queryOptions = {
     where: whereClause,
     include: [
-      {
-        model: BurnedArtifact,
-        as: 'artifacts',
-      },
-      {
-        model: Resolution,
-        as: 'resolutions',
-      },
-      {
-        model: CustomerServiceOrder,
-        as: 'customerServiceOrders', 
-      },
-      {
-        model: InternalWorkOrder,
-        as: 'internalWorkOrders', 
-      }
-
-
+      { model: BurnedArtifact, as: 'artifacts' },
+      { model: Resolution, as: 'resolutions' },
+      { model: CustomerServiceOrder, as: 'customerServiceOrders' },
+      { model: InternalWorkOrder, as: 'internalWorkOrders' },
     ],
     distinct: true,
-    order: [['id', order]],
   };
+
+if (sort === 'status') {
+  queryOptions.order = [
+    [
+      Sequelize.literal(`CASE WHEN "SAC"."status" = 'Pending' THEN 1 WHEN "SAC"."status" = 'Open' THEN 2 ELSE 3 END`)
+    ],
+    ['id', order],
+  ];
+} else if (sort === 'id') {
+  queryOptions.order = [['id', order]];
+} else {
+  queryOptions.order = [[sort || 'id', order]];
+}
+
+
 
   if (limit !== undefined && limit !== -1) {
     queryOptions.limit = parseInt(limit);
     queryOptions.offset = (page - 1) * parseInt(limit);
   }
 
+try {
   const sacs = await SAC.findAndCountAll(queryOptions);
   return sacs;
+} catch (error) {
+  console.error('Error en findAndCountAll:', error);
+  throw error;
+}
 };
+
 
 
 

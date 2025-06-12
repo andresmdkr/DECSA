@@ -161,6 +161,14 @@
 .table th:nth-child(5), .table td:nth-child(5) { width: 10%; } /* N° Cuenta */
 .table th:nth-child(6), .table td:nth-child(6) { width: 10%; text-align: center; } /* Acciones */
 
+.table thead th {
+  position: sticky;
+  top: -20px;
+  z-index: 10;
+  background-color: #f4f4f4; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Puntos suspensivos en celdas largas */
 .ellipsisCell {

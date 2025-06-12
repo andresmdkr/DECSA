@@ -9,145 +9,181 @@ import { fetchAllTechnicalServices } from '../../redux/slices/technicalServiceSl
 import { updateSAC } from '../../redux/slices/sacsSlice';
 import OacXLSX from '../OacXLSX/OacXLSX';
 import Swal from 'sweetalert2';
+import tensionOptions from './tensionOptions.json'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
-const OacForm = ({ sac, oac, onClose, onOacCreated, mode }) => {
+const OacForm = ({ sac, oac, onClose, mode }) => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
+
+  // -------------------- Estados --------------------
   const [oacNumber, setOacNumber] = useState('');
   const [assignedBy, setAssignedBy] = useState('');
-  const [assignedPerson, setAssignedPerson] = useState(sac.assignedTo || ''); 
+  const [assignedPerson, setAssignedPerson] = useState(sac.assignedTo || '');
   const [isLoading, setIsLoading] = useState(false);
   const [client, setClient] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
   const [mainFile, setMainFile] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState('');
   const [formMode, setFormMode] = useState(mode);
+  const [oacStatus, setOacStatus] = useState(oac?.status || '');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [tension, setTension] = useState('');
+  const [failureReason, setFailureReason] = useState('');
+  const [performedWork, setPerformedWork] = useState('');
+  const [pendingTasks, setPendingTasks] = useState('');
 
- const technicalServices = useSelector((state) => state.technicalService.technicalServices);
+  const technicalServices = useSelector((state) => state.technicalService.technicalServices);
 
-useEffect(() => {
-  setFormMode(mode);
-}, [mode]);
+  const failureReasons = tension ? tensionOptions[tension]?.failureReasons || [] : [];
+  const performedWorks = tension ? tensionOptions[tension]?.performedWorks || [] : [];
 
+  const isReadOnly = formMode === 'view';
+  // -------------------- useEffect --------------------
+  useEffect(() => {
+    setFormMode(mode);
+  }, [mode]);
 
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user) setAssignedBy(`${user.name} ${user.lastName}`);
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchAllTechnicalServices());
+
     if (sac.clientId) {
       dispatch(fetchClientByAccountNumber(sac.clientId))
         .unwrap()
         .then(setClient)
-        .catch((error) => console.error('Error fetching client:', error));
+        .catch((err) => console.error('Error fetching client:', err));
     }
 
-    if (mode !== 'create' && oac) {
+    if (formMode !== 'create' && oac) {
       setOacNumber(String(oac.id));
       setAssignedPerson(oac.assignedPerson || '');
-      const mainFileExist = oac.mainFile
-        ? [{ name: oac.mainFile.split('\\').pop(), isNew: false, url: `/uploads/OAC/OAC-${oac.id}/${oac.mainFile.split('\\').pop()}` }]
-        : [];
+      setTension(oac.tension || '');
+      setFailureReason(oac.failureReason || '');
+      setPerformedWork(oac.performedWork || '');
+      setPendingTasks(oac.pendingTasks || '');
+      setMainFile(oac.mainFile ? [{
+        name: oac.mainFile.split('\\').pop(),
+        isNew: false,
+        url: `/uploads/OAC/OAC-${oac.id}/${oac.mainFile.split('\\').pop()}`
+      }] : []);
 
-      setMainFile(mainFileExist);
-
-      const existingFiles = oac.files
-        ? oac.files.map((file) => ({
-            name: file.split('\\').pop(),
-            isNew: false,
-            url: `uploads/OAC/OAC-${oac.id}/${file.split('\\').pop()}`,
-          }))
-        : [];
-      setSelectedFiles(existingFiles);
+      setSelectedFiles(
+        oac.files?.map((f) => ({
+          name: f.split('\\').pop(),
+          isNew: false,
+          url: `uploads/OAC/OAC-${oac.id}/${f.split('\\').pop()}`
+        })) || []
+      );
     }
-  }, [dispatch, sac.clientId, mode, oac]);
+  }, [dispatch, sac.clientId, formMode, oac]);
 
-
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setAssignedBy(`${user.name} ${user.lastName}`);
-    }
-  }, []);
-
-  const handleOacNumberChange = (e) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value) && value.length <= 20) {
-      setOacNumber(value);
-    }
+  // -------------------- Técnicos agrupados --------------------
+  const groupedByType = {
+    'personal propio': [],
+    contratista: [],
+    redes: [],
   };
 
+  technicalServices
+    .filter((s) => s.area === 'operaciones')
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .forEach((agent) => {
+      if (groupedByType[agent.type]) groupedByType[agent.type].push(agent);
+    });
 
-  //NUEVA LOGICA DE PERSONA ASIGNADA
-
-  useEffect(() => {
-  dispatch(fetchAllTechnicalServices());
-}, [dispatch]);
-
-const filteredOperationalAgents = technicalServices.filter(
-  (service) => service.area === 'operaciones'
-);
-
-const sortedOperationalAgents = [...filteredOperationalAgents].sort((a, b) =>
-  a.name.localeCompare(b.name)
-);
-
-const groupedByType = {
-  'personal propio': [],
-  contratista: [],
-  redes: [],
-};
-
-sortedOperationalAgents.forEach((agent) => {
-  if (groupedByType[agent.type]) {
-    groupedByType[agent.type].push(agent);
-  }
-});
-
+  // -------------------- Utils --------------------
   const renameFileIfDuplicate = (file, existingFiles) => {
-    let newFileName = file.name;
-    let fileCount = 1;
+    let name = file.name, count = 1;
+    const ext = file.name.split('.').pop();
+    let base = name.replace(`.${ext}`, '');
 
-    while (existingFiles.some((f) => f.name === newFileName)) {
-      const fileExtension = file.name.split('.').pop();
-      const baseName = file.name.replace(`.${fileExtension}`, '');
-      newFileName = `${baseName}(${fileCount}).${fileExtension}`;
-      fileCount++;
+    while (existingFiles.some((f) => f.name === name)) {
+      name = `${base}(${count++}).${ext}`;
     }
 
-    return new File([file], newFileName, { type: file.type });
+    return new File([file], name, { type: file.type });
   };
 
+  const downloadFile = (blob, filename) => {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(link.href);
+  };
+
+  // -------------------- Handlers de archivo --------------------
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    const tooLargeFiles = files.filter((file) => file.size > MAX_FILE_SIZE);
+    const tooLarge = files.filter((f) => f.size > MAX_FILE_SIZE);
 
-    if (tooLargeFiles.length > 0) {
-      setErrorMessage(`Uno o más archivos superan el tamaño máximo de 50 MB.`);
+    if (tooLarge.length) {
+      setErrorMessage('Uno o más archivos superan el tamaño máximo de 50 MB.');
     } else {
-      const renamedFiles = files.map((file) => renameFileIfDuplicate(file, selectedFiles));
+      const renamed = files.map((f) => renameFileIfDuplicate(f, selectedFiles));
       setSelectedFiles([
         ...selectedFiles,
-        ...renamedFiles.map((file) => ({ file, name: file.name, isNew: true })),
+        ...renamed.map((f) => ({ file: f, name: f.name, isNew: true })),
       ]);
       setErrorMessage('');
     }
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleFileRemove = (fileName) => {
-    setSelectedFiles(selectedFiles.filter((file) => file.name !== fileName));
+    setSelectedFiles(selectedFiles.filter((f) => f.name !== fileName));
   };
 
+  const handleMainFileUpdate = (e) => {
+    const file = e.target.files[0];
+    const allowed = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ];
+
+    if (!file) return;
+    setUploadedFileName(file.name);
+
+    if (!allowed.includes(file.type)) {
+      setErrorMessage('El archivo debe ser Excel (.xlsx o .xls).');
+    } else if (file.size > MAX_FILE_SIZE) {
+      setErrorMessage('El archivo supera el tamaño máximo de 50 MB.');
+    } else {
+      const newName = mainFile?.[0]?.name || file.name;
+      setMainFile([{ file: new File([file], newName, { type: file.type }), name: newName, isNew: true }]);
+      setErrorMessage('');
+    }
+
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  // -------------------- Handlers generales --------------------
+  const handleOacNumberChange = (e) => {
+    const val = e.target.value;
+    if (/^\d*$/.test(val) && val.length <= 20) setOacNumber(val);
+  };
+
+  const handleAssignedPersonChange = (e) => {
+    setAssignedPerson(e.target.value);
+  };
+
+  // -------------------- Envío formulario --------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-  
-      if (mode === 'create') {
+
+      if (formMode === 'create') {
         const confirm = await Swal.fire({
           title: `¿Está seguro de que desea crear la OAC con el número ${oacNumber}?`,
           icon: 'question',
@@ -155,231 +191,217 @@ sortedOperationalAgents.forEach((agent) => {
           confirmButtonText: 'Sí, crear',
           cancelButtonText: 'Cancelar',
         });
-  
         if (!confirm.isConfirmed) return;
-  
+
         const blob = await OacXLSX({ oacNumber, sac, client });
-        
-  
         const oacData = {
           id: oacNumber,
           description: `OAC #${oacNumber} creada correctamente`,
-          assignedBy,          
+          assignedBy,
           assignedPerson,
           mainFile: blob,
           files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
+          tension,
+          failureReason,
+          performedWork,
+          pendingTasks,
         };
+
         const response = await dispatch(createOac({ sacId: sac.id, oacData })).unwrap();
 
-        downloadFile(blob, `OAC_${oacNumber}.xlsx`);
+        Swal.fire({ icon: 'success', title: `OAC creada con éxito (ID: ${response.id})` });
+        setOacNumber(String(response.id));
+        setOacStatus('Open');
+        setFormMode('edit');
+        setMainFile([{
+          name: `OAC_${response.id}.xlsx`,
+          isNew: false,
+          url: `/uploads/OAC/OAC-${response.id}/OAC_${response.id}.xlsx`,
+        }]);
+        setSelectedFiles([]);
+        return;
 
-        if (sac.status !== 'Open') {
-          await dispatch(updateSAC({ id: sac.id, sacData: { status: 'Open' } })).unwrap();
-        }
-        
-  
-        Swal.fire({
-          icon: 'success',
-          title: `OAC creada con éxito (ID: ${response.id})`,
-        });
-  
-        if (onOacCreated) {
-          onOacCreated(sac.id);
-        }
-      } else if (mode === 'edit') {
+      } else if (formMode === 'edit') {
         const oacData = {
           id: oacNumber,
           assignedPerson,
           mainFile: mainFile?.[0]?.file || undefined,
           files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
+          tension,
+          failureReason,
+          performedWork,
+          pendingTasks,
         };
-        await dispatch(updateOac({ oacId: oac.id, sacId: sac.id, oacData }));
+        await dispatch(updateOac({ oacId: oacNumber, sacId: sac.id, oacData }));
         Swal.fire({ icon: 'success', title: 'OAC actualizada con éxito' });
       }
-  
-      onClose();
     } catch (error) {
-      if (error.status === 409) {
-        Swal.fire({
-          icon: 'error',
-          title: 'OAC duplicada',
-          text: error.data?.message || 'Ya existe una OAC con este número.',
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.message || 'Hubo un error al procesar la OAC.',
-        });
-      }
+      Swal.fire({
+        icon: 'error',
+        title: error.status === 409 ? 'OAC duplicada' : 'Error',
+        text: error.data?.message || error.message || 'Hubo un error.',
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  
+  // -------------------- Finalización de OAC --------------------
+  const handleFinalize = async () => {
+    try {
+      setIsLoading(true);
 
-  const downloadFile = (blob, filename) => {
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url); 
-  };
+      if (formMode === 'view') {
+        const confirm = await Swal.fire({
+          title: `¿Está seguro de que desea reabrir esta OAC?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, reabrir',
+          cancelButtonText: 'Cancelar',
+        });
+        if (!confirm.isConfirmed) return;
 
+        await dispatch(updateOac({ oacId: oacNumber, oacData: { status: 'Open' } }));
+        setOacStatus('Open');
+        setFormMode('edit');
+        return;
+      }
 
-
-
-  const handleMainFileUpdate = (e) => {
-    const file = e.target.files[0];
-    const allowedMimeTypes = [
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-        'application/vnd.ms-excel', // .xls
-    ];
-
-    if (file) {
-        setUploadedFileName(file.name);
-        if (!allowedMimeTypes.includes(file.type)) {
-            setErrorMessage('El archivo debe ser de tipo Excel (.xlsx o .xls).');
-            return;
-        }
-
-        if (file.size > MAX_FILE_SIZE) {
-            setErrorMessage('El archivo supera el tamaño máximo de 50 MB.');
-            return;
-        }
-
-        const originalFileName = mainFile?.[0]?.name || file.name;
-        const renamedFile = new File([file], originalFileName, { type: file.type });
-
-        setMainFile([{ file: renamedFile, name: originalFileName, isNew: true }]);
-        setErrorMessage('');
-    }
-
-    if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-    }
-};
-
-const handleAssignedPersonChange = (e) => {
-  setAssignedPerson(e.target.value);
-};
-
-const handleFinalize = async () => {
-  try {
-    setIsLoading(true);
-
-    if (formMode === 'view') {
       const confirm = await Swal.fire({
-        title: `¿Está seguro de que desea reabrir esta OAC?`,
+        title: `¿Desea finalizar esta OAC?`,
+        text: 'Una vez finalizada, no podrá editarse.',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Sí, reabrir',
+        confirmButtonText: 'Sí, finalizar',
         cancelButtonText: 'Cancelar',
       });
-
       if (!confirm.isConfirmed) return;
 
-      await dispatch(updateOac({ oacId: oac.id, oacData: { status: 'Open' } }));
-      setFormMode('edit');
-      return;
+      const oacData = {
+        id: oacNumber,
+        assignedPerson,
+        mainFile: mainFile?.[0]?.file || undefined,
+        files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
+        status: 'Completed',
+        tension,
+        failureReason,
+        performedWork,
+        pendingTasks,
+      };
+      await dispatch(updateOac({ oacId: oacNumber, sacId: sac.id, oacData }));
+      setOacStatus('Completed');
+
+      if (sac.status !== 'Closed') {
+        const closeSacConfirm = await Swal.fire({
+          title: `¿Desea cerrar también la SAC #${sac.id}?`,
+          text: 'Esto marcará la SAC como cerrada.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cerrar SAC',
+          cancelButtonText: 'No cerrar',
+        });
+
+        if (closeSacConfirm.isConfirmed) {
+          const user = JSON.parse(localStorage.getItem('user'));
+          const now = new Date();
+          const argNow = new Date(now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+
+          const updatedData = {
+            ...sac,
+            status: 'Closed',
+            closeDate: argNow.toISOString().split('T')[0],
+            closeTime: argNow.toTimeString().split(' ')[0],
+            closedBy: `${user.name} ${user.lastName}`,
+          };
+
+          await dispatch(updateSAC({ id: sac.id, sacData: updatedData }));
+          Swal.fire({ icon: 'success', title: 'SAC cerrada con éxito' });
+          onClose({ sacStatus: 'Closed', oacStatus: 'Completed' });
+          return;
+        } else {
+          Swal.fire({ icon: 'info', title: 'OAC finalizada', text: 'La SAC permanece abierta.' });
+        }
+      } else {
+        Swal.fire({ icon: 'success', title: 'OAC finalizada con éxito' });
+      }
+
+      onClose({ sacStatus: sac.status, oacStatus: 'Completed' });
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al finalizar',
+        text: error.message || 'Hubo un error al finalizar la OAC.',
+      });
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const confirm = await Swal.fire({
-      title: `¿Está seguro de que desea finalizar esta OAC?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, finalizar',
-      cancelButtonText: 'Cancelar',
-    });
+  const handleClose = () => {
+    onClose({ sacStatus: sac?.status || 'Open', oacStatus });
+  };
 
-    if (!confirm.isConfirmed) return;
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-    const oacData = {
-      id: oacNumber,
-      assignedPerson,
-      mainFile: mainFile?.[0]?.file || undefined,
-      files: selectedFiles.map((f) => (f.isNew ? f.file : f.name)),
-      status: 'Completed', 
-    };
 
-    await dispatch(updateOac({ oacId: oac.id, sacId: sac.id, oacData }));
-    Swal.fire({ icon: 'success', title: 'OAC finalizada con éxito' });
-    onClose();
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error al finalizar',
-      text: error.message || 'Hubo un error al finalizar la OAC.',
-    });
-  } finally {
-    setIsLoading(false);
-  }
-};
+ return (
+  <div className={styles.oacModalOverlay}>
+      <div className={`${styles.oacModalWrapper} ${formMode === 'create' ? styles.soloPrincipal : ''}`}>
+        <div className={styles.oacModalHeader}>
+          <button className={styles.oacCloseButton} onClick={handleClose}>
+            <AiOutlineClose />
+          </button>
 
-  
+          <h2 className={styles.oacTitle}>
+            {formMode === 'create' ? 'Crear Nueva O.A.C' : `Editar O.A.C #${oacNumber}`}
+          </h2>
+</div>
 
-  return (
-    <div className={styles.oacModalOverlay}>
-      <div className={styles.oacModalContent}>
-        <button className={styles.oacCloseButton} onClick={onClose}>
-          <AiOutlineClose />
-        </button>
-        <h2 className={styles.oacTitle}>{formMode === 'create' ? 'Crear Nueva O.A.C' : `Editar O.A.C #${oac.id}`}</h2>
-        <div className={styles.oacFormContainer}>
-          <div className={styles.inlineGroup}>
-            <label className={styles.oacLabel}>Número de O.A.C:</label>
-            <input
-              type="text"
-              className={styles.oacInput}
-              value={oacNumber}
-              onChange={handleOacNumberChange}
-              placeholder="Ingrese el número de la O.A.C"
-              readOnly={formMode === 'edit'}
-            />
-          </div>
-          <div className={styles.inlineGroup}>
-            <label className={styles.oacLabel}>Persona a cargo:</label>
-            <select
-              className={`${styles.oacSelect} ${formMode === 'view' ? styles.disabledSelect : ''}`}
-              value={assignedPerson}
-              onChange={(e) => setAssignedPerson(e.target.value)}
-              disabled={formMode === 'view'}
-            >
-              <option value="">Seleccionar...</option>
+ <div className={styles.oacModalBody}>
+        <div className={styles.oacMainPanel}>
 
-              <optgroup label="Personal Propio">
-                {groupedByType['personal propio'].map((agent) => (
-                  <option key={agent.id} value={agent.name}>
-                    {agent.name}
-                  </option>
+          <div className={styles.oacFormContainer}>
+            {/* Número de OAC */}
+            <div className={styles.inlineGroup}>
+              <label className={styles.oacLabel}>Número de O.A.C:</label>
+              <input
+                type="text"
+                className={styles.oacInput}
+                value={oacNumber}
+                onChange={handleOacNumberChange}
+                placeholder="Ingrese el número de la O.A.C"
+                readOnly={formMode === 'edit'}
+              />
+            </div>
+            {/* Persona a cargo */}
+            <div className={styles.inlineGroup}>
+              <label className={styles.oacLabel}>Persona a cargo:</label>
+              <select
+                className={`${styles.oacSelect} ${formMode === 'view' ? styles.disabledSelect : ''}`}
+                value={assignedPerson}
+                onChange={handleAssignedPersonChange}
+                disabled={formMode === 'view'}
+              >
+                <option value="">Seleccionar...</option>
+                {Object.entries(groupedByType).map(([group, agents]) => (
+                  <optgroup key={group} label={capitalize(group)}>
+                    {agents.map((agent) => (
+                      <option key={agent.id} value={agent.name}>
+                        {agent.name}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
-              </optgroup>
-
-              <optgroup label="Contratista">
-                {groupedByType['contratista'].map((agent) => (
-                  <option key={agent.id} value={agent.name}>
-                    {agent.name}
-                  </option>
-                ))}
-              </optgroup>
-
-              <optgroup label="Redes">
-                {groupedByType['redes'].map((agent) => (
-                  <option key={agent.id} value={agent.name}>
-                    {agent.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-          </div>
-
-          {mainFile && (
+              </select>
+            </div>
+        
+         
+   
+            {/* Archivo Excel principal */}
+            {mainFile && (
               <>
-                <hr className={styles.separator} />
+               <hr className={styles.separator} />
                 <div className={styles.mainFile}>
                   <div className={styles.mainFileText}>
                     <span>ARCHIVO EXCEL:</span>
@@ -399,20 +421,23 @@ const handleFinalize = async () => {
                     >
                       Descargar archivo
                     </button>
+
                     <input
                       type="file"
                       className={styles.hiddenInput}
                       id="uploadFile"
-                      onChange={(e) => handleMainFileUpdate(e)}
+                      onChange={handleMainFileUpdate}
                       disabled={formMode === 'create'}
                       accept=".xlsx,.xls"
                     />
-                    {formMode !== 'view' && ( <label htmlFor="uploadFile" className={styles.actionButton}>
-                      Subir archivo modificado
-                    </label>)}
-                   
 
+                    {formMode !== 'view' && (
+                      <label htmlFor="uploadFile" className={styles.actionButton}>
+                        Subir archivo modificado
+                      </label>
+                    )}
                   </div>
+
                   {uploadedFileName && (
                     <div className={styles.uploadedFileName}>
                       Archivo seleccionado: <strong>{uploadedFileName}</strong>
@@ -422,25 +447,31 @@ const handleFinalize = async () => {
                 <hr className={styles.separator} />
               </>
             )}
-          {selectedFiles.length > 0 && (
-            <div className={styles.oacFileList}>
-              <h3> Otros Archivos:</h3>
-              <ul>
-                {selectedFiles.map((file) => (
-                  <li key={file.name}>
-                    {file.isNew ? (
-                      <>
-                        {file.name}
-                        <button
-                          type="button"
-                          className={styles.oacFileRemoveButton}
-                          onClick={() => handleFileRemove(file.name)}
-                        >
-                          Eliminar
-                        </button>
-                      </>
-                    ) : (
-                      <>
+            {/* Errores */}
+            {errorMessage && <p className={styles.oacErrorMessage}>{errorMessage}</p>}
+      </div>
+            
+     <div className={styles.oacModalContent}>
+
+            {/* Otros archivos */}
+            {selectedFiles.length > 0 && (
+              <div className={styles.oacFileList}>
+                <h3>Otros Archivos:</h3>
+                <ul>
+                  {selectedFiles.map((file) => (
+                    <li key={file.name}>
+                      {file.isNew ? (
+                        <>
+                          {file.name}
+                          <button
+                            type="button"
+                            className={styles.oacFileRemoveButton}
+                            onClick={() => handleFileRemove(file.name)}
+                          >
+                            Eliminar
+                          </button>
+                        </>
+                      ) : (
                         <button
                           type="button"
                           className={styles.oacFileLinkButton}
@@ -448,56 +479,147 @@ const handleFinalize = async () => {
                         >
                           {file.name}
                         </button>
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {formMode === 'edit' && (
-            <div className={styles.oacFileList1}>
-              <label className={styles.oacLabel1}>
-                Subir otros archivos (máximo 50 MB por archivo):
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  className={styles.oacFileInput}
-                  multiple
-                  onChange={handleFileChange}
-                />
-              </label>
-            </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
-          {errorMessage && <p className={styles.oacErrorMessage}>{errorMessage}</p>}
-        </div>
-        <div
+
+            {/* Subir otros archivos */}
+            {formMode === 'edit' && (
+              <div className={styles.oacFileList1}>
+                <label className={styles.oacLabel1}>
+                  Subir otros archivos (máximo 50 MB por archivo):
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className={styles.oacFileInput}
+                    multiple
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+            )}
+            </div>
+            
+       
+          
+
+          
+  </div>
+  {/* Tensión, Motivo de Falla, Trabajos Realizados, Tareas Pendientes */}
+         {formMode !== 'create' && (
+    <div className={styles.oacSidePanel}>
+      <div className={styles.inlineGroup}>
+        <label className={styles.oacLabel}>Tipo de Tensión:</label>
+        <select
+          value={tension}
+          onChange={(e) => setTension(e.target.value)}
+          className={styles.oacSelect}
+          disabled={isReadOnly}
+        >
+          <option value="">Seleccione</option>
+          <option value="BT">Baja Tensión (B.T.)</option>
+          <option value="MT">Media Tensión (M.T.)</option>
+        </select>
+      </div>
+
+      {tension && (
+        <>
+          <div className={styles.inlineGroup}>
+            <label className={styles.oacLabel}>Motivo de la Falla:</label>
+            <select
+              value={failureReason}
+              onChange={(e) => setFailureReason(e.target.value)}
+              className={styles.oacSelect}
+              disabled={isReadOnly}
+            >
+              <option value="">Seleccione</option>
+              {failureReasons.map((reason) => (
+                <option key={reason.code} value={reason.code}>
+                  {reason.code} / {reason.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.inlineGroup}>
+            <label className={styles.oacLabel}>Trabajos Realizados:</label>
+            <select
+              value={performedWork}
+              onChange={(e) => setPerformedWork(e.target.value)}
+              className={styles.oacSelect}
+              disabled={isReadOnly}
+            >
+              <option value="">Seleccione</option>
+              {performedWorks.map((work) => (
+                <option key={work.code} value={work.code}>
+                  {work.code} / {work.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.textareaGroup}>
+            <label className={styles.oacLabel}>Tareas Pendientes:</label>
+            <textarea
+              className={styles.oacTextarea}
+              value={pendingTasks}
+              onChange={(e) => setPendingTasks(e.target.value)}
+              placeholder="Tareas pendientes"
+              maxLength={1000}
+              readOnly={isReadOnly}
+            />
+          </div>
+        </>
+      )}
+    </div>
+  )}
+{/* Botones */}
+          <div
             className={`${styles.oacButtonContainer} ${
               formMode !== 'create' ? styles.spaceBetween : styles.flexEnd
             }`}
           >
             {formMode !== 'create' && (
               <button
-                  className={styles.oacFinalizeButton}
-                  onClick={handleFinalize}
-                  disabled={isLoading}
-                >
-                  {isLoading
-                    ? formMode === 'view' ? 'Reabriendo...' : 'Finalizando...'
-                    : formMode === 'view' ? 'Reabrir O.A.C' : 'Finalizar O.A.C'}
-                </button>
+                className={styles.oacFinalizeButton}
+                onClick={handleFinalize}
+                disabled={isLoading}
+              >
+                {isLoading
+                  ? formMode === 'view'
+                    ? 'Reabriendo...'
+                    : 'Finalizando...'
+                  : formMode === 'view'
+                  ? 'Reabrir O.A.C'
+                  : 'Finalizar O.A.C'}
+              </button>
             )}
-            <button
-              className={styles.oacSubmitButton}
-              onClick={handleSubmit}
-              disabled={!oacNumber.trim() || isLoading}
-            >
-              {isLoading ? 'Procesando...' : formMode === 'create' ? 'Crear Nueva O.A.C' : 'Guardar Cambios'}
-            </button>
-          </div>
-      </div>
+
+            {formMode === 'create' || formMode === 'edit' ? (
+              <button
+                className={styles.oacSubmitButton}
+                onClick={handleSubmit}
+                disabled={!oacNumber.trim() || isLoading}
+              >
+                {isLoading
+                  ? 'Procesando...'
+                  : formMode === 'create'
+                  ? 'Crear Nueva O.A.C'
+                  : 'Guardar Cambios'}
+              </button>
+            ) : null}
+
+     
     </div>
-  );
+  </div>
+  </div>
+
+  </div>
+);
+
 };
 
 export default OacForm;

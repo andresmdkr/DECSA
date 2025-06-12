@@ -29,7 +29,7 @@ const sortedOrders = [...internalWorkOrders]
     const [sacSearch, setSacSearch] = useState('');
     const [otiSearch, setOtiSearch] = useState('');
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const itemsPerPage = 10;
+    const itemsPerPage = 20;
 
     const [showSac, setShowSac] = useState(false);
     const [selectedSac, setSelectedSac] = useState(null);
@@ -206,7 +206,7 @@ const sortedOrders = [...internalWorkOrders]
                                 <th>N° O.T.I</th>
                                 <th>Dirección</th>
                                 <th>Tarea</th>
-                                <th>Responsable</th>
+                                <th>Responsable👤</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
@@ -242,7 +242,7 @@ const sortedOrders = [...internalWorkOrders]
                                         className={styles.viewOtiButton} 
                                         onClick={() => handleOpenOtiForm(oti)}
                                         >
-                                        Ver O.T.I
+                                        Ver O.T.I 📄
                                         </button>
 
                                     </td>

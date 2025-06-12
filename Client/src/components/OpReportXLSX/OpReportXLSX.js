@@ -56,7 +56,8 @@ const OpReportXLS = async (startDate, endDate, clientId, substationFilter) => {
       'RECLAMANTE': sac.claimantName || sac.client?.holderName || 'N/A',  
       'N° SUMINISTRO': sac.client?.supply || 'N/A',
       'RELACIÓN CON EL TITULAR': sac.claimantRelationship || 'Titular',
-      'DOMICILIO SUMINISTRO': `${sac.client?.address || ''} ${sac.client?.extraAddressInfo || ''}`.trim(),
+/*       'DOMICILIO SUMINISTRO': `${sac.client?.address || ''} ${sac.client?.extraAddressInfo || ''}`.trim(), */
+      'DOMICILIO SUMINISTRO': sac.client?.address || 'N/A',
       'DEPARTAMENTO': sac.client?.department || 'N/A',
       'DISTRIBUIDOR': sac.client?.distributor || 'N/A',
       'N° SETA': sac.client?.substation || 'N/A',

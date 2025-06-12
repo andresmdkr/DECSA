@@ -21,7 +21,8 @@ const OacXLSX = async ({ oacNumber, sac, client }) => {
 
     worksheet.getCell('H6').value = oacNumber; 
     worksheet.getCell('E10').value = client?.holderName || ''; 
-    worksheet.getCell('E11').value = `${client?.address || ''} ${client?.extraAddressInfo || ''}`.trim(); 
+/*     worksheet.getCell('E11').value = `${client?.address || ''} ${client?.extraAddressInfo || ''}`.trim();  */
+    worksheet.getCell('E11').value = client?.address || '';
     worksheet.getCell('E13').value = client?.barrio || ''; 
     worksheet.getCell('E14').value = client?.supply || ''; 
     worksheet.getCell('O11').value = client?.device || ''; 

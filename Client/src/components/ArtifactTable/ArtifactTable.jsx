@@ -14,7 +14,7 @@ const ArtifactTable = () => {
     const [sacIdSearch, setSacIdSearch] = useState('');
     const [clientIdSearch, setClientIdSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const artifactsPerPage = 10;
+    const artifactsPerPage = 20;
     const [isRefreshing, setIsRefreshing] = useState(false);
 
     const [isArtifactModalOpen, setIsArtifactModalOpen] = useState(false);

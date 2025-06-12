@@ -6,12 +6,12 @@ import { fetchSACs, updateSAC } from '../../redux/slices/sacsSlice';
 import { fetchClientByAccountNumber } from '../../redux/slices/clientsSlice.js';
 import styles from './OngoingClaimsTable.module.css';
 import OacModal from '../OacModal/OacModal';
+import OacForm from '../OacForm/OacForm.jsx';
 import Sac from '../Sac/Sac.jsx';
 
 const OngoingClaimsTable = () => {
     const dispatch = useDispatch();
     const { sacs, status, error, total } = useSelector((state) => state.sacs);
-    console.log(sacs);
     const [currentPage, setCurrentPage] = useState(1);
     const [sacIdSearch, setSacIdSearch] = useState('');
     const [clientIdSearch, setClientIdSearch] = useState('');
@@ -23,6 +23,10 @@ const OngoingClaimsTable = () => {
     const [showOacModal, setShowOacModal] = useState(false);
     const [showSac, setShowSac] = useState(false);  
     const [clients, setClients] = useState({}); 
+    const [sortOption, setSortOption] = useState('id');
+    const [isOacFormOpen, setIsOacFormOpen] = useState(false);
+    const [oacFormSac, setOacFormSac] = useState(null);
+
 
     const [searchParams, setSearchParams] = useState({
         sacId: '',
@@ -63,12 +67,13 @@ const OngoingClaimsTable = () => {
                 limit: sacsPerPage,
                 sacId: searchParams.sacId,
                 clientId: searchParams.clientId,
-                status:  "Open",
+                status: statusFilter || ["Pending", "Open"],
                 priority: priorityFilter,
-                area:"operaciones"
+                area:"operaciones",
+                sort: sortOption,
             }));
         }
-    }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing]);
+    }, [dispatch, currentPage, statusFilter, priorityFilter, sacsPerPage, searchParams, isRefreshing, sortOption]);
 
     useEffect(() => {
             const fetchClients = async () => {
@@ -121,6 +126,20 @@ const OngoingClaimsTable = () => {
                 setIsRefreshing(false);
             }, 300);
         }
+    };
+
+    const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+    };
+
+        const handleStatusChange = (e) => {
+        setSearchParams({
+            sacId: '',
+            clientId: clientIdSearch || '',
+        });
+        setSacIdSearch('');
+        setStatusFilter(e.target.value);
+        setCurrentPage(1);
     };
 
     const handlePriorityChange = (e) => {
@@ -179,7 +198,40 @@ const OngoingClaimsTable = () => {
       const handleCloseSac = () => {
         setShowSac(false);
         setSelectedSac(null);
+        handleReset();
       };
+
+      const handleOpenOacForm = (sac) => {
+    
+    setOacFormSac(sac);
+    setIsOacFormOpen(true);
+};
+
+const handleCloseOacForm = async ({ sacStatus, oacStatus }) => {
+  const shouldOpenSac = sacStatus === 'Pending' && oacStatus !== 'Completed' && oacStatus ;
+
+  if (shouldOpenSac) {
+    await dispatch(updateSAC({ id: oacFormSac.id, sacData: { status: 'Open' } }));
+  }
+
+  setIsOacFormOpen(false);
+  setOacFormSac(null);
+  handleReset();
+};
+
+
+
+
+      const sortedSacs = [...sacs].sort((a, b) => {
+        if (sortOption === 'status') {
+            const order = { 'Pending': 1, 'Open': 2 };
+            return order[a.status] - order[b.status];
+        } else if (sortOption === 'id') {
+            return b.id - a.id; 
+        }
+        return 0;
+        });
+
 
     return (
         <div className={styles.container}>
@@ -203,6 +255,18 @@ const OngoingClaimsTable = () => {
                 {/* Estado Filter */}
                 <div className={styles.filters}>
                     <FormControl variant="outlined" className={styles.filter}>
+                        <InputLabel>Estado</InputLabel>
+                        <Select
+                            value={statusFilter}
+                            onChange={handleStatusChange}
+                            label="Estado"
+                        >
+                            <MenuItem value=""><em>Ninguno</em></MenuItem>
+                            <MenuItem value="Pending">Pendiente</MenuItem>
+                            <MenuItem value="Open">En Curso</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl variant="outlined" className={styles.filter}>
                         <InputLabel>Prioridad</InputLabel>
                         <Select
                             value={priorityFilter}
@@ -214,6 +278,17 @@ const OngoingClaimsTable = () => {
                             <MenuItem value="media">Media</MenuItem>
                             <MenuItem value="baja">Baja</MenuItem>
                         </Select>
+                    </FormControl>
+                    <FormControl variant="outlined" className={styles.filter}>
+                    <InputLabel>Ordenar por</InputLabel>
+                    <Select
+                        value={sortOption}
+                        onChange={handleSortChange}
+                        label="Ordenar por"
+                    >
+                        <MenuItem value="status">Pendientes primero</MenuItem>
+                        <MenuItem value="id">N°de SAC</MenuItem>
+                    </Select>
                     </FormControl>
                     <button
                         onClick={handleReset}
@@ -258,81 +333,93 @@ const OngoingClaimsTable = () => {
             {/* SAC Table */}
             {status === 'succeeded' && sacs?.length > 0 && (
                 <div>
-                   <table className={styles.table}>
-  <thead>
-    <tr>
-      <th>SAC</th>
-      <th>Motivo</th>
-      <th>Estado</th>
-      <th>Prioridad</th>
-      <th>Cuenta</th>
-      <th>Nombre Titular</th>
-      <th>Dirección</th>
-      <th>Responsable</th>
-      <th>Fecha</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {sacs.map((sac) => {
-      const customerServiceOrders = sac.customerServiceOrders || [];
-      const lastOrder = customerServiceOrders[customerServiceOrders.length - 1];
-      const assignedPerson = lastOrder?.assignedPerson || "N/A";
+                    <table className={styles.table}>
+                    <thead>
+                            <tr>
+                                <th className={styles.ellipsisCell}>SAC</th>
+                                <th className={styles.ellipsisCell}>Estado</th>
+                                <th className={styles.ellipsisCell}>Prioridad</th>
+                                <th className={styles.ellipsisCell}>Motivo</th>
+                                <th className={styles.ellipsisCell}>Responsable👤</th> 
+                                <th className={styles.ellipsisCell}>Dirección</th>
+                                <th className={styles.ellipsisCell}>Cuenta</th>
+                                <th className={styles.ellipsisCell}>Nombre Titular</th>                               
+                                <th className={styles.ellipsisCell}>Fecha</th>                                 
+                                <th className={styles.ellipsisCell}>Acciones</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                        {sortedSacs.map((sac) => {
+                        const customerServiceOrders = sac.customerServiceOrders || [];
+                        const lastOrder = customerServiceOrders[customerServiceOrders.length - 1];
+                        const assignedPerson = lastOrder?.assignedPerson || "N/A";
 
-      const formattedDate = new Date(sac.createdAt).toLocaleDateString("es-AR", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
+                        const formattedDate = new Date(sac.createdAt).toLocaleDateString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                        });
 
-      const client = clients[sac.clientId] || {};
-
-      return (
-        <tr
-          key={sac.id}
-          className={`
-            ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
-            ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
-            ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
-          `}
-        >
-          <td>{sac.id}</td>
-          <td>{capitalizeClaimReason(sac.claimReason)}</td>
-          <td>
-            <div className={styles.statusContainer}>
-              <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
-              {mapStatusToSpanish(sac.status)}
-            </div>
-          </td>
-          <td>{capitalizePriority(sac.priority)}</td>
-          <td>{sac.clientId || "S/N"}</td>
-          <td className={styles.ellipsisCell}>{client.holderName || "N/A"}</td>
-          <td className={styles.ellipsisCell}>
-            {client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}
-          </td>
-          <td className={styles.ellipsisCell}>{assignedPerson}</td>
-          <td>{formattedDate}</td>
-          <td className={styles.actionsCell}>
-            <div className={styles.buttonGroup}>
-              <button
-                className={`${styles.buttonBase} ${styles.viewClaimButton}`}
-                onClick={() => handleViewOac(sac)}
-              >
-                Ver O.A.Cs
-              </button>
-              <button
-                className={`${styles.buttonBase} ${styles.viewReclamoButton}`}
-                onClick={() => handleViewSac(sac)}
-              >
-                Ver Reclamo
-              </button>
-            </div>
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
-</table>
+                        const client = clients[sac.clientId] || {};
+                        console.log(sac);
+                        return (
+                            <tr
+                            key={sac.id}
+                            className={`
+                                ${sac.priority === 'alta' ? styles.highPriorityRow : ''}
+                                ${sac.priority === 'media' ? styles.mediumPriorityRow : ''}
+                                ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
+                            `}
+                            >
+                            <td>{sac.id}</td>
+                            <td>
+                                <div className={styles.statusContainer}>
+                                <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
+                                {mapStatusToSpanish(sac.status)}
+                                </div>
+                            </td>
+                            <td>{capitalizePriority(sac.priority)}</td>
+                            <td>{capitalizeClaimReason(sac.claimReason)}</td>
+                            <td className={styles.ellipsisCell}>{assignedPerson}</td>
+                            <td className={styles.ellipsisCell}>
+                                {client.address ? `${client.address}` : "N/A"}
+                            </td>
+                             {/* <td className={styles.ellipsisCell}>
+                                {client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}
+                            </td> */}
+                            <td>{sac.clientId || "S/N"}</td>
+                            <td className={styles.ellipsisCell}>{client.holderName || "N/A"}</td>
+                            <td>{formattedDate}</td>
+                            <td className={styles.actionsCell}>
+                                <div className={styles.buttonGroup}>
+                                {customerServiceOrders.length > 0 ? (
+                                    <button
+                                        className={`${styles.buttonBase} ${styles.viewClaimButton}`}
+                                        onClick={() => handleViewOac(sac)}
+                                    >
+                                        Ver O.A.Cs
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={`${styles.buttonBase} ${styles.generateOacButton}`}
+                                        onClick={() => handleOpenOacForm(sac)}
+                                    >
+                                        O.A.C 📄
+                                    </button>
+                                )}
+                                <button
+                                    className={`${styles.buttonBase} ${styles.viewReclamoButton}`}
+                                    onClick={() => handleViewSac(sac)}
+                                >
+                                    Ver Reclamo
+                                </button>
+                                </div>
+                            </td>
+                            </tr>
+                        );
+                        })}
+                    </tbody>
+                    </table>
 
 
                     {/* Pagination */}
@@ -346,6 +433,14 @@ const OngoingClaimsTable = () => {
                     </div>
                     {showOacModal && selectedSac && (
                         <OacModal sac={selectedSac} onClose={handleCloseOacModal} showStatusButton={true} />  
+                    )}
+                    {isOacFormOpen && oacFormSac && (
+                        <OacForm
+                            sac={oacFormSac}
+                            client={clients[oacFormSac.clientId]}
+                            onClose={handleCloseOacForm}
+                            mode="create"
+                        />
                     )}
                     {showSac && (
                     <Sac sac={selectedSac} onClose={handleCloseSac} />

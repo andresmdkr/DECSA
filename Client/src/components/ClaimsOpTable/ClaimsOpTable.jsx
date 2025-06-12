@@ -303,16 +303,16 @@ const ClaimsOpTable = () => {
                     <table className={styles.table}>
                         <thead>
                             <tr>
-                                <th>SAC</th>
-                                <th>Motivo</th>
-                                <th>Estado</th>
-                                <th>Prioridad</th>
-                                <th>Cuenta</th>
-                                <th>Nombre Titular</th>
-                                <th>Dirección</th>
-                                <th>Responsable</th> 
-                                <th>Fecha</th>                                 
-                                <th>Acciones</th>
+                                <th className={styles.ellipsisCell}>SAC</th>
+                                <th className={styles.ellipsisCell}>Estado</th>
+                                <th className={styles.ellipsisCell}>Prioridad</th>
+                                <th className={styles.ellipsisCell}>Motivo</th>
+                                <th className={styles.ellipsisCell}>Responsable</th> 
+                                <th className={styles.ellipsisCell}>Dirección</th>
+                                <th className={styles.ellipsisCell}>Cuenta</th>
+                                <th className={styles.ellipsisCell}>Nombre Titular</th>                               
+                                <th className={styles.ellipsisCell}>Fecha</th>                                 
+                                <th className={styles.ellipsisCell}>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -335,18 +335,21 @@ const ClaimsOpTable = () => {
                                 ${sac.priority === 'baja' ? styles.lowPriorityRow : ''}
                             `}>
                                     <td>{sac.id}</td>
-                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> 
-                                    <td>
+                                     <td>
                                         <div className={styles.statusContainer}>
                                             <span className={`${styles.statusCircle} ${styles[mapStatusToClass(sac.status)]}`}></span>
                                             {mapStatusToSpanish(sac.status)}
                                         </div>
                                     </td>
                                     <td>{capitalizePriority(sac.priority)}</td>
+                                    <td>{capitalizeClaimReason(sac.claimReason)}</td> 
+                                    <td className={styles.ellipsisCell}>{assignedPerson}</td>
+                                    {/* <td>{client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}</td> */}
+                                    <td className={styles.ellipsisCell}>{client.address ? client.address : "N/A"}</td>
                                     <td>{sac.clientId || "S/N"}</td>
-                                    <td>{client.holderName || "N/A"}</td>
-                                    <td>{client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : "N/A"}</td>
-                                    <td>{assignedPerson}</td>
+                                    <td className={styles.ellipsisCell}>{client.holderName || "N/A"}</td>
+
+                                    
                                     <td>{formattedDate}</td>
                                     <td>
                                         <button 

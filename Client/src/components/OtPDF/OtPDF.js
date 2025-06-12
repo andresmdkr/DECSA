@@ -33,7 +33,8 @@ const OtPDF = async ({ sac, ot, artifact,client }) => {
     pageContainer.querySelector('#supply').textContent = client.supply || 'N/A';
     pageContainer.querySelector('#claimantName').textContent = sac.claimantName || client.holderName || 'N/A';
     pageContainer.querySelector('#eventDate').textContent = sac.eventDate ? formatDate(sac.eventDate) : 'N/A';
-    pageContainer.querySelector('#address').textContent = `${client.address} ${client.extraAddressInfo}`;
+    /* pageContainer.querySelector('#address').textContent = `${client.address} ${client.extraAddressInfo}`; */
+    pageContainer.querySelector('#address').textContent = client.address || 'N/A';
     pageContainer.querySelector('#claimantPhone').textContent = sac.claimantPhone || client.phone || 'N/A';
 
      // Mostrar tabla de instalación si hay información relevante

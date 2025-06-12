@@ -7,7 +7,7 @@ import { createResolution, updateResolution, fetchResolutions } from '../../redu
 import styles from './ResolutionForm.module.css';
 import ResolutionPDF from '../ResolutionPDF/ResolutionPDF.js';
 
-const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) => {
+const ResolutionForm = ({ sac, burnedArtifact, resolution, mode, onClose }) => {
     const dispatch = useDispatch();
     const [type, setType] = useState('');
     const [currentMode, setCurrentMode] = useState(mode);
@@ -17,6 +17,8 @@ const ResolutionForm = ({ sacId, burnedArtifactId, resolution, mode, onClose }) 
     const [resolutionId, setResolutionId] = useState(null);
     const [artifactData, setArtifactData] = useState(null);
     
+    const sacId = sac.id || resolution?.sacId;
+    const burnedArtifactId = burnedArtifact.id || resolution?.burnedArtifactId;
     
     const artifact = useSelector(state => state.artifacts.artifact);
 
@@ -143,8 +145,7 @@ Personalizado: ""
                         cancelButtonText: 'Cerrar',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const artifactId = burnedArtifactId || response.payload?.burnedArtifactId;
-                            ResolutionPDF(sacId, createdResolutionId, artifactId); 
+                            ResolutionPDF(sac, createdResolutionId,burnedArtifact); 
                         }
                         onClose();
                     });
@@ -164,8 +165,7 @@ Personalizado: ""
                         cancelButtonText: 'Cerrar',
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
-                            ResolutionPDF(sacId, resolution.id, artifactId);
+                            ResolutionPDF(sac, resolution.id, burnedArtifact);
                         }
                         onClose()
                     });
@@ -211,8 +211,7 @@ Personalizado: ""
                     resolutionId: resolution.id, 
                     resolutionData: { type, description, clientNotified } 
                 }));
-                const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
-                ResolutionPDF(sacId, resolution.id, artifactId);
+                ResolutionPDF(sac, resolution.id, burnedArtifact);
             } catch (error) {
                 console.error("Error al actualizar la resolución antes de imprimir:", error);
                 Swal.fire({
@@ -222,9 +221,8 @@ Personalizado: ""
                 });
             }
         } else {
-            const artifactId = burnedArtifactId || resolution?.burnedArtifactId;
             
-            ResolutionPDF(sacId, resolution.id, artifactId);
+            ResolutionPDF(sac, resolution.id, burnedArtifact);
         }
     };
     

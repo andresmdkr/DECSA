@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -16,7 +16,7 @@ export const fetchAllTechnicalServices = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/technical-service`, config);
+      const response = await api.get(`${API_BASE_URL}/technical-service`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch technical services');
@@ -37,7 +37,7 @@ export const fetchTechnicalServiceById = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/technical-service/${id}`, config);
+      const response = await api.get(`${API_BASE_URL}/technical-service/${id}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch technical service');
@@ -58,7 +58,7 @@ export const createTechnicalService = createAsyncThunk(
         },
       };
 
-      const response = await axios.post(`${API_BASE_URL}/technical-service`, data, config);
+      const response = await api.post(`${API_BASE_URL}/technical-service`, data, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to create technical service');
@@ -79,7 +79,7 @@ export const updateTechnicalService = createAsyncThunk(
           },
         };
   
-        const response = await axios.put(`${API_BASE_URL}/technical-service/${id}`, { name, type, address, phone }, config); 
+        const response = await api.put(`${API_BASE_URL}/technical-service/${id}`, { name, type, address, phone }, config); 
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to update technical service');
@@ -101,7 +101,7 @@ export const deleteTechnicalService = createAsyncThunk(
         },
       };
 
-      await axios.delete(`${API_BASE_URL}/technical-service/${id}`, config);
+      await api.delete(`${API_BASE_URL}/technical-service/${id}`, config);
       return id;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to delete technical service');

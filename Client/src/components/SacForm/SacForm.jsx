@@ -138,7 +138,7 @@ const SacForm = ({ client, onClose }) => {
           icon: 'success',
           confirmButtonText: 'Cerrar',
           showCancelButton: true,     
-          cancelButtonText: 'Imprimir', 
+          cancelButtonText: 'Imprimir 📄', 
         }).then((result) => {
           if (result.dismiss === Swal.DismissReason.cancel) {
             SacPDF(sacId);
@@ -205,6 +205,8 @@ const SacForm = ({ client, onClose }) => {
               claimantRelationship: relationship, 
             }),
             assignedTo: area === 'operaciones' ? assignedTo : null ,
+            status: assignedTo && assignedTo !== 'Sin Asignar' && area === 'operaciones' ? 'Open' : 'Pending',
+
           };
       
           const response = await dispatch(createSAC(sacData)).unwrap();  

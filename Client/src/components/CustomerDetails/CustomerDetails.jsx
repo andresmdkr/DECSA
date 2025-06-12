@@ -286,7 +286,8 @@ const CustomerDetails = ({ client, onClose }) => {
             >
               <option value="CONECTADO">CONECTADO</option>
               <option value="BAJA">BAJA</option>
-              <option value="PENDIENTE_CONEXION">PENDIENTE_CONEXION</option>
+              <option value="PENDIENTE DE CONEXION">PENDIENTE DE CONEXION</option>
+              <option value="PENDIENTE DESCONEXION">PENDIENTE DESCONEXION</option>
             </select>
             {!isFieldEditing ? (
               <AiOutlineEdit className={styles.editIcon} onClick={() => handleEditClick(field, label)} />

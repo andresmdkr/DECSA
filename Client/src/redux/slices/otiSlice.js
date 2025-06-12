@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
+
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -12,7 +13,7 @@ export const fetchInternalWorkOrders = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
         params: { sacId, otiId, page, limit }, 
       };
-      const response = await axios.get(`${API_BASE_URL}/oti`, config);
+      const response = await api.get(`${API_BASE_URL}/oti`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch Internal Work Orders');
@@ -51,7 +52,7 @@ export const createInternalWorkOrder = createAsyncThunk(
       let sacId = internalWorkOrderData.sacId;
 
       if (!sacId) {
-        const sacResponse = await axios.post(`${API_BASE_URL}/sacs`, sacData, config);
+        const sacResponse = await api.post(`${API_BASE_URL}/sacs`, sacData, config);
         sacId = sacResponse.data.id;
       }
 
@@ -72,7 +73,7 @@ export const createInternalWorkOrder = createAsyncThunk(
         });
       }
       
-      const otiResponse = await axios.post(`${API_BASE_URL}/oti`, formData, config);
+      const otiResponse = await api.post(`${API_BASE_URL}/oti`, formData, config);
       return otiResponse.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error creating Internal Work Order and SAC');
@@ -86,6 +87,7 @@ export const updateInternalWorkOrder = createAsyncThunk(
   async ({ internalWorkOrderId, internalWorkOrderData, sacId, isDerived }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user'));
 
       const config = {
         headers: {
@@ -93,8 +95,14 @@ export const updateInternalWorkOrder = createAsyncThunk(
         },
       };
 
-      
+      // Si hay SAC y no es derivado, actualizar también el SAC
       if (sacId && !isDerived) {
+        const now = new Date();
+        const argNow = new Date(now.toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }));
+
+        const formattedDate = argNow.toISOString().split('T')[0]; 
+        const formattedTime = argNow.toTimeString().split(' ')[0];
+
         const sacData = {
           claimReason: internalWorkOrderData.task,
           eventDate: internalWorkOrderData.date,
@@ -102,9 +110,17 @@ export const updateInternalWorkOrder = createAsyncThunk(
           status: internalWorkOrderData.status,
         };
 
-        await axios.put(`${API_BASE_URL}/sacs/${sacId}`, sacData, config);
+        // Si el estado es cerrado, agregar datos extra
+        if (internalWorkOrderData.status === "Closed") {
+          sacData.closeDate = formattedDate;
+          sacData.closeTime = formattedTime;
+          sacData.closedBy = `${user.name} ${user.lastName}`;
+        }
+
+        await api.put(`${API_BASE_URL}/sacs/${sacId}`, sacData, config);
       }
 
+      // Crear FormData para OTI
       const formData = new FormData();
       formData.append('status', internalWorkOrderData.status);
       formData.append('task', internalWorkOrderData.task);
@@ -120,13 +136,15 @@ export const updateInternalWorkOrder = createAsyncThunk(
         });
       }
 
-      const response = await axios.put(`${API_BASE_URL}/oti/${internalWorkOrderId}`, formData, config);
+      const response = await api.put(`${API_BASE_URL}/oti/${internalWorkOrderId}`, formData, config);
       return response.data;
+
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error updating Internal Work Order and SAC');
     }
   }
 );
+
 
 
 

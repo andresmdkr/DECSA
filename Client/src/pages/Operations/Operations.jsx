@@ -21,11 +21,11 @@ const Operations = () => {
 
     const actions = [
         { label: 'Solicitud de Atención al Cliente (S.A.C)', component: CustomerSearchOp },
-        { label: 'Reclamos Entrantes', component: IncomingClaims },
-        { label: 'Reclamos En Curso', component: OngoingClaims },
+/*         { label: 'Reclamos Entrantes', component: IncomingClaims }, */
+        { label: 'Reclamos Pendientes/Curso', component: OngoingClaims },
         { label: 'Todos los Reclamos', component: ClaimsOp },
-        { label: 'Reportes', component: OpReports },
         { label: 'Agentes Operativos', component: OperationalAgent },
+        { label: 'Reportes', component: OpReports },
 
     ];
 

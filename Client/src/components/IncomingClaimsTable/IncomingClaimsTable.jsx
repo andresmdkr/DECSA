@@ -98,17 +98,6 @@ const IncomingClaimsTable = () => {
         setOacFormOpen(true); 
     };
 
-    const handleOacCreated = async (sacId) => {
-        const sacData = { status: 'Open' }; 
-        try {
-            await dispatch(updateSAC({ id: sacId, sacData }));
-            setOacFormOpen(false); 
-            setSelectedSac(null);
-            handleReset();
-        } catch (error) {
-            console.error('Error al actualizar el SAC:', error);
-        }
-    };
     
 
     const handleCloseForm = () => {
@@ -208,8 +197,11 @@ const IncomingClaimsTable = () => {
                     <td>{capitalizeText(sac.claimReason)}</td>
                     <td>{sac.assignedTo || 'N/A'}</td>
                     <td className={styles.ellipsisCell}>{client.holderName || 'N/A'}</td>
-                    <td className={styles.ellipsisCell}>
+                    {/* <td className={styles.ellipsisCell}>
                         {client.address ? `${client.address}, ${client.extraAddressInfo || ''}` : 'N/A'}
+                    </td> */}
+                    <td className={styles.ellipsisCell}>
+                        {client.address ? `${client.address}` : 'N/A'}
                     </td>
                     <td>
                         <button className={styles.actionButton} onClick={() => handleViewSac(sac)}>
@@ -240,7 +232,6 @@ const IncomingClaimsTable = () => {
                 <OacForm
                 sac={selectedSac}
                 onClose={handleCloseForm}
-                onOacCreated={() => handleOacCreated(selectedSac.id)}
                 mode={formMode}
                 />
             )}

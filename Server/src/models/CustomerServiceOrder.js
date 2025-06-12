@@ -29,6 +29,22 @@ module.exports = (sequelize) => {
       allowNull: true,
       defaultValue: [],
     },
+    tension: {
+      type:DataTypes.STRING, 
+      allowNull: true,
+    },
+    failureReason: {
+      type: DataTypes.STRING, 
+      allowNull: true,
+    },
+    performedWork: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    pendingTasks: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   },
   {
     timestamps: true,

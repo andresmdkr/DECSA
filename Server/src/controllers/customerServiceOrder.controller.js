@@ -37,6 +37,10 @@ const handleFileUpload = async (files, dir) => {
         assignedBy: data.assignedBy|| 'No asignado',
         mainFile: mainFilePath,
         status: 'Open',
+        tension: data.tension,
+        failureReason: data.failureReason,
+        performedWork: data.performedWork,
+        pendingTasks: data.pendingTasks,
       });
     
       return newOrder;
@@ -62,9 +66,8 @@ const updateCustomerServiceOrder = async (id, data, mainFile, otherFiles) => {
     try {
       const order = await CustomerServiceOrder.findByPk(id);
       if (!order) throw new Error('Order not found');
-  
+      console.log(data);
       const dir = path.join(__dirname, '../../uploads/OAC', `OAC-${id}`);
-      console.log(mainFile);
   
       if (mainFile) {
 
@@ -72,7 +75,6 @@ const updateCustomerServiceOrder = async (id, data, mainFile, otherFiles) => {
           fs.unlinkSync(path.join(dir, path.basename(order.mainFile)));
         }
         const mainFilePath = (await handleFileUpload([mainFile], dir))[0];
-        console.log(mainFilePath);
         order.mainFile = mainFilePath;
       }
 
@@ -80,10 +82,13 @@ const updateCustomerServiceOrder = async (id, data, mainFile, otherFiles) => {
         const otherFilePaths = await handleFileUpload(otherFiles, dir);
         order.files = [...(order.files || []), ...otherFilePaths];
       }
-      console.log(order);
       if (data.assignedPerson) order.assignedPerson = data.assignedPerson;
       if (data.assignedBy) order.assignedBy = data.assignedBy;
       if (data.status) order.status = data.status;
+      if (data.tension) order.tension = data.tension;
+      if (data.failureReason) order.failureReason = data.failureReason;
+      if (data.performedWork) order.performedWork = data.performedWork;
+      if (data.pendingTasks) order.pendingTasks = data.pendingTasks;
       await order.save();
       return order;
     } catch (error) {

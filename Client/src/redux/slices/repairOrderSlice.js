@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -11,7 +11,7 @@ export const fetchRepairOrder = createAsyncThunk(
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const response = await axios.get(`${API_BASE_URL}/repair-order/${burnedArtifactId}`, config);
+      const response = await api.get(`${API_BASE_URL}/repair-order/${burnedArtifactId}`, config);
       console.log('Repair Order Data:', response.data)
       return response.data;
     } catch (error) {
@@ -32,7 +32,7 @@ export const createRepairOrder = createAsyncThunk(
         
       const config = { headers: { Authorization: `Bearer ${token}` } };
 
-      const response = await axios.post(`${API_BASE_URL}/repair-order`, repairOrderData, config);
+      const response = await api.post(`${API_BASE_URL}/repair-order`, repairOrderData, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error creating Repair Order');
@@ -48,7 +48,7 @@ export const updateRepairOrder = createAsyncThunk(
       const token = localStorage.getItem('token');
 
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.put(`${API_BASE_URL}/repair-order/${repairOrderId}`,repairOrderData , config);
+      const response = await api.put(`${API_BASE_URL}/repair-order/${repairOrderId}`,repairOrderData , config);
       console.log(response)
       return response.data;
     } catch (error) {

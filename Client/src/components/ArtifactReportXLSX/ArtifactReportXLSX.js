@@ -38,13 +38,14 @@ const ArtifactReportXLS = async (startDate, endDate) => {
       const artifactList = artifacts.map((artifact) => artifact.name || 'N/A').join(' // ');
 
       const claimantName = sac.claimantName || client?.holderName || 'N/A';
-      const fullAddress = `${client?.address || ''} ${client?.extraAddressInfo || ''}`.trim();
+/*       const fullAddress = `${client?.address || ''} ${client?.extraAddressInfo || ''}`.trim(); */
 
       rows.push({
         'N° CUENTA':  Number(sac.clientId) || 'N/A',
         'N° SUMINISTRO':  Number(client?.supply) || 'N/A',
         'RECLAMANTE': claimantName,
-        'DOMICILIO SUMINISTRO': fullAddress || 'N/A',
+/*         'DOMICILIO SUMINISTRO': fullAddress || 'N/A', */
+        'DOMICILIO SUMINISTRO': client?.address || 'N/A',
         'N° RECLAMO':  Number(sac.id) || 'N/A',
         'FECHA RECLAMO': sac.createdAt ? new Date(sac.createdAt).toLocaleDateString('es-AR') : 'N/A',
         'ARTEFACTOS RECLAMADOS': artifactList || 'N/A',

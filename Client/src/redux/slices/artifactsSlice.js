@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -15,7 +15,7 @@ export const fetchArtifact = createAsyncThunk(
         
       };
 
-      const response = await axios.get(`${API_BASE_URL}/artifact/${artifactId}`, config);
+      const response = await api.get(`${API_BASE_URL}/artifact/${artifactId}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch artifact');
@@ -37,7 +37,7 @@ export const fetchAllArtifacts = createAsyncThunk(
       };
 
 
-      const response = await axios.get(`${API_BASE_URL}/artifact`, config);
+      const response = await api.get(`${API_BASE_URL}/artifact`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch artifacts');
@@ -57,7 +57,7 @@ export const updateArtifact = createAsyncThunk(
         },
       };
 
-      const response = await axios.put(`${API_BASE_URL}/artifact/${artifactId}`, artifactData, config);
+      const response = await api.put(`${API_BASE_URL}/artifact/${artifactId}`, artifactData, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update artifact');

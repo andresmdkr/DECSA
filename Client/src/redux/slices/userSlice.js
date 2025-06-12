@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -15,7 +15,7 @@ export const fetchAllUsers = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/user`, config);
+      const response = await api.get(`${API_BASE_URL}/user`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch users');
@@ -35,7 +35,7 @@ export const fetchUserById = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/user/${userId}`, config);
+      const response = await api.get(`${API_BASE_URL}/user/${userId}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch user');
@@ -55,7 +55,7 @@ export const fetchUserByName = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/user/find/${name}`, config);
+      const response = await api.get(`${API_BASE_URL}/user/find/${name}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to fetch user by name');
@@ -75,7 +75,7 @@ export const updateUser = createAsyncThunk(
         },
       };
 
-      const response = await axios.put(`${API_BASE_URL}/user/${userId}`, userData, config);
+      const response = await api.put(`${API_BASE_URL}/user/${userId}`, userData, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update user');
@@ -95,7 +95,7 @@ export const deleteUser = createAsyncThunk(
         },
       };
 
-      const response = await axios.delete(`${API_BASE_URL}/user/${userId}`, config);
+      const response = await api.delete(`${API_BASE_URL}/user/${userId}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to delete user');
@@ -115,7 +115,7 @@ export const createUser = createAsyncThunk(
           },
         };
   
-        const response = await axios.post(`${API_BASE_URL}/user`, userData, config);
+        const response = await api.post(`${API_BASE_URL}/user`, userData, config);
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response?.data || 'Failed to create user');

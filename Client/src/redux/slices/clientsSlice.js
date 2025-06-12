@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../auth/api.js'; 
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -15,7 +15,7 @@ export const fetchClientByAccountNumber = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/client/${accountNumber}`, config);
+      const response = await api.get(`${API_BASE_URL}/client/${accountNumber}`, config);
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -38,7 +38,7 @@ export const updateClientByAccountNumber = createAsyncThunk(
         },
       };
 
-      const response = await axios.put(`${API_BASE_URL}/client/${accountNumber}`, data, config);
+      const response = await api.put(`${API_BASE_URL}/client/${accountNumber}`, data, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to update client');
@@ -59,7 +59,7 @@ export const searchClientsByName = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/client/search?holderName=${holderName}`, config);
+      const response = await api.get(`${API_BASE_URL}/client/search?holderName=${holderName}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to search clients');
@@ -76,7 +76,7 @@ export const searchClientsBySubstation = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/client/search?substation=${substation}`, config);
+      const response = await api.get(`${API_BASE_URL}/client/search?substation=${substation}`, config);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Failed to search clients by substation');
@@ -96,7 +96,7 @@ export const searchClientsByDevice = createAsyncThunk(
         },
       };
 
-      const response = await axios.get(`${API_BASE_URL}/client/search?device=${device}`, config);
+      const response = await api.get(`${API_BASE_URL}/client/search?device=${device}`, config);
       console.log(response.data);
       return response.data;
     } catch (error) {
